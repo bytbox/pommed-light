@@ -271,8 +271,9 @@ main (int argc, char **argv)
 		}
 	      else
 		{
-		  tv_diff.tv_usec = 1000000 - tv_als.tv_usec;
-		  tv_diff.tv_usec += tv_now.tv_usec;
+		  tv_diff.tv_sec--;
+		  tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
+		  tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
 		}
 
 	      if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
