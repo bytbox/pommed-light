@@ -50,6 +50,9 @@
 #define LCD_BCK_STEP            10
 #define KBD_BCK_STEP            10
 
+#define STEP_UP                 1
+#define STEP_DOWN               -1
+
 #define EVDEV_BASE              "/dev/input/event"
 #define MAX_EVDEV               32
 
@@ -57,15 +60,18 @@
 #define KBD_AMBIENT             "/sys/devices/platform/applesmc/light"
 #define KBD_AMBIENT_THRESHOLD   20
 #define KBD_BACKLIGHT_DEFAULT   100
+#define KBD_BACKLIGHT_OFF       0
+#define KBD_BACKLIGHT_MAX       255
 
 #define MBP_EVDEV_TIMEOUT       200
 
 
 struct
 {
-  int off;    /* turned off ? */
-  int r_sens; /* right sensor */
-  int l_sens; /* left sensor */
+  int auto_on;  /* automatic */
+  int off;      /* turned off ? */
+  int r_sens;   /* right sensor */
+  int l_sens;   /* left sensor */
 } kbd_bck_status;
 
 
@@ -122,6 +128,15 @@ kbd_backlight_set(int val)
 
   debug("KBD backlight value set to %d\n", val);
 
+  /* backlight turned off by user */
+  if ((val == KBD_BACKLIGHT_OFF) && (kbd_bck_status.auto_on))
+    kbd_bck_status.off = 1;
+
+  /* backlight turned on again by user */
+  if ((val > KBD_BACKLIGHT_OFF)
+      && (kbd_bck_status.auto_on) && (kbd_bck_status.off))
+    kbd_bck_status.off = 0;
+
   close(fd);
 }
 
@@ -136,21 +151,21 @@ kbd_backlight_step(int dir)
   if (val < 0)
     return;
 
-  if (dir > 0)
+  if (dir == STEP_UP)
     {
       newval = val + KBD_BCK_STEP;
 
-      if (newval > 255)
-	newval = 255;
+      if (newval > KBD_BACKLIGHT_MAX)
+	newval = KBD_BACKLIGHT_MAX;
 
       debug("KBD stepping +%d -> %d\n", KBD_BCK_STEP, newval);
     }
-  else
+  else if (dir == STEP_DOWN)
     {
       newval = val - KBD_BCK_STEP;
 
-      if (newval < 0)
-	newval = 0;
+      if (newval < KBD_BACKLIGHT_OFF)
+	newval = KBD_BACKLIGHT_OFF;
 
       debug("KBD stepping -%d -> %d\n", KBD_BCK_STEP, newval);
     }
@@ -202,6 +217,7 @@ kbd_backlight_ambient_get(int *r, int *l)
 void
 kbd_backlight_status_init(void)
 {
+  kbd_bck_status.auto_on = 0;
   kbd_bck_status.off = 0;
 
   kbd_backlight_ambient_get(&kbd_bck_status.r_sens, &kbd_bck_status.l_sens);
@@ -219,12 +235,37 @@ kbd_backlight_ambient_check(void)
 
   if ((amb_r < KBD_AMBIENT_THRESHOLD) || (amb_l < KBD_AMBIENT_THRESHOLD))
     {
+      debug("Ambient light lower threshold reached\n");
+
+      /* backlight turned on automatically, then disabled by user */
+      if (kbd_bck_status.auto_on && kbd_bck_status.off)
+	return;
+
+      /* backlight already on */
+      if (kbd_backlight_get() > KBD_BACKLIGHT_OFF)
+	return;
+
+      /* turn on backlight */
+      kbd_bck_status.auto_on = 1;
       kbd_bck_status.off = 0;
-      kbd_bck_status.r_sens = amb_r;
-      kbd_bck_status.l_sens = amb_l;
 
       kbd_backlight_set(KBD_BACKLIGHT_DEFAULT);
     }
+  else if (kbd_bck_status.auto_on)
+    {
+      if ((amb_r > (2 * KBD_AMBIENT_THRESHOLD)) && (amb_l > (2 * KBD_AMBIENT_THRESHOLD)))
+	{
+	  debug("Ambient light upper threshold reached\n");
+
+	  kbd_bck_status.auto_on = 0;
+	  kbd_bck_status.off = 0;
+
+	  kbd_backlight_set(KBD_BACKLIGHT_OFF);
+	}
+    }
+
+  kbd_bck_status.r_sens = amb_r;
+  kbd_bck_status.l_sens = amb_l;
 }
 
 
@@ -275,19 +316,19 @@ process_evdev_events(int fd)
 	  case K_KBD_BCK_OFF:
 	    debug("\nKEY: keyboard backlight off\n");
 
-	    kbd_backlight_set(0);
+	    kbd_backlight_set(KBD_BACKLIGHT_OFF);
 	    break;
 
 	  case K_KBD_BCK_DOWN:
 	    debug("\nKEY: keyboard backlight down\n");
 
-	    kbd_backlight_step(-1);
+	    kbd_backlight_step(STEP_DOWN);
 	    break;
 
 	  case K_KBD_BCK_UP:
 	    debug("\nKEY: keyboard backlight up\n");
 
-	    kbd_backlight_step(1);
+	    kbd_backlight_step(STEP_UP);
 	    break;
 
 	  case K_CD_EJECT:
