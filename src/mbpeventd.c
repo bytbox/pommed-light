@@ -17,6 +17,7 @@
 
 #include "mbpeventd.h"
 #include "kbd_backlight.h"
+#include "cd_eject.h"
 
 void
 process_evdev_events(int fd)
@@ -82,6 +83,8 @@ process_evdev_events(int fd)
 
 	  case K_CD_EJECT:
 	    debug("\nKEY: CD eject\n");
+
+	    cd_eject();
 	    break;
 
 	  default:

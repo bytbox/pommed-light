@@ -56,5 +56,8 @@
 #define KBD_BACKLIGHT_OFF       0
 #define KBD_BACKLIGHT_MAX       255
 
+#define CD_DVD_DEVICE           "/dev/dvd"
+#define CD_CDROM_DEVICE         "/dev/cdrom"
+#define CD_EJECT_CMD            "/usr/bin/eject"
 
 #endif /* !__MBPEVENTD_H__ */
