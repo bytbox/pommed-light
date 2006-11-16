@@ -41,7 +41,8 @@
 #define STEP_DOWN               -1
 
 #define EVDEV_BASE              "/dev/input/event"
-#define MAX_EVDEV               32
+#define EVDEV_MAX               32
+#define EVDEV_TIMEOUT           200
 
 #define LCD_BCK_STEP            10
 #define LCD_BACKLIGHT_OFF       0
@@ -55,6 +56,5 @@
 #define KBD_BACKLIGHT_OFF       0
 #define KBD_BACKLIGHT_MAX       255
 
-#define MBP_EVDEV_TIMEOUT       200
 
 #endif /* !__MBPEVENTD_H__ */

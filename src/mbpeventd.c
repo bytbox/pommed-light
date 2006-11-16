@@ -113,7 +113,7 @@ open_evdev(struct pollfd **fds)
   unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
   char evdev[32];
 
-  for (i = 0; i < MAX_EVDEV; i++)
+  for (i = 0; i < EVDEV_MAX; i++)
     {
       ret = snprintf(evdev, 32, "%s%d", EVDEV_BASE, i);
 
@@ -173,7 +173,7 @@ open_evdev(struct pollfd **fds)
 
   if (*fds == NULL)
     {
-      for (i = 0; i < MAX_EVDEV; i++)
+      for (i = 0; i < EVDEV_MAX; i++)
 	{
 	  if (fd[i] > 0)
 	    close(fd[i]);
@@ -185,7 +185,7 @@ open_evdev(struct pollfd **fds)
     }
 
   j = 0;
-  for (i = 0; i < MAX_EVDEV && j < found; i++)
+  for (i = 0; i < EVDEV_MAX && j < found; i++)
     {
       if (fd[i] < 0)
 	continue;
@@ -220,7 +220,7 @@ main (int argc, char **argv)
 
   while (1)
     {
-      ret = poll(fds, nfds, MBP_EVDEV_TIMEOUT);
+      ret = poll(fds, nfds, EVDEV_TIMEOUT);
 
       if (ret < 0) /* error */
 	{
