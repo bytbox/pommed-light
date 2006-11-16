@@ -20,6 +20,7 @@ static struct
 {
   int auto_on;  /* automatic */
   int off;      /* turned off ? */
+  int value;    /* previous value */
   int r_sens;   /* right sensor */
   int l_sens;   /* left sensor */
 } kbd_bck_status;
@@ -62,6 +63,28 @@ kbd_backlight_set(int val)
 
   curval = kbd_backlight_get();
 
+  /* automatic backlight toggle by user */
+  if ((val == KBD_BACKLIGHT_OFF) && (kbd_bck_status.auto_on))
+    {
+      if (!kbd_bck_status.off)
+	{
+	  debug("bar\n");
+	  kbd_bck_status.off = 1;
+	  kbd_bck_status.value = curval;
+	}
+      else
+	{
+	  debug("foo\n");
+	  kbd_bck_status.off = 0;
+	  val = kbd_bck_status.value;
+	}
+    }
+
+  /* backlight turned on again by user */
+  if ((val > KBD_BACKLIGHT_OFF)
+      && (kbd_bck_status.auto_on) && (kbd_bck_status.off))
+    kbd_bck_status.off = 0;
+
   if (val == curval)
     return;
 
@@ -77,15 +100,6 @@ kbd_backlight_set(int val)
   ret = write(fd, buf, ret);
 
   debug("KBD backlight value set to %d\n", val);
-
-  /* backlight turned off by user */
-  if ((val == KBD_BACKLIGHT_OFF) && (kbd_bck_status.auto_on))
-    kbd_bck_status.off = 1;
-
-  /* backlight turned on again by user */
-  if ((val > KBD_BACKLIGHT_OFF)
-      && (kbd_bck_status.auto_on) && (kbd_bck_status.off))
-    kbd_bck_status.off = 0;
 
   close(fd);
 }
@@ -130,6 +144,10 @@ kbd_backlight_status_init(void)
 {
   kbd_bck_status.auto_on = 0;
   kbd_bck_status.off = 0;
+
+  kbd_bck_status.value = kbd_backlight_get();
+  if (kbd_bck_status.value < 0)
+    kbd_bck_status.value = 0;
 
   ambient_get(&kbd_bck_status.r_sens, &kbd_bck_status.l_sens);
 }
