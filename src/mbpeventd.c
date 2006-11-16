@@ -1,3 +1,7 @@
+/*
+ * $Id$
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -351,9 +355,18 @@ open_evdev(struct pollfd **fds)
 
       ioctl(fd[i], EVIOCGBIT(0, EV_MAX), bit[0]);
 
-      if (test_bit(2, bit[0]))
+      if (!test_bit(1, bit[0]))
 	{
-	  debug("Discarding evdev %d with event type > 2 (not a keyboard)\n", i);
+	  debug("Discarding evdev %d with no key event type (not a keyboard)\n", i);
+
+	  close(fd[i]);
+	  fd[i] = -1;
+
+	  continue;
+	}
+      else if (test_bit(2, bit[0]))
+	{
+	  debug("Discarding evdev %d with event type >= 2 (not a keyboard)\n", i);
 
 	  close(fd[i]);
 	  fd[i] = -1;
