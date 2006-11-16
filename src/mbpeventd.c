@@ -8,6 +8,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/time.h>
+#include <time.h>
 #include <string.h>
 #include <poll.h>
 
@@ -211,6 +213,10 @@ main (int argc, char **argv)
   struct pollfd *fds;
   int nfds;
 
+  struct timeval tv_now;
+  struct timeval tv_als;
+  struct timeval tv_diff;
+
   nfds = open_evdev(&fds);
   if (nfds < 1)
     {
@@ -221,9 +227,11 @@ main (int argc, char **argv)
 
   kbd_backlight_status_init();
 
+  gettimeofday(&tv_als, NULL);
+
   while (1)
     {
-      ret = poll(fds, nfds, EVDEV_TIMEOUT);
+      ret = poll(fds, nfds, LOOP_TIMEOUT);
 
       if (ret < 0) /* error */
 	{
@@ -242,7 +250,37 @@ main (int argc, char **argv)
 		}
 	    }
 
-	  kbd_backlight_ambient_check();
+	  /* only check ambient light sensors when poll() times out
+	   * or when we haven't checked since LOOP_TIMEOUT
+	   */
+	  gettimeofday(&tv_now, NULL);
+	  if (ret == 0)
+	    {
+	      kbd_backlight_ambient_check();
+	      tv_als = tv_now;
+	    }
+	  else
+	    {
+	      tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
+	      if (tv_diff.tv_sec < 0)
+		tv_diff.tv_sec = 0;
+
+	      if (tv_diff.tv_sec == 0)
+		{
+		  tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
+		}
+	      else
+		{
+		  tv_diff.tv_usec = 1000000 - tv_als.tv_usec;
+		  tv_diff.tv_usec += tv_now.tv_usec;
+		}
+
+	      if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
+		{
+		  kbd_backlight_ambient_check();
+		  tv_als = tv_now;
+		}
+	    }
 	}
     }
 

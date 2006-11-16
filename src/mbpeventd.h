@@ -42,7 +42,8 @@
 
 #define EVDEV_BASE              "/dev/input/event"
 #define EVDEV_MAX               32
-#define EVDEV_TIMEOUT           200
+
+#define LOOP_TIMEOUT           200
 
 #define LCD_BCK_STEP            10
 #define LCD_BACKLIGHT_OFF       0
