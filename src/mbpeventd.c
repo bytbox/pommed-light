@@ -58,7 +58,7 @@
 #define KBD_AMBIENT_THRESHOLD   20
 #define KBD_BACKLIGHT_DEFAULT   100
 
-#define MBP_EVDEV_TIMEOUT       100
+#define MBP_EVDEV_TIMEOUT       200
 
 
 struct
