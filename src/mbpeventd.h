@@ -37,15 +37,17 @@
 #define K_KBD_BCK_UP            0xe6
 #define K_CD_EJECT              0xa1
 
-#define LCD_BCK_STEP            10
-#define KBD_BCK_STEP            10
-
 #define STEP_UP                 1
 #define STEP_DOWN               -1
 
 #define EVDEV_BASE              "/dev/input/event"
 #define MAX_EVDEV               32
 
+#define LCD_BCK_STEP            10
+#define LCD_BACKLIGHT_OFF       0
+#define LCD_BACKLIGHT_MAX       255
+
+#define KBD_BCK_STEP            10
 #define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
 #define KBD_AMBIENT_SENSOR      "/sys/devices/platform/applesmc/light"
 #define KBD_AMBIENT_THRESHOLD   20
