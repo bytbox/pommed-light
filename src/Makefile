@@ -6,11 +6,11 @@ OBJS = $(SOURCES:%.c=%.o)
 
 mbpeventd: $(OBJS)
 
-mbpeventd.o: mbpeventd.h kbd_backlight.h ambient.h
+mbpeventd.o: mbpeventd.c mbpeventd.h kbd_backlight.h ambient.h
 
-kbd_backlight.o: mbpeventd.h kbd_backlight.h ambient.h
+kbd_backlight.o: kbd_backlight.c mbpeventd.h kbd_backlight.h ambient.h
 
-ambient.o: mbpeventd.h ambient.h
+ambient.o: ambient.c mbpeventd.h ambient.h
 
 clean:
 	rm -f mbpeventd $(OBJS)
