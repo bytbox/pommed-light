@@ -49,7 +49,7 @@ ambient_get(int *r, int *l)
   p = buf + 1;
   *l = atoi(p);
 
-  debug("Ambient light: right %d, left %d\n", *r, *l);
+  logdebug("Ambient light: right %d, left %d\n", *r, *l);
   
   close(fd);
 }

@@ -8,9 +8,11 @@
 #define DEBUG
 
 #ifdef DEBUG
-# define debug(fmt, args...) printf(fmt, ##args);
+# define logdebug(fmt, args...) printf(fmt, ##args);
+# define debug 1
 #else
-# define debug(fmt, args...)
+# define logdebug(fmt, args...)
+extern int debug;
 #endif
 
 

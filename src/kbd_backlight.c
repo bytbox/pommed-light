@@ -48,7 +48,7 @@ kbd_backlight_get(void)
 
   ret = atoi(buf);
 
-  debug("KBD backlight value is %d\n", ret);
+  logdebug("KBD backlight value is %d\n", ret);
 
   return ret;
 }
@@ -68,13 +68,11 @@ kbd_backlight_set(int val)
     {
       if (!kbd_bck_status.off)
 	{
-	  debug("bar\n");
 	  kbd_bck_status.off = 1;
 	  kbd_bck_status.value = curval;
 	}
       else
 	{
-	  debug("foo\n");
 	  kbd_bck_status.off = 0;
 	  val = kbd_bck_status.value;
 	}
@@ -99,7 +97,7 @@ kbd_backlight_set(int val)
 
   ret = write(fd, buf, ret);
 
-  debug("KBD backlight value set to %d\n", val);
+  logdebug("KBD backlight value set to %d\n", val);
 
   close(fd);
 }
@@ -122,7 +120,7 @@ kbd_backlight_step(int dir)
       if (newval > KBD_BACKLIGHT_MAX)
 	newval = KBD_BACKLIGHT_MAX;
 
-      debug("KBD stepping +%d -> %d\n", KBD_BCK_STEP, newval);
+      logdebug("KBD stepping +%d -> %d\n", KBD_BCK_STEP, newval);
     }
   else if (dir == STEP_DOWN)
     {
@@ -131,7 +129,7 @@ kbd_backlight_step(int dir)
       if (newval < KBD_BACKLIGHT_OFF)
 	newval = KBD_BACKLIGHT_OFF;
 
-      debug("KBD stepping -%d -> %d\n", KBD_BCK_STEP, newval);
+      logdebug("KBD stepping -%d -> %d\n", KBD_BCK_STEP, newval);
     }
   else
     return;
@@ -164,7 +162,7 @@ kbd_backlight_ambient_check(void)
 
   if ((amb_r < KBD_AMBIENT_THRESHOLD) || (amb_l < KBD_AMBIENT_THRESHOLD))
     {
-      debug("Ambient light lower threshold reached\n");
+      logdebug("Ambient light lower threshold reached\n");
 
       /* backlight turned on automatically, then disabled by user */
       if (kbd_bck_status.auto_on && kbd_bck_status.off)
@@ -184,7 +182,7 @@ kbd_backlight_ambient_check(void)
     {
       if ((amb_r > (2 * KBD_AMBIENT_THRESHOLD)) && (amb_l > (2 * KBD_AMBIENT_THRESHOLD)))
 	{
-	  debug("Ambient light upper threshold reached\n");
+	  logdebug("Ambient light upper threshold reached\n");
 
 	  kbd_bck_status.auto_on = 0;
 	  kbd_bck_status.off = 0;

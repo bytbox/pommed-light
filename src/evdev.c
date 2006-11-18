@@ -42,53 +42,53 @@ process_evdev_events(int fd)
       switch (ev.code)
 	{
 	  case K_LCD_BCK_DOWN:
-	    debug("\nKEY: LCD backlight down\n");
+	    logdebug("\nKEY: LCD backlight down\n");
 
 	    lcd_backlight_step(STEP_DOWN);
 	    break;
 
 	  case K_LCD_BCK_UP:
-	    debug("\nKEY: LCD backlight up\n");
+	    logdebug("\nKEY: LCD backlight up\n");
 
 	    lcd_backlight_step(STEP_UP);
 	    break;
 
 	  case K_AUDIO_MUTE:
-	    debug("\nKEY: audio mute\n");
+	    logdebug("\nKEY: audio mute\n");
 	    break;
 
 	  case K_AUDIO_DOWN:
-	    debug("\nKEY: audio down\n");
+	    logdebug("\nKEY: audio down\n");
 	    break;
 
 	  case K_AUDIO_UP:
-	    debug("\nKEY: audio up\n");
+	    logdebug("\nKEY: audio up\n");
 	    break;
 
 	  case K_VIDEO_TOGGLE:
-	    debug("\nKEY: video toggle\n");
+	    logdebug("\nKEY: video toggle\n");
 	    break;
 
 	  case K_KBD_BCK_OFF:
-	    debug("\nKEY: keyboard backlight off\n");
+	    logdebug("\nKEY: keyboard backlight off\n");
 
 	    kbd_backlight_set(KBD_BACKLIGHT_OFF);
 	    break;
 
 	  case K_KBD_BCK_DOWN:
-	    debug("\nKEY: keyboard backlight down\n");
+	    logdebug("\nKEY: keyboard backlight down\n");
 
 	    kbd_backlight_step(STEP_DOWN);
 	    break;
 
 	  case K_KBD_BCK_UP:
-	    debug("\nKEY: keyboard backlight up\n");
+	    logdebug("\nKEY: keyboard backlight up\n");
 
 	    kbd_backlight_step(STEP_UP);
 	    break;
 
 	  case K_CD_EJECT:
-	    debug("\nKEY: CD eject\n");
+	    logdebug("\nKEY: CD eject\n");
 
 	    cd_eject();
 	    break;
@@ -134,7 +134,7 @@ open_evdev(struct pollfd **fds)
       if (fd[i] < 0)
 	{
 	  if (errno != ENOENT)
-	    debug("Could not open %s: %s\n", evdev, strerror(errno));
+	    logdebug("Could not open %s: %s\n", evdev, strerror(errno));
 
 	  continue;
 	}
@@ -143,7 +143,7 @@ open_evdev(struct pollfd **fds)
 
       if (!evdev_is_geyser4(id[ID_VENDOR], id[ID_PRODUCT]))
 	{
-	  debug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
+	  logdebug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
 
 	  close(fd[i]);
 	  fd[i] = -1;
@@ -157,7 +157,7 @@ open_evdev(struct pollfd **fds)
 
       if (!test_bit(1, bit[0]))
 	{
-	  debug("Discarding evdev %d with no key event type (not a keyboard)\n", i);
+	  logdebug("Discarding evdev %d with no key event type (not a keyboard)\n", i);
 
 	  close(fd[i]);
 	  fd[i] = -1;
@@ -166,7 +166,7 @@ open_evdev(struct pollfd **fds)
 	}
       else if (test_bit(2, bit[0]))
 	{
-	  debug("Discarding evdev %d with event type >= 2 (not a keyboard)\n", i);
+	  logdebug("Discarding evdev %d with event type >= 2 (not a keyboard)\n", i);
 
 	  close(fd[i]);
 	  fd[i] = -1;
@@ -177,7 +177,7 @@ open_evdev(struct pollfd **fds)
       found++;
     }
 
-  debug("Found %d devices\n", found);
+  logdebug("Found %d devices\n", found);
 
   *fds = (struct pollfd *) malloc(found * sizeof(struct pollfd));
 
@@ -189,7 +189,7 @@ open_evdev(struct pollfd **fds)
 	    close(fd[i]);
 	}
 
-      debug("Out of memory for %d pollfd structs\n", found);
+      logdebug("Out of memory for %d pollfd structs\n", found);
 
       return -1;
     }

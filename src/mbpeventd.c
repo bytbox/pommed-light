@@ -18,6 +18,8 @@
 
 #include <smbios/SystemInfo.h>
 
+#include <getopt.h>
+
 #include "mbpeventd.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
@@ -27,6 +29,11 @@
 
 /* Machine type */
 int machine;
+
+/* debug mode */
+#ifndef DEBUG
+int debug = 0;
+#endif
 
 /* Used by signal handlers */
 static int running;
@@ -41,7 +48,7 @@ check_machine_smbios(void)
 
   if (geteuid() != 0)
     {
-      debug("Error: SMBIOS machine detection only works as root\n");
+      logdebug("Error: SMBIOS machine detection only works as root\n");
 
       return ret;
     }
@@ -49,7 +56,7 @@ check_machine_smbios(void)
   /* Check vendor name */
   prop = SMBIOSGetVendorName();
 
-  debug("SMBIOS vendor name: [%s]\n", prop);
+  logdebug("SMBIOS vendor name: [%s]\n", prop);
   if (strcmp(prop, "Apple Computer, Inc.") == 0)
     ret = MACHINE_VENDOR_APPLE;
 
@@ -63,7 +70,7 @@ check_machine_smbios(void)
   /* Check system name */
   prop = SMBIOSGetSystemName();
 
-  debug("SMBIOS system name: [%s]\n", prop);
+  logdebug("SMBIOS system name: [%s]\n", prop);
   if (strcmp(prop, "MacBookPro2,2") == 0)
     ret = MACHINE_MACBOOKPRO_22;
 
@@ -83,6 +90,7 @@ int
 main (int argc, char **argv)
 {
   int ret;
+  int c;
   int i;
 
   FILE *pidfile;
@@ -94,11 +102,28 @@ main (int argc, char **argv)
   struct timeval tv_als;
   struct timeval tv_diff;
 
+  while ((c = getopt(argc, argv, "f")) != -1)
+    {
+      switch (c)
+	{
+	  case 'f':
+#ifndef DEBUG
+	    debug = 1;
+#endif
+	    break;
+	  default:
+	    fprintf(stderr, "Unknown option -%c\n", c);
+
+	    exit(-1);
+	    break;
+	}
+    }
+
   machine = check_machine_smbios();
   switch (machine)
     {
       case MACHINE_MACBOOKPRO_22:
-	debug("Detected (SMBIOS) a MacBookPro2,2\n");
+	logdebug("Detected (SMBIOS) a MacBookPro2,2\n");
 	break;
       case MACHINE_MAC_UNKNOWN:
 	fprintf(stderr, "Error: unknown Apple machine\n");
@@ -130,21 +155,24 @@ main (int argc, char **argv)
 
   kbd_backlight_status_init();
 
-  /*
-   * Detach from the console
-   */
-  if (daemon(1, 1) != 0)
+  if (!debug)
     {
-      fprintf(stderr, "Error: daemon() failed: %s\n", strerror(errno));
+      /*
+       * Detach from the console
+       */
+      if (daemon(0, 0) != 0)
+	{
+	  fprintf(stderr, "Error: daemon() failed: %s\n", strerror(errno));
 
-      close_evdev(&fds, nfds);
-      exit(-1);
+	  close_evdev(&fds, nfds);
+	  exit(-1);
+	}
     }
 
   pidfile = fopen(PIDFILE, "w");
   if (pidfile == NULL)
     {
-      debug("Could not open pidfile: %s\n", strerror(errno));
+      logdebug("Could not open pidfile: %s\n", strerror(errno));
 
       close_evdev(&fds, nfds);
       exit(-1);
@@ -164,7 +192,7 @@ main (int argc, char **argv)
 
       if (ret < 0) /* error */
 	{
-	  debug("Poll error: %s\n", strerror(errno));
+	  logdebug("Poll error: %s\n", strerror(errno));
 
 	  break;
 	}

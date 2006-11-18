@@ -81,7 +81,7 @@ lcd_backlight_map(void)
 
   if ((address == 0) || (length == 0))
     {
-      debug("No probing done !\n");
+      logdebug("No probing done !\n");
       return -1;
     }
 
@@ -89,7 +89,7 @@ lcd_backlight_map(void)
 	
   if (fd < 0)
     {
-      debug("cannot open /dev/mem: %s\n", strerror(errno));
+      logdebug("cannot open /dev/mem: %s\n", strerror(errno));
       return -1;
     }
 
@@ -97,7 +97,7 @@ lcd_backlight_map(void)
 
   if (memory == MAP_FAILED)
     {
-      debug("mmap failed: %s\n", strerror(errno));
+      logdebug("mmap failed: %s\n", strerror(errno));
       return -1;
     }
 
@@ -141,7 +141,7 @@ lcd_backlight_step(int dir)
       if (newval > LCD_BACKLIGHT_MAX)
 	newval = LCD_BACKLIGHT_MAX;
 
-      debug("LCD stepping +%d -> %d\n", LCD_BCK_STEP, newval);
+      logdebug("LCD stepping +%d -> %d\n", LCD_BCK_STEP, newval);
     }
   else if (dir == STEP_DOWN)
     {
@@ -150,7 +150,7 @@ lcd_backlight_step(int dir)
       if (newval < LCD_BACKLIGHT_OFF)
 	newval = LCD_BACKLIGHT_OFF;
 
-      debug("LCD stepping -%d -> %d\n", LCD_BCK_STEP, newval);
+      logdebug("LCD stepping -%d -> %d\n", LCD_BCK_STEP, newval);
     }
   else
     return;
@@ -195,7 +195,7 @@ lcd_backlight_probe_X1600(void)
 
   if (!address)
     {
-      debug("Failed to detect ATI X1600, aborting...\n");
+      logdebug("Failed to detect ATI X1600, aborting...\n");
       return -1;
     }
 
