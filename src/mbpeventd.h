@@ -25,6 +25,8 @@ extern int machine;
 #define test_bit(bit, array)    ((array[LONG(bit)] >> OFF(bit)) & 1)
 
 
+#define PIDFILE                "/var/run/mbpeventd.pid"
+
 #define USB_VENDOR_ID_APPLE           0x05ac
 #define USB_PRODUCT_ID_GEYSER4_ISO    0x021b
 

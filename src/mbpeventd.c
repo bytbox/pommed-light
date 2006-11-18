@@ -12,6 +12,7 @@
 #include <time.h>
 #include <string.h>
 #include <poll.h>
+#include <signal.h>
 
 #include <errno.h>
 
@@ -24,8 +25,11 @@
 #include "lcd_backlight.h"
 #include "cd_eject.h"
 
-
+/* Machine type */
 int machine;
+
+/* Used by signal handlers */
+static int running;
 
 
 void
@@ -255,12 +259,36 @@ open_evdev(struct pollfd **fds)
   return found;
 }
 
+void
+close_evdev(struct pollfd **fds, int nfds)
+{
+  int i;
+
+  if (*fds != NULL)
+    {
+      for (i = 0; i < nfds; i++)
+	close((*fds)[i].fd);
+
+      free(*fds);
+    }
+
+  *fds = NULL;
+}
+
+
+void
+sig_int_term_handler(int signal)
+{
+  running = 0;
+}
 
 int
 main (int argc, char **argv)
 {
   int ret;
   int i;
+
+  FILE *pidfile;
 
   struct pollfd *fds;
   int nfds;
@@ -306,9 +334,35 @@ main (int argc, char **argv)
 
   kbd_backlight_status_init();
 
+  /*
+   * Detach from the console
+   */
+  if (daemon(1, 1) != 0)
+    {
+      fprintf(stderr, "Error: daemon() failed: %s\n", strerror(errno));
+
+      close_evdev(&fds, nfds);
+      exit(-1);
+    }
+
+  pidfile = fopen(PIDFILE, "w");
+  if (pidfile == NULL)
+    {
+      debug("Could not open pidfile: %s\n", strerror(errno));
+
+      close_evdev(&fds, nfds);
+      exit(-1);
+    }
+  fprintf(pidfile, "%d\n", getpid());
+  fclose(pidfile);
+
   gettimeofday(&tv_als, NULL);
 
-  while (1)
+  running = 1;
+  signal(SIGINT, sig_int_term_handler);
+  signal(SIGTERM, sig_int_term_handler);
+
+  while (1 && running)
     {
       ret = poll(fds, nfds, LOOP_TIMEOUT);
 
@@ -364,13 +418,8 @@ main (int argc, char **argv)
 	}
     }
 
-  if (fds != NULL)
-    {
-      for (i = 0; i < nfds; i++)
-	close(fds[i].fd);
-
-      free(fds);
-    }
+  close_evdev(&fds, nfds);
+  unlink(PIDFILE);
 
   return 0;
 }
