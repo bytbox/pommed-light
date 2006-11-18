@@ -108,7 +108,7 @@ process_evdev_events(int fd)
 
 
 int
-check_machine(void)
+check_machine_smbios(void)
 {
   int ret = -1;
 
@@ -262,7 +262,7 @@ main (int argc, char **argv)
   struct timeval tv_als;
   struct timeval tv_diff;
 
-  machine = check_machine();
+  machine = check_machine_smbios();
   switch (machine)
     {
       case MACHINE_MACBOOKPRO_22:
