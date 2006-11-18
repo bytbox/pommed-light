@@ -4,6 +4,8 @@
  * $Id$
  *
  * Copyright (C) 2006 Nicolas Boichat <nicolas@boichat.ch>
+ * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ *  + Adapted for mbpeventd
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +32,18 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <pci/pci.h>
 
 #include "mbpeventd.h"
+#include "lcd_backlight.h"
 
 
-static char *memory;
-
+static int fd = -1;
+static char *memory = NULL;
+static long address = 0;
+static long length = 0;
 
 static inline unsigned int
 readl(const volatile void *addr)
@@ -64,15 +70,68 @@ lcd_backlight_get()
 void
 lcd_backlight_set(unsigned char value)
 {
+  debug("value %d\n", value);
   OUTREG(0x7af8, 0x00000001 | ((unsigned int)value << 8));
+}
+
+
+int
+lcd_backlight_map(void)
+{
+  unsigned int state;
+
+  if ((address == 0) || (length == 0))
+    {
+      debug("No probing done !\n");
+      return -1;
+    }
+
+  fd = open("/dev/mem", O_RDWR);
+	
+  if (fd < 0)
+    {
+      debug("cannot open /dev/mem: %s\n", strerror(errno));
+      return -1;
+    }
+
+  memory = mmap(NULL, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, address);
+
+  if (memory == MAP_FAILED)
+    {
+      debug("mmap failed: %s\n", strerror(errno));
+      return -1;
+    }
+
+  /* Is it really necessary ? */
+  OUTREG(0x4dc, 0x00000005);
+  state = INREG(0x7ae4);
+  OUTREG(0x7ae4, state);
+
+  return 0;
+}
+
+void
+lcd_backlight_unmap(void)
+{
+  munmap(memory, length);
+  memory = NULL;
+
+  close(fd);
+  fd = -1;
 }
 
 
 void
 lcd_backlight_step(int dir)
 {
+  int ret;
+
   int val;
   int newval;
+
+  ret = lcd_backlight_map();
+  if (ret < 0)
+    return;
 
   val = lcd_backlight_get();
 
@@ -97,23 +156,19 @@ lcd_backlight_step(int dir)
   else
     return;
 
-  lcd_backlight_set((unsigned char)val);
+  lcd_backlight_set((unsigned char)newval);
+
+  lcd_backlight_unmap();
 }
 
+
 #define PCI_ID_VENDOR_ATI        0x1002
-#defien PCI_ID_PRODUCT_X1600     0x71c5
+#define PCI_ID_PRODUCT_X1600     0x71c5
 
 /* Look for an ATI Radeon Mobility X1600 */
 int
 lcd_backlight_probe_X1600(void)
 {
-  char* endptr;
-  int ret = 0;
-  long address = 0;
-  long length = 0;
-  int fd;
-  int state;
-
   struct pci_access *pacc;
   struct pci_dev *dev;
 
@@ -141,93 +196,9 @@ lcd_backlight_probe_X1600(void)
 
   if (!address)
     {
-      printf("Failed to detect ATI X1600, aborting...\n");
-      return 1;
+      debug("Failed to detect ATI X1600, aborting...\n");
+      return -1;
     }
 
-  fd = open("/dev/mem", O_RDWR);
-	
-  if (fd < 0) {
-    perror("cannot open /dev/mem");
-    return 1;
-  }
-
-  memory = mmap(NULL, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, address);
-
-  if (memory == MAP_FAILED)
-    {
-      perror("mmap failed");
-      return 1;
-    }
-
-  /* Is it really necessary ? */
-  OUTREG(0x4dc, 0x00000005);
-  state = INREG(0x7ae4);
-  OUTREG(0x7ae4, state);
-
-  if (argc == 2)
-    {
-      if (argv[1][0] == '+')
-	{
-	  long value = strtol(&argv[1][1], &endptr, 10);
-	  if ((value < 0) || (value > 255) || (endptr[0]))
-	    {
-	      printf("Invalid value \"%s\" (should be an integer between 0 and 255).\n", &argv[1][1]);
-	      usage(argv[0]);
-	      ret = 1;
-	    }
-	  else
-	    {
-	      value = read_backlight()+value;
-	      if (value > 255)
-		value = 255;
-	      write_backlight(value);
-	    }
-	}
-      else if (argv[1][0] == '-')
-	{
-	  long value = strtol(&argv[1][1], &endptr, 10);
-	  if ((value < 0) || (value > 255) || (endptr[0]))
-	    {
-	      printf("Invalid value \"%s\" (should be an integer between 0 and 255).\n", &argv[1][1]);
-	      usage(argv[0]);
-	      ret = 1;
-	    }
-	  else
-	    {
-	      value = read_backlight()-value;
-	      if (value < 0)
-		value = 0;
-	      write_backlight(value);
-	    }
-	}
-      else
-	{
-	  long value = strtol(argv[1], &endptr, 10);
-	  if ((value < 0) || (value > 255) || (endptr[0]))
-	    {
-	      printf("Invalid value \"%s\" (should be an integer between 0 and 255).\n", argv[1]);
-	      usage(argv[0]);
-	      ret = 1;
-	    }
-	  else
-	    {
-	      write_backlight(value);
-	    }
-	}
-    }
-  else
-    {
-      printf("%d\n", read_backlight());
-    }
-
-  close(fd);
-
-  return ret;
-}
-
-void
-lcd_backlight_release(void)
-{
-  munmap(memory, length);
+  return 0;
 }

@@ -19,6 +19,7 @@
 
 #include "mbpeventd.h"
 #include "kbd_backlight.h"
+#include "lcd_backlight.h"
 #include "cd_eject.h"
 
 void
@@ -43,10 +44,14 @@ process_evdev_events(int fd)
 	{
 	  case K_LCD_BCK_DOWN:
 	    debug("\nKEY: LCD backlight down\n");
+
+	    lcd_backlight_step(STEP_DOWN);
 	    break;
 
 	  case K_LCD_BCK_UP:
 	    debug("\nKEY: LCD backlight up\n");
+
+	    lcd_backlight_step(STEP_UP);
 	    break;
 
 	  case K_AUDIO_MUTE:
@@ -216,6 +221,14 @@ main (int argc, char **argv)
   struct timeval tv_now;
   struct timeval tv_als;
   struct timeval tv_diff;
+
+  ret = lcd_backlight_probe_X1600();
+  if (ret < 0)
+    {
+      fprintf(stderr, "Error: no Radeon Mobility X1600 found\n");
+
+      exit(1);
+    }
 
   nfds = open_evdev(&fds);
   if (nfds < 1)
