@@ -112,7 +112,6 @@ main (int argc, char **argv)
 	break;
     }
 
-
   ret = lcd_backlight_probe_X1600();
   if (ret < 0)
     {
@@ -159,7 +158,7 @@ main (int argc, char **argv)
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
 
-  while (1 && running)
+  while (running)
     {
       ret = poll(fds, nfds, LOOP_TIMEOUT);
 
@@ -169,49 +168,42 @@ main (int argc, char **argv)
 
 	  break;
 	}
-      else
+      else if (ret != 0)
 	{
-	  if (ret != 0)
+	  for (i = 0; i < nfds; i++)
 	    {
-	      for (i = 0; i < nfds; i++)
-		{
-		  if (fds[i].revents & POLLIN)
-		    process_evdev_events(fds[i].fd);
-		}
+	      if (fds[i].revents & POLLIN)
+		process_evdev_events(fds[i].fd);
 	    }
 
-	  /* only check ambient light sensors when poll() times out
-	   * or when we haven't checked since LOOP_TIMEOUT
-	   */
+	  /* is it time to chek the ambient light sensors ? */
 	  gettimeofday(&tv_now, NULL);
-	  if (ret == 0)
+	  tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
+	  if (tv_diff.tv_sec < 0)
+	    tv_diff.tv_sec = 0;
+
+	  if (tv_diff.tv_sec == 0)
+	    {
+	      tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
+	    }
+	  else
+	    {
+	      tv_diff.tv_sec--;
+	      tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
+	      tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
+	    }
+
+	  if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
 	    {
 	      kbd_backlight_ambient_check();
 	      tv_als = tv_now;
 	    }
-	  else
-	    {
-	      tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
-	      if (tv_diff.tv_sec < 0)
-		tv_diff.tv_sec = 0;
-
-	      if (tv_diff.tv_sec == 0)
-		{
-		  tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
-		}
-	      else
-		{
-		  tv_diff.tv_sec--;
-		  tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
-		  tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
-		}
-
-	      if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
-		{
-		  kbd_backlight_ambient_check();
-		  tv_als = tv_now;
-		}
-	    }
+	}
+      else
+	{
+	  /* poll() timed out, check ambient light sensors */
+	  kbd_backlight_ambient_check();
+	  gettimeofday(&tv_als, NULL);
 	}
     }
 
