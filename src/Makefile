@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -O2 -Wall
-LDFLAGS = -lz
+LDFLAGS = -lz -lsmbios
 
 LIBS = /usr/lib/libpci.a
 

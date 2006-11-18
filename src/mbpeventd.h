@@ -14,6 +14,9 @@
 #endif
 
 
+extern int machine;
+
+
 #define BITS_PER_LONG (sizeof(long) * 8)
 #define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
 #define OFF(x)  ((x)%BITS_PER_LONG)
@@ -24,6 +27,10 @@
 
 #define USB_VENDOR_ID_APPLE           0x05ac
 #define USB_PRODUCT_ID_GEYSER4_ISO    0x021b
+
+#define MACHINE_VENDOR_APPLE          0
+#define MACHINE_MACBOOKPRO_22         1
+#define MACHINE_MAC_UNKNOWN           0
 
 
 #define K_LCD_BCK_DOWN          0xe0

@@ -17,10 +17,16 @@
 
 #include <linux/input.h>
 
+#include <smbios/SystemInfo.h>
+
 #include "mbpeventd.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
 #include "cd_eject.h"
+
+
+int machine;
+
 
 void
 process_evdev_events(int fd)
@@ -98,6 +104,40 @@ process_evdev_events(int fd)
 	    break;
 	}
     }
+}
+
+
+int
+check_machine(void)
+{
+  int ret = -1;
+
+  const char *prop;
+
+  /* Check vendor name */
+  prop = SMBIOSGetVendorName();
+
+  debug("SMBIOS vendor name: [%s]\n", prop);
+  if (strcmp(prop, "Apple Computer, Inc.") == 0)
+    ret = MACHINE_VENDOR_APPLE;
+
+  SMBIOSFreeMemory(prop);
+
+  if (ret != MACHINE_VENDOR_APPLE)
+    return ret;
+
+  ret = MACHINE_MAC_UNKNOWN;
+
+  /* Check system name */
+  prop = SMBIOSGetSystemName();
+
+  debug("SMBIOS system name: [%s]\n", prop);
+  if (strcmp(prop, "MacBookPro2,2") == 0)
+    ret = MACHINE_MACBOOKPRO_22;
+
+  SMBIOSFreeMemory(prop);
+
+  return ret;
 }
 
 
@@ -221,6 +261,25 @@ main (int argc, char **argv)
   struct timeval tv_now;
   struct timeval tv_als;
   struct timeval tv_diff;
+
+  machine = check_machine();
+  switch (machine)
+    {
+      case MACHINE_MACBOOKPRO_22:
+	debug("Detected (SMBIOS) a MacBookPro2,2\n");
+	break;
+      case MACHINE_MAC_UNKNOWN:
+	fprintf(stderr, "Error: unknown Apple machine\n");
+
+	exit(1);
+	break;
+      default:
+	fprintf(stderr, "Error: unknown non-Apple machine\n");
+
+	exit(1);
+	break;
+    }
+
 
   ret = lcd_backlight_probe_X1600();
   if (ret < 0)
