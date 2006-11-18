@@ -114,6 +114,13 @@ check_machine_smbios(void)
 
   const char *prop;
 
+  if (geteuid() != 0)
+    {
+      debug("Error: SMBIOS machine detection only works as root\n");
+
+      return ret;
+    }
+
   /* Check vendor name */
   prop = SMBIOSGetVendorName();
 
