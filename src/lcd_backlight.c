@@ -70,7 +70,6 @@ lcd_backlight_get()
 void
 lcd_backlight_set(unsigned char value)
 {
-  debug("value %d\n", value);
   OUTREG(0x7af8, 0x00000001 | ((unsigned int)value << 8));
 }
 
