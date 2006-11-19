@@ -32,6 +32,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+#include <syslog.h>
+
 #include <errno.h>
 
 #include <pci/pci.h>
@@ -89,7 +92,7 @@ lcd_backlight_map(void)
 	
   if (fd < 0)
     {
-      logdebug("cannot open /dev/mem: %s\n", strerror(errno));
+      logmsg(LOG_WARNING, "Cannot open /dev/mem: %s", strerror(errno));
       return -1;
     }
 
@@ -97,7 +100,7 @@ lcd_backlight_map(void)
 
   if (memory == MAP_FAILED)
     {
-      logdebug("mmap failed: %s\n", strerror(errno));
+      logmsg(LOG_ERR, "mmap failed: %s", strerror(errno));
       return -1;
     }
 
@@ -173,7 +176,10 @@ lcd_backlight_probe_X1600(void)
 
   pacc = pci_alloc();
   if (pacc == NULL)
-    return -1;
+    {
+      logmsg(LOG_ERR, "Could not allocate PCI structs");
+      return -1;
+    }
 
   pci_init(pacc);
   pci_scan_bus(pacc);

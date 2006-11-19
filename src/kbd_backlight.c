@@ -10,6 +10,9 @@
 #include <fcntl.h>
 #include <string.h>
 
+#include <syslog.h>
+
+#include <errno.h>
 
 #include "mbpeventd.h"
 #include "kbd_backlight.h"
@@ -35,7 +38,10 @@ kbd_backlight_get(void)
 
   fd = open(KBD_BACKLIGHT, O_RDONLY);
   if (fd < 0)
-    return -1;
+    {
+      logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno));
+      return -1;
+    }
 
   memset(buf, 0, 8);
 
@@ -49,6 +55,9 @@ kbd_backlight_get(void)
   ret = atoi(buf);
 
   logdebug("KBD backlight value is %d\n", ret);
+
+  if ((ret < KBD_BACKLIGHT_OFF) || (ret > KBD_BACKLIGHT_MAX))
+    ret = -1;
 
   return ret;
 }
@@ -86,9 +95,15 @@ kbd_backlight_set(int val)
   if (val == curval)
     return;
 
+  if ((val < KBD_BACKLIGHT_OFF) || (val > KBD_BACKLIGHT_MAX))
+    return;
+
   fd = open(KBD_BACKLIGHT, O_RDWR | O_APPEND);
   if (fd < 0)
-    return;
+    {
+      logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno));
+      return;
+    }
 
   ret = snprintf(buf, 8, "%d\n", val);
 

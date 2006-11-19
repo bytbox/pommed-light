@@ -14,6 +14,9 @@
 #include <poll.h>
 #include <signal.h>
 
+#include <syslog.h>
+#include <stdarg.h>
+
 #include <errno.h>
 
 #include <smbios/SystemInfo.h>
@@ -37,6 +40,40 @@ int debug = 0;
 
 /* Used by signal handlers */
 static int running;
+
+void
+logmsg(int level, char *fmt, ...)
+{
+  va_list ap;
+
+  va_start(ap, fmt);
+
+  if (debug)
+    {
+      switch (level)
+	{
+	  case LOG_INFO:
+	    fprintf(stderr, "I: ");
+	    break;
+	  case LOG_WARNING:
+	    fprintf(stderr, "W: ");
+	    break;
+	  case LOG_ERR:
+	    fprintf(stderr, "E: ");
+	    break;
+	  default:
+	    break;
+	}
+      vfprintf(stderr, fmt, ap);
+      fprintf(stderr, "\n");
+    }
+  else
+    {
+      vsyslog(level | LOG_DAEMON, fmt, ap);
+    }
+
+  va_end(ap);
+}
 
 
 int
@@ -119,19 +156,26 @@ main (int argc, char **argv)
 	}
     }
 
+  if (!debug)
+    {
+      openlog("mbpeventd", LOG_PID, LOG_DAEMON);
+    }
+
+  logmsg(LOG_INFO, "mbpeventd $Rev$, Copyright (C) 2006 Julien BLACHE <jb@jblache.org>");
+
   machine = check_machine_smbios();
   switch (machine)
     {
       case MACHINE_MACBOOKPRO_22:
-	logdebug("Detected (SMBIOS) a MacBookPro2,2\n");
+	logmsg(LOG_INFO, "Running on a MacBookPro2,2 (detected via SMBIOS)");
 	break;
       case MACHINE_MAC_UNKNOWN:
-	fprintf(stderr, "Error: unknown Apple machine\n");
+	logmsg(LOG_ERR, "Unknown Apple machine");
 
 	exit(1);
 	break;
       default:
-	fprintf(stderr, "Error: unknown non-Apple machine\n");
+	logmsg(LOG_ERR, "Unknown non-Apple machine");
 
 	exit(1);
 	break;
@@ -140,7 +184,7 @@ main (int argc, char **argv)
   ret = lcd_backlight_probe_X1600();
   if (ret < 0)
     {
-      fprintf(stderr, "Error: no Radeon Mobility X1600 found\n");
+      logmsg(LOG_ERR, "No Radeon Mobility X1600 found");
 
       exit(1);
     }
@@ -148,7 +192,7 @@ main (int argc, char **argv)
   nfds = open_evdev(&fds);
   if (nfds < 1)
     {
-      fprintf(stderr, "Error: no devices found\n");
+      logmsg(LOG_ERR, "No suitable event devices found");
 
       exit(1);
     }
@@ -162,7 +206,7 @@ main (int argc, char **argv)
        */
       if (daemon(0, 0) != 0)
 	{
-	  fprintf(stderr, "Error: daemon() failed: %s\n", strerror(errno));
+	  logmsg(LOG_ERR, "daemon() failed: %s", strerror(errno));
 
 	  close_evdev(&fds, nfds);
 	  exit(-1);
@@ -172,7 +216,7 @@ main (int argc, char **argv)
   pidfile = fopen(PIDFILE, "w");
   if (pidfile == NULL)
     {
-      logdebug("Could not open pidfile: %s\n", strerror(errno));
+      logmsg(LOG_WARNING, "Could not open pidfile %s: %s", PIDFILE, strerror(errno));
 
       close_evdev(&fds, nfds);
       exit(-1);
@@ -192,9 +236,12 @@ main (int argc, char **argv)
 
       if (ret < 0) /* error */
 	{
-	  logdebug("Poll error: %s\n", strerror(errno));
+	  if (errno != EINTR)
+	    {
+	      logmsg(LOG_ERR, "poll() error: %s", strerror(errno));
 
-	  break;
+	      break;
+	    }
 	}
       else if (ret != 0)
 	{
@@ -237,6 +284,11 @@ main (int argc, char **argv)
 
   close_evdev(&fds, nfds);
   unlink(PIDFILE);
+
+  logmsg(LOG_INFO, "Exiting");
+
+  if (!debug)
+    closelog();
 
   return 0;
 }

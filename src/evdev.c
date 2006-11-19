@@ -11,6 +11,8 @@
 #include <string.h>
 #include <poll.h>
 
+#include <syslog.h>
+
 #include <errno.h>
 
 #include <linux/input.h>
@@ -134,7 +136,7 @@ open_evdev(struct pollfd **fds)
       if (fd[i] < 0)
 	{
 	  if (errno != ENOENT)
-	    logdebug("Could not open %s: %s\n", evdev, strerror(errno));
+	    logmsg(LOG_WARNING, "Could not open %s: %s", evdev, strerror(errno));
 
 	  continue;
 	}
@@ -189,7 +191,7 @@ open_evdev(struct pollfd **fds)
 	    close(fd[i]);
 	}
 
-      logdebug("Out of memory for %d pollfd structs\n", found);
+      logmsg(LOG_ERR, "Out of memory for %d pollfd structs", found);
 
       return -1;
     }

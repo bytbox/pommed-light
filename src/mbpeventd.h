@@ -5,7 +5,10 @@
 #ifndef __MBPEVENTD_H__
 #define __MBPEVENTD_H__
 
-#define DEBUG
+void
+logmsg(int level, char *fmt, ...);
+
+//#define DEBUG
 
 #ifdef DEBUG
 # define logdebug(fmt, args...) printf(fmt, ##args);
