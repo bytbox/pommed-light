@@ -13,4 +13,7 @@ open_evdev(struct pollfd **fds);
 void
 close_evdev(struct pollfd **fds, int nfds);
 
+int
+reopen_evdev(struct pollfd **fds, int nfds);
+
 #endif /* !__EVDEV_H__ */

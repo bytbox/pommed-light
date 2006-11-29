@@ -135,6 +135,8 @@ main (int argc, char **argv)
   struct pollfd *fds;
   int nfds;
 
+  int reopen;
+
   struct timeval tv_now;
   struct timeval tv_als;
   struct timeval tv_diff;
@@ -230,8 +232,25 @@ main (int argc, char **argv)
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
 
+  reopen = 0;
+
   while (running)
     {
+      /* Attempt to reopen event devices, typically after resuming */
+      if (reopen)
+	{
+	  nfds = reopen_evdev(&fds, nfds);
+
+	  if (nfds < 1)
+	    {
+	      logmsg(LOG_ERR, "No suitable event devices found (reopen)");
+
+	      break;
+	    }
+
+	  reopen = 0;
+	}
+
       ret = poll(fds, nfds, LOOP_TIMEOUT);
 
       if (ret < 0) /* error */
@@ -247,6 +266,16 @@ main (int argc, char **argv)
 	{
 	  for (i = 0; i < nfds; i++)
 	    {
+	      /* the event devices cease to exist when suspending */
+	      if ((fds[i].revents & POLLERR)
+		  || (fds[i].revents & POLLHUP)
+		  || (fds[i].revents & POLLNVAL))
+		{
+		  logmsg(LOG_WARNING, "Error condition signaled on evdev, reopening");
+		  reopen = 1;
+		  break;
+		}
+
 	      if (fds[i].revents & POLLIN)
 		process_evdev_events(fds[i].fd);
 	    }
