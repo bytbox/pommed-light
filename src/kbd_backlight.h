@@ -5,11 +5,8 @@
 #ifndef __KBD_BACKLIGHT_H__
 #define __KBD_BACKLIGHT_H__
 
-int
-kbd_backlight_get(void);
-
 void
-kbd_backlight_set(int val);
+kbd_backlight_off(void);
 
 void
 kbd_backlight_step(int dir);

@@ -29,7 +29,7 @@ static struct
 } kbd_bck_status;
 
 
-int
+static int
 kbd_backlight_get(void)
 {
   int fd;
@@ -62,7 +62,7 @@ kbd_backlight_get(void)
   return ret;
 }
 
-void
+static void
 kbd_backlight_set(int val)
 {
   int fd;
@@ -115,6 +115,12 @@ kbd_backlight_set(int val)
   logdebug("KBD backlight value set to %d\n", val);
 
   close(fd);
+}
+
+void
+kbd_backlight_off(void)
+{
+  kbd_backlight_set(KBD_BACKLIGHT_OFF);
 }
 
 void

@@ -82,7 +82,7 @@ process_evdev_events(int fd)
 	  case K_KBD_BCK_OFF:
 	    logdebug("\nKEY: keyboard backlight off\n");
 
-	    kbd_backlight_set(KBD_BACKLIGHT_OFF);
+	    kbd_backlight_off();
 	    break;
 
 	  case K_KBD_BCK_DOWN:
@@ -110,7 +110,7 @@ process_evdev_events(int fd)
 }
 
 
-int
+static int
 evdev_is_geyser4(unsigned short vendor, unsigned short product)
 {
   if (vendor != USB_VENDOR_ID_APPLE)
