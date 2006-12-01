@@ -109,14 +109,12 @@ check_machine_smbios(void)
 
   logdebug("SMBIOS vendor name: [%s]\n", prop);
   if (strcmp(prop, "Apple Computer, Inc.") == 0)
-    ret = MACHINE_VENDOR_APPLE;
+    ret = MACHINE_MAC_UNKNOWN;
 
   SMBIOSFreeMemory(prop);
 
-  if (ret != MACHINE_VENDOR_APPLE)
+  if (ret != MACHINE_MAC_UNKNOWN)
     return ret;
-
-  ret = MACHINE_MAC_UNKNOWN;
 
   /* Check system name */
   prop = SMBIOSGetSystemName();

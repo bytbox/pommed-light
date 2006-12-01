@@ -36,7 +36,6 @@ extern struct machine_ops *mops;
 #define USB_VENDOR_ID_APPLE           0x05ac
 #define USB_PRODUCT_ID_GEYSER4_ISO    0x021b
 
-#define MACHINE_VENDOR_APPLE          0
 #define MACHINE_MACBOOKPRO_22         1
 #define MACHINE_MAC_UNKNOWN           0
 
@@ -58,7 +57,7 @@ extern struct machine_ops *mops;
 #define EVDEV_BASE              "/dev/input/event"
 #define EVDEV_MAX               32
 
-#define LOOP_TIMEOUT           200
+#define LOOP_TIMEOUT            200
 
 #define LCD_BCK_STEP            10
 #define LCD_BACKLIGHT_OFF       0
