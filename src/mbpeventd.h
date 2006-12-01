@@ -5,6 +5,10 @@
 #ifndef __MBPEVENTD_H__
 #define __MBPEVENTD_H__
 
+
+#define M_VERSION "0.3"
+
+
 void
 logmsg(int level, char *fmt, ...);
 

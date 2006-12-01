@@ -41,13 +41,16 @@ struct machine_ops mbp22_ops = {
 };
 
 
+
 /* debug mode */
 #ifndef DEBUG
 int debug = 0;
 #endif
 
+
 /* Used by signal handlers */
 static int running;
+
 
 void
 logmsg(int level, char *fmt, ...)
@@ -153,7 +156,7 @@ main (int argc, char **argv)
   struct timeval tv_als;
   struct timeval tv_diff;
 
-  while ((c = getopt(argc, argv, "f")) != -1)
+  while ((c = getopt(argc, argv, "fv")) != -1)
     {
       switch (c)
 	{
@@ -162,6 +165,14 @@ main (int argc, char **argv)
 	    debug = 1;
 #endif
 	    break;
+
+	  case 'v':
+	    printf("mbpeventd v" M_VERSION " ($Rev$) MacBook Pro hotkeys handler\n");
+	    printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
+
+	    exit(0);
+	    break;
+
 	  default:
 	    fprintf(stderr, "Unknown option -%c\n", c);
 
@@ -175,7 +186,8 @@ main (int argc, char **argv)
       openlog("mbpeventd", LOG_PID, LOG_DAEMON);
     }
 
-  logmsg(LOG_INFO, "mbpeventd $Rev$, Copyright (C) 2006 Julien BLACHE <jb@jblache.org>");
+  logmsg(LOG_INFO, "mbpeventd v" M_VERSION " ($Rev$) MacBook Pro hotkeys handler");
+  logmsg(LOG_INFO, "Copyright (C) 2006 Julien BLACHE <jb@jblache.org>");
 
   machine = check_machine_smbios();
   switch (machine)
