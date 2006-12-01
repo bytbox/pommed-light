@@ -1,0 +1,22 @@
+TODO for mbpeventd
+------------------
+
+ * Machine support
+ -----------------
+  - MacBook LCD backlight support (Intel GPU)
+  - Core Duo & Core2 Duo MacBook SMBIOS identification
+  - Core Duo MacBook Pro SMBIOS identification
+
+  If you own one of these machines, please send me the output of the
+  getSystemId or sysid commands from libsmbios (libsmbios-bin in Debian).
+
+
+ * General
+ ---------
+  - ALSA sound support
+  - use ambient light sensor
+    - for automatic LCD backlight tweaking (powersaving)
+    - for (better) automatic keyboard backlight tweaking
+
+
+ -- Julien BLACHE <jb@jblache.org>, Fri, 01 Dec 2006 21:08:07 +0000
