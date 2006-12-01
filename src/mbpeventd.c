@@ -38,6 +38,7 @@ struct machine_ops mbp22_ops = {
   .type = MACHINE_MACBOOKPRO_22,
   .lcd_backlight_probe = x1600_backlight_probe,
   .lcd_backlight_step = x1600_backlight_step,
+  .evdev_identify = evdev_is_geyser4,
 };
 
 

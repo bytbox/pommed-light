@@ -109,14 +109,28 @@ process_evdev_events(int fd)
     }
 }
 
+/* Core Duo MacBook & MacBook Pro */
+int
+evdev_is_geyser3(unsigned short vendor, unsigned short product)
+{
+  if (vendor != USB_VENDOR_ID_APPLE)
+    return 0;
 
-static int
+  return ((product == USB_PRODUCT_ID_GEYSER3_ANSI)
+	  || (product == USB_PRODUCT_ID_GEYSER3_ISO)
+	  || (product == USB_PRODUCT_ID_GEYSER3_JIS));
+}
+
+/* Core2 Duo MacBook & MacBook Pro */
+int
 evdev_is_geyser4(unsigned short vendor, unsigned short product)
 {
   if (vendor != USB_VENDOR_ID_APPLE)
     return 0;
 
-  return (product == USB_PRODUCT_ID_GEYSER4_ISO);
+  return ((product == USB_PRODUCT_ID_GEYSER4_ANSI)
+	  || (product == USB_PRODUCT_ID_GEYSER4_ISO)
+	  || (product == USB_PRODUCT_ID_GEYSER4_JIS));
 }
 
 
@@ -151,7 +165,7 @@ open_evdev(struct pollfd **fds)
 
       ioctl(fd[i], EVIOCGID, id);
 
-      if (!evdev_is_geyser4(id[ID_VENDOR], id[ID_PRODUCT]))
+      if (!mops->evdev_identify(id[ID_VENDOR], id[ID_PRODUCT]))
 	{
 	  logdebug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
 

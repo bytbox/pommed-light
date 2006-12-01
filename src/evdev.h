@@ -5,6 +5,12 @@ void
 process_evdev_events(int fd);
 
 int
+evdev_is_geyser3(unsigned short vendor, unsigned short product);
+
+int
+evdev_is_geyser4(unsigned short vendor, unsigned short product);
+
+int
 open_evdev(struct pollfd **fds);
 
 void

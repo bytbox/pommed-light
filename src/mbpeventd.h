@@ -33,15 +33,26 @@ struct machine_ops
   machine_type type;
   int (*lcd_backlight_probe) (void);
   void (*lcd_backlight_step) (int dir);
+  int (*evdev_identify) (unsigned short vendor, unsigned short product);
 };
 
 extern struct machine_ops *mops;
 
 
-#define PIDFILE                "/var/run/mbpeventd.pid"
-
 #define USB_VENDOR_ID_APPLE           0x05ac
+
+/* Apple Geyser III keyboard + trackpad */
+#define USB_PRODUCT_ID_GEYSER3_ANSI   0x0217
+#define USB_PRODUCT_ID_GEYSER3_ISO    0x0218
+#define USB_PRODUCT_ID_GEYSER3_JIS    0x0219
+
+/* Apple Geyser IV keyboard + trackpad */
+#define USB_PRODUCT_ID_GEYSER4_ANSI   0x021a
 #define USB_PRODUCT_ID_GEYSER4_ISO    0x021b
+#define USB_PRODUCT_ID_GEYSER4_JIS    0x021c
+
+
+#define PIDFILE                "/var/run/mbpeventd.pid"
 
 
 #define K_LCD_BCK_DOWN          0xe0
