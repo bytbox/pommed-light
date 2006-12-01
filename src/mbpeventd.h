@@ -21,9 +21,16 @@ extern int debug;
 #endif
 
 
+typedef enum
+  {
+    MACHINE_ERROR = -1,
+    MACHINE_MAC_UNKNOWN,
+    MACHINE_MACBOOKPRO_22
+  } machine_type;
+
 struct machine_ops
 {
-  int type;
+  machine_type type;
   int (*lcd_backlight_probe) (void);
   void (*lcd_backlight_step) (int dir);
 };
@@ -35,9 +42,6 @@ extern struct machine_ops *mops;
 
 #define USB_VENDOR_ID_APPLE           0x05ac
 #define USB_PRODUCT_ID_GEYSER4_ISO    0x021b
-
-#define MACHINE_MACBOOKPRO_22         1
-#define MACHINE_MAC_UNKNOWN           0
 
 
 #define K_LCD_BCK_DOWN          0xe0

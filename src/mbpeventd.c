@@ -90,10 +90,10 @@ logmsg(int level, char *fmt, ...)
 }
 
 
-int
+static machine_type
 check_machine_smbios(void)
 {
-  int ret = -1;
+  int ret = MACHINE_ERROR;
 
   const char *prop;
 
@@ -148,7 +148,7 @@ main (int argc, char **argv)
   int nfds;
 
   int reopen;
-  int machine;
+  machine_type machine;
 
   struct timeval tv_now;
   struct timeval tv_als;
