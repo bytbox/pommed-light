@@ -20,6 +20,7 @@ logmsg(int level, char *fmt, ...);
 extern int debug;
 #endif
 
+
 struct machine_ops
 {
   int type;
@@ -28,14 +29,6 @@ struct machine_ops
 };
 
 extern struct machine_ops *mops;
-
-
-#define BITS_PER_LONG (sizeof(long) * 8)
-#define NBITS(x) ((((x)-1)/BITS_PER_LONG)+1)
-#define OFF(x)  ((x)%BITS_PER_LONG)
-#define BIT(x)  (1UL<<OFF(x))
-#define LONG(x) ((x)/BITS_PER_LONG)
-#define test_bit(bit, array)    ((array[LONG(bit)] >> OFF(bit)) & 1)
 
 
 #define PIDFILE                "/var/run/mbpeventd.pid"
