@@ -4,7 +4,7 @@ LDFLAGS = -lz -lsmbios
 
 LIBS = /usr/lib/libpci.a
 
-SOURCES = mbpeventd.c kbd_backlight.c ambient.c cd_eject.c lcd_backlight.c \
+SOURCES = mbpeventd.c kbd_backlight.c ambient.c cd_eject.c x1600_backlight.c \
 		evdev.c
 
 OBJS = $(SOURCES:%.c=%.o)
@@ -19,7 +19,7 @@ ambient.o: ambient.c mbpeventd.h ambient.h
 
 cd_eject.o: cd_eject.c mbpeventd.h cd_eject.h
 
-lcd_backlight.o: lcd_backlight.c mbpeventd.h lcd_backlight.h
+x1600_backlight.o: x1600_backlight.c mbpeventd.h lcd_backlight.h
 
 evdev.o: evdev.c mbpeventd.h kbd_backlight.h ambient.h cd_eject.h evdev.h
 

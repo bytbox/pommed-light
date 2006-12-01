@@ -64,21 +64,21 @@ writel(unsigned int b, volatile void *addr)
 #define OUTREG(addr,val)	writel(val, memory+addr)
 
 
-unsigned char
-lcd_backlight_get()
+static unsigned char
+x1600_backlight_get()
 {
   return INREG(0x7af8) >> 8;
 }
 
-void
-lcd_backlight_set(unsigned char value)
+static void
+x1600_backlight_set(unsigned char value)
 {
   OUTREG(0x7af8, 0x00000001 | ((unsigned int)value << 8));
 }
 
 
-int
-lcd_backlight_map(void)
+static int
+x1600_backlight_map(void)
 {
   unsigned int state;
 
@@ -112,8 +112,8 @@ lcd_backlight_map(void)
   return 0;
 }
 
-void
-lcd_backlight_unmap(void)
+static void
+x1600_backlight_unmap(void)
 {
   munmap(memory, length);
   memory = NULL;
@@ -124,18 +124,18 @@ lcd_backlight_unmap(void)
 
 
 void
-lcd_backlight_step(int dir)
+x1600_backlight_step(int dir)
 {
   int ret;
 
   int val;
   int newval;
 
-  ret = lcd_backlight_map();
+  ret = x1600_backlight_map();
   if (ret < 0)
     return;
 
-  val = lcd_backlight_get();
+  val = x1600_backlight_get();
 
   if (dir == STEP_UP)
     {
@@ -158,9 +158,9 @@ lcd_backlight_step(int dir)
   else
     return;
 
-  lcd_backlight_set((unsigned char)newval);
+  x1600_backlight_set((unsigned char)newval);
 
-  lcd_backlight_unmap();
+  x1600_backlight_unmap();
 }
 
 
@@ -169,7 +169,7 @@ lcd_backlight_step(int dir)
 
 /* Look for an ATI Radeon Mobility X1600 */
 int
-lcd_backlight_probe_X1600(void)
+x1600_backlight_probe(void)
 {
   struct pci_access *pacc;
   struct pci_dev *dev;

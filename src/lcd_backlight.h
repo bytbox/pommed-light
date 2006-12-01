@@ -5,10 +5,13 @@
 #ifndef __LCD_BACKLIGHT_H__
 #define __LCD_BACKLIGHT_H__
 
+
+/* x1600_backlight.c */
 void
-lcd_backlight_step(int dir);
+x1600_backlight_step(int dir);
 
 int
-lcd_backlight_probe_X1600(void);
+x1600_backlight_probe(void);
+
 
 #endif /* !__LCD_BACKLIGHT_H__ */

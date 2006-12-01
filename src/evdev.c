@@ -46,13 +46,13 @@ process_evdev_events(int fd)
 	  case K_LCD_BCK_DOWN:
 	    logdebug("\nKEY: LCD backlight down\n");
 
-	    lcd_backlight_step(STEP_DOWN);
+	    mops->lcd_backlight_step(STEP_DOWN);
 	    break;
 
 	  case K_LCD_BCK_UP:
 	    logdebug("\nKEY: LCD backlight up\n");
 
-	    lcd_backlight_step(STEP_UP);
+	    mops->lcd_backlight_step(STEP_UP);
 	    break;
 
 	  case K_AUDIO_MUTE:

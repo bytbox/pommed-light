@@ -8,8 +8,6 @@
 void
 logmsg(int level, char *fmt, ...);
 
-//#define DEBUG
-
 #ifdef DEBUG
 # define logdebug(fmt, args...) printf(fmt, ##args);
 # define debug 1
@@ -18,8 +16,14 @@ logmsg(int level, char *fmt, ...);
 extern int debug;
 #endif
 
+struct machine_ops
+{
+  int type;
+  int (*lcd_backlight_probe) (void);
+  void (*lcd_backlight_step) (int dir);
+};
 
-extern int machine;
+extern struct machine_ops *mops;
 
 
 #define BITS_PER_LONG (sizeof(long) * 8)

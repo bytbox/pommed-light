@@ -30,8 +30,16 @@
 #include "evdev.h"
 
 
-/* Machine type */
-int machine;
+/* Machine-specific operations */
+struct machine_ops *mops;
+
+/* MacBookPro2,2 machine operations */
+struct machine_ops mbp22_ops = {
+  .type = MACHINE_MACBOOKPRO_22,
+  .lcd_backlight_probe = x1600_backlight_probe,
+  .lcd_backlight_step = x1600_backlight_step,
+};
+
 
 /* debug mode */
 #ifndef DEBUG
@@ -55,12 +63,15 @@ logmsg(int level, char *fmt, ...)
 	  case LOG_INFO:
 	    fprintf(stderr, "I: ");
 	    break;
+
 	  case LOG_WARNING:
 	    fprintf(stderr, "W: ");
 	    break;
+
 	  case LOG_ERR:
 	    fprintf(stderr, "E: ");
 	    break;
+
 	  default:
 	    break;
 	}
@@ -136,6 +147,7 @@ main (int argc, char **argv)
   int nfds;
 
   int reopen;
+  int machine;
 
   struct timeval tv_now;
   struct timeval tv_als;
@@ -170,12 +182,16 @@ main (int argc, char **argv)
     {
       case MACHINE_MACBOOKPRO_22:
 	logmsg(LOG_INFO, "Running on a MacBookPro2,2 (detected via SMBIOS)");
+
+	mops = &mbp22_ops;
 	break;
+
       case MACHINE_MAC_UNKNOWN:
 	logmsg(LOG_ERR, "Unknown Apple machine");
 
 	exit(1);
 	break;
+
       default:
 	logmsg(LOG_ERR, "Unknown non-Apple machine");
 
@@ -183,10 +199,10 @@ main (int argc, char **argv)
 	break;
     }
 
-  ret = lcd_backlight_probe_X1600();
+  ret = mops->lcd_backlight_probe();
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "No Radeon Mobility X1600 found");
+      logmsg(LOG_ERR, "No LCD backlight found");
 
       exit(1);
     }
