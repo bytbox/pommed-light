@@ -24,6 +24,7 @@ extern int debug;
 typedef enum
   {
     MACHINE_ERROR = -1,
+    MACHINE_UNKNOWN,
     MACHINE_MAC_UNKNOWN,
     MACHINE_MACBOOKPRO_22
   } machine_type;

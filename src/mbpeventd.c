@@ -111,15 +111,15 @@ logmsg(int level, char *fmt, ...)
 static machine_type
 check_machine_smbios(void)
 {
-  int ret = MACHINE_ERROR;
+  int ret = MACHINE_UNKNOWN;
 
   const char *prop;
 
   if (geteuid() != 0)
     {
-      logdebug("Error: SMBIOS machine detection only works as root\n");
+      logmsg(LOG_ERR, "root privileges needed for SMBIOS machine detection");
 
-      return ret;
+      return MACHINE_ERROR;
     }
 
   /* Check vendor name */
@@ -222,9 +222,13 @@ main (int argc, char **argv)
 	exit(1);
 	break;
 
-      default:
+      case MACHINE_UNKNOWN:
 	logmsg(LOG_ERR, "Unknown non-Apple machine");
 
+	exit(1);
+	break;
+
+      default:
 	exit(1);
 	break;
     }
