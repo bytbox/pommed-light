@@ -147,6 +147,13 @@ check_machine_smbios(void)
 }
 
 
+static int
+has_kbd_backlight(void)
+{
+  return (mops->type == MACHINE_MACBOOKPRO_22);
+}
+
+
 void
 sig_int_term_handler(int signal)
 {
@@ -324,30 +331,33 @@ main (int argc, char **argv)
 		process_evdev_events(fds[i].fd);
 	    }
 
-	  /* is it time to chek the ambient light sensors ? */
-	  gettimeofday(&tv_now, NULL);
-	  tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
-	  if (tv_diff.tv_sec < 0)
-	    tv_diff.tv_sec = 0;
+	  if (has_kbd_backlight())
+	    {
+	      /* is it time to chek the ambient light sensors ? */
+	      gettimeofday(&tv_now, NULL);
+	      tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
+	      if (tv_diff.tv_sec < 0)
+		tv_diff.tv_sec = 0;
 
-	  if (tv_diff.tv_sec == 0)
-	    {
-	      tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
-	    }
-	  else
-	    {
-	      tv_diff.tv_sec--;
-	      tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
-	      tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
-	    }
+	      if (tv_diff.tv_sec == 0)
+		{
+		  tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
+		}
+	      else
+		{
+		  tv_diff.tv_sec--;
+		  tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
+		  tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
+		}
 
-	  if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
-	    {
-	      kbd_backlight_ambient_check();
-	      tv_als = tv_now;
+	      if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
+		{
+		  kbd_backlight_ambient_check();
+		  tv_als = tv_now;
+		}
 	    }
 	}
-      else
+      else if (has_kbd_backlight())
 	{
 	  /* poll() timed out, check ambient light sensors */
 	  kbd_backlight_ambient_check();
