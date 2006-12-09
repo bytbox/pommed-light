@@ -6,7 +6,7 @@
 #define __MBPEVENTD_H__
 
 
-#define M_VERSION "0.3"
+#define M_VERSION "0.4"
 
 
 void
@@ -26,6 +26,7 @@ typedef enum
     MACHINE_ERROR = -1,
     MACHINE_UNKNOWN,
     MACHINE_MAC_UNKNOWN,
+    MACHINE_MACBOOKPRO_12,
     MACHINE_MACBOOKPRO_22
   } machine_type;
 
