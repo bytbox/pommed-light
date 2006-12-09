@@ -243,7 +243,8 @@ main (int argc, char **argv)
       exit(1);
     }
 
-  kbd_backlight_status_init();
+  if (has_kbd_backlight())
+    kbd_backlight_status_init();
 
   if (!debug)
     {
