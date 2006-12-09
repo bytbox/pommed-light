@@ -124,8 +124,8 @@ check_machine_smbios(void)
 
   /* Check vendor name */
   prop = SMBIOSGetVendorName();
-
   logdebug("SMBIOS vendor name: [%s]\n", prop);
+
   if (strcmp(prop, "Apple Computer, Inc.") == 0)
     ret = MACHINE_MAC_UNKNOWN;
 
@@ -136,10 +136,12 @@ check_machine_smbios(void)
 
   /* Check system name */
   prop = SMBIOSGetSystemName();
-
   logdebug("SMBIOS system name: [%s]\n", prop);
+
   if (strcmp(prop, "MacBookPro2,2") == 0)
     ret = MACHINE_MACBOOKPRO_22;
+  else
+    logmsg(LOG_ERR, "Unknown machine: %s", prop);
 
   SMBIOSFreeMemory(prop);
 
