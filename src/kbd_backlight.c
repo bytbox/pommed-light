@@ -54,6 +54,13 @@ static struct
 } kbd_bck_status;
 
 
+int
+has_kbd_backlight(void)
+{
+  return (mops->type == MACHINE_MACBOOKPRO_22);
+}
+
+
 static int
 kbd_backlight_get(void)
 {

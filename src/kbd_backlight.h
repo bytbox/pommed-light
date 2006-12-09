@@ -5,6 +5,9 @@
 #ifndef __KBD_BACKLIGHT_H__
 #define __KBD_BACKLIGHT_H__
 
+int
+has_kbd_backlight(void);
+
 void
 kbd_backlight_off(void);
 

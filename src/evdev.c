@@ -99,17 +99,26 @@ process_evdev_events(int fd)
 	  case K_KBD_BCK_OFF:
 	    logdebug("\nKEY: keyboard backlight off\n");
 
+	    if (!has_kbd_backlight())
+	      break;
+
 	    kbd_backlight_off();
 	    break;
 
 	  case K_KBD_BCK_DOWN:
 	    logdebug("\nKEY: keyboard backlight down\n");
 
+	    if (!has_kbd_backlight())
+	      break;
+
 	    kbd_backlight_step(STEP_DOWN);
 	    break;
 
 	  case K_KBD_BCK_UP:
 	    logdebug("\nKEY: keyboard backlight up\n");
+
+	    if (!has_kbd_backlight())
+	      break;
 
 	    kbd_backlight_step(STEP_UP);
 	    break;

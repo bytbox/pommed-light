@@ -147,13 +147,6 @@ check_machine_smbios(void)
 }
 
 
-static int
-has_kbd_backlight(void)
-{
-  return (mops->type == MACHINE_MACBOOKPRO_22);
-}
-
-
 void
 sig_int_term_handler(int signal)
 {
