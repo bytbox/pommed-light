@@ -74,18 +74,6 @@ extern struct machine_ops *mops;
 
 #define LOOP_TIMEOUT            200
 
-#define LCD_BCK_STEP            10
-#define LCD_BACKLIGHT_OFF       0
-#define LCD_BACKLIGHT_MAX       255
-
-#define KBD_BCK_STEP            10
-#define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
-#define KBD_AMBIENT_SENSOR      "/sys/devices/platform/applesmc/light"
-#define KBD_AMBIENT_THRESHOLD   20
-#define KBD_BACKLIGHT_DEFAULT   100
-#define KBD_BACKLIGHT_OFF       0
-#define KBD_BACKLIGHT_MAX       255
-
 #define CD_DVD_DEVICE           "/dev/dvd"
 #define CD_CDROM_DEVICE         "/dev/cdrom"
 #define CD_EJECT_CMD            "/usr/bin/eject"

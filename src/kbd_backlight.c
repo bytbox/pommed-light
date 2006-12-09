@@ -36,6 +36,14 @@
 #include "ambient.h"
 
 
+#define KBD_BCK_STEP            10
+#define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
+#define KBD_AMBIENT_THRESHOLD   20
+#define KBD_BACKLIGHT_DEFAULT   100
+#define KBD_BACKLIGHT_OFF       0
+#define KBD_BACKLIGHT_MAX       255
+
+
 static struct
 {
   int auto_on;  /* automatic */

@@ -43,6 +43,11 @@
 #include "lcd_backlight.h"
 
 
+#define LCD_BCK_STEP            10
+#define LCD_BACKLIGHT_OFF       0
+#define LCD_BACKLIGHT_MAX       255
+
+
 static int fd = -1;
 static char *memory = NULL;
 static long address = 0;
