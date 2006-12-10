@@ -271,8 +271,8 @@ gma950_backlight_probe(void)
       if ((dev->vendor_id == PCI_ID_VENDOR_INTEL)
 	  && (dev->device_id == PCI_ID_PRODUCT_GMA950))
 	{
-	  address = dev->base_addr[1];
-	  length = dev->size[1];
+	  address = dev->base_addr[0];
+	  length = dev->size[0];
 	}
     }
 
