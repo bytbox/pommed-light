@@ -226,7 +226,7 @@ main (int argc, char **argv)
 	    break;
 
 	  case 'v':
-	    printf("mbpeventd v" M_VERSION " ($Rev$) MacBook Pro hotkeys handler\n");
+	    printf("mbpeventd v" M_VERSION " ($Rev$) MacBook Pro & MacBook hotkeys handler\n");
 	    printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
 
 	    exit(0);
@@ -245,7 +245,7 @@ main (int argc, char **argv)
       openlog("mbpeventd", LOG_PID, LOG_DAEMON);
     }
 
-  logmsg(LOG_INFO, "mbpeventd v" M_VERSION " ($Rev$) MacBook Pro hotkeys handler");
+  logmsg(LOG_INFO, "mbpeventd v" M_VERSION " ($Rev$) MacBook Pro & MacBook hotkeys handler");
   logmsg(LOG_INFO, "Copyright (C) 2006 Julien BLACHE <jb@jblache.org>");
 
   machine = check_machine_smbios();
