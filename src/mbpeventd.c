@@ -181,6 +181,9 @@ check_machine_smbios(void)
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", prop);
 
+  if (ret != MACHINE_MAC_UNKNOWN)
+    logmsg(LOG_INFO, "SMBIOS machine check: running on a %s", prop);
+
   SMBIOSFreeMemory(prop);
 
   return ret;
@@ -249,26 +252,18 @@ main (int argc, char **argv)
   switch (machine)
     {
       case MACHINE_MACBOOKPRO_1:
-	logmsg(LOG_INFO, "Running on a MacBookPro1,1 or MacBookPro1,2 (SMBIOS)");
-
 	mops = &mbp1_ops;
 	break;
 
       case MACHINE_MACBOOKPRO_2:
-	logmsg(LOG_INFO, "Running on a MacBookPro2,1 or MacBookPro2,2 (SMBIOS)");
-
 	mops = &mbp2_ops;
 	break;
 
       case MACHINE_MACBOOK_11:
-	logmsg(LOG_INFO, "Running on a MacBook1,1 (SMBIOS)");
-
 	mops = &mb11_ops;
 	break;
 
       case MACHINE_MACBOOK_12:
-	logmsg(LOG_INFO, "Running on a MacBook1,2 (SMBIOS)");
-
 	mops = &mb12_ops;
 	break;
 
