@@ -1,5 +1,5 @@
 /*
- * Macbook Backlight Control
+ * MacBook Backlight Control (Intel GMA950)
  *
  * $Id$
  *
@@ -52,27 +52,6 @@
  *
  */
 
-/* REMOVE ME
- * The base address of the video card is hard-coded below.  This is the
- * value on my Macbook.  If you need to change this, please write me an
- * email about it and I'll develop an autodetection.
- *
- * Update: several people have mailed about the location on the 2nd
- *         generation model of Macbook being at 0x50380000.
- */
-
-#if 0 /* REMOVE ME */
-#ifdef GENERATION_2
-#define VIDEO_CARD_ADDRESS    0x50380000
-#else
-#define VIDEO_CARD_ADDRESS    0x90380000 /* taken from lspci, 512K region */
-#endif
-#endif /* 0 */
-
-
-/* REMOVE ME */
-#define DEBUG 1
-
 #include <stdio.h>
 #include <sys/io.h>
 #include <stdlib.h>
@@ -105,19 +84,6 @@ static long length = 0;
 
 
 #define REGISTER_OFFSET       0x00061254
-
-
-#if 0 /* REMOVE ME */
-#define REGISTER_ADDRESS      (VIDEO_CARD_ADDRESS+REGISTER_OFFSET)
-#define PAGE_SIZE             4096
-#define PAGE_MASK             (PAGE_SIZE - 1)
-
-#define ACCESS_PAGE           (REGISTER_ADDRESS & ~PAGE_MASK)
-#define ACCESS_OFFSET         (REGISTER_ADDRESS & PAGE_MASK)
-#define ACCESS_INDEX          (ACCESS_OFFSET >> 2)
-
-#endif /* 0 */
-
 
 
 static inline unsigned int
@@ -208,9 +174,6 @@ gma950_backlight_step(int dir)
 
   val = gma950_backlight_get();
 
-  /* REMOVE ME */
-  logdebug("Backlight val: 0x%x\n", val);
-
   if (dir == STEP_UP)
     {
       newval = val + LCD_BCK_STEP;
@@ -231,9 +194,6 @@ gma950_backlight_step(int dir)
     }
   else
     return;
-
-  /* REMOVE ME */
-  logdebug("Backlight new: 0x%x\n", newval);
 
   gma950_backlight_set(newval);
 
@@ -278,9 +238,6 @@ gma950_backlight_probe(void)
 
   pci_cleanup(pacc);
 
-  /* REMOVE ME */
-  logdebug("Found Intel GMA950 at 0x%lx, size 0x%lx\n", address, length);
-
   if (!address)
     {
       logdebug("Failed to detect Intel GMA950, aborting...\n");
@@ -301,9 +258,6 @@ gma950_backlight_probe(void)
       logmsg(LOG_ERR, "Could not determine max backlight value");
       return -1;
     }
-
-  /* REMOVE ME */
-  logdebug("Max backlight value: 0x%x\n", LCD_BACKLIGHT_MAX);
 
   return 0;
 }

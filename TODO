@@ -3,8 +3,7 @@ TODO for mbpeventd
 
  * Machine support
  -----------------
-  - MacBook LCD backlight support (Intel GPU)
-  - Core Duo & Core2 Duo MacBook SMBIOS identification
+  - Core Duo MacBook SMBIOS identification
 
   If you own one of these machines, please send me the output of the
   getSystemId or sysid commands from libsmbios (libsmbios-bin in Debian).
