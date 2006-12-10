@@ -57,8 +57,8 @@ static struct
 int
 has_kbd_backlight(void)
 {
-  return ((mops->type == MACHINE_MACBOOKPRO_12)
-	  || (mops->type == MACHINE_MACBOOKPRO_22));
+  return ((mops->type == MACHINE_MACBOOKPRO_1)
+	  || (mops->type == MACHINE_MACBOOKPRO_2));
 }
 
 

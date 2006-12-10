@@ -52,17 +52,17 @@ struct machine_ops *mops;
 
 /* MacBook Pro machines */
 
-/* MacBookPro1,2 (Core Duo) machine operations */
-struct machine_ops mbp12_ops = {
-  .type = MACHINE_MACBOOKPRO_12,
+/* MacBookPro1,1 / MacBookPro1,2 (Core Duo) */
+struct machine_ops mbp1_ops = {
+  .type = MACHINE_MACBOOKPRO_1,
   .lcd_backlight_probe = x1600_backlight_probe,
   .lcd_backlight_step = x1600_backlight_step,
   .evdev_identify = evdev_is_geyser3,
 };
 
-/* MacBookPro2,2 (Core2 Duo) machine operations */
-struct machine_ops mbp22_ops = {
-  .type = MACHINE_MACBOOKPRO_22,
+/* MacBookPro2,1 / MacBookPro2,2 (Core2 Duo) */
+struct machine_ops mbp2_ops = {
+  .type = MACHINE_MACBOOKPRO_2,
   .lcd_backlight_probe = x1600_backlight_probe,
   .lcd_backlight_step = x1600_backlight_step,
   .evdev_identify = evdev_is_geyser4,
@@ -71,9 +71,17 @@ struct machine_ops mbp22_ops = {
 
 /* MacBook machines */
 
-/* MacBook2,1 (Core2 Duo) machine operations */
-struct machine_ops mb21_ops = {
-  .type = MACHINE_MACBOOK_21,
+/* MacBook1,1 (Core Duo) */
+struct machine_ops mb11_ops = {
+  .type = MACHINE_MACBOOK_11,
+  .lcd_backlight_probe = gma950_backlight_probe,
+  .lcd_backlight_step = gma950_backlight_step,
+  .evdev_identify = evdev_is_geyser3,
+};
+
+/* MacBook1,2 (Core2 Duo) */
+struct machine_ops mb12_ops = {
+  .type = MACHINE_MACBOOK_12,
   .lcd_backlight_probe = gma950_backlight_probe,
   .lcd_backlight_step = gma950_backlight_step,
   .evdev_identify = evdev_is_geyser4,
@@ -158,12 +166,18 @@ check_machine_smbios(void)
   prop = SMBIOSGetSystemName();
   logdebug("SMBIOS system name: [%s]\n", prop);
 
-  if (strcmp(prop, "MacBookPro1,2") == 0)
-    ret = MACHINE_MACBOOKPRO_12;
-  else if (strcmp(prop, "MacBookPro2,2") == 0)
-    ret = MACHINE_MACBOOKPRO_22;
-  else if (strcmp(prop, "MacBook2,1") == 0)
-    ret = MACHINE_MACBOOK_21;
+  /* Core Duo MacBook Pro 15" (January 2006) & 17" (April 2006) */
+  if ((strcmp(prop, "MacBookPro1,1") == 0) || (strcmp(prop, "MacBookPro1,2") == 0))
+    ret = MACHINE_MACBOOKPRO_1;
+  /* Core2 Duo MacBook Pro 17" & 15" (October 2006) */
+  else if ((strcmp(prop, "MacBookPro2,1") == 0) || (strcmp(prop, "MacBookPro2,2") == 0))
+    ret = MACHINE_MACBOOKPRO_2;
+  /* Core Duo MacBook (May 2006) */
+  else if (strcmp(prop, "MacBook1,1") == 0)
+    ret = MACHINE_MACBOOK_11;
+  /* Core2 Duo MacBook (November 2006) */
+  else if (strcmp(prop, "MacBook1,2") == 0)
+    ret = MACHINE_MACBOOK_12;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", prop);
 
@@ -234,22 +248,28 @@ main (int argc, char **argv)
   machine = check_machine_smbios();
   switch (machine)
     {
-      case MACHINE_MACBOOKPRO_12:
-	logmsg(LOG_INFO, "Running on a MacBookPro1,2 (detected via SMBIOS)");
+      case MACHINE_MACBOOKPRO_1:
+	logmsg(LOG_INFO, "Running on a MacBookPro1,1 or MacBookPro1,2 (SMBIOS)");
 
-	mops = &mbp12_ops;
+	mops = &mbp1_ops;
 	break;
 
-      case MACHINE_MACBOOKPRO_22:
-	logmsg(LOG_INFO, "Running on a MacBookPro2,2 (detected via SMBIOS)");
+      case MACHINE_MACBOOKPRO_2:
+	logmsg(LOG_INFO, "Running on a MacBookPro2,1 or MacBookPro2,2 (SMBIOS)");
 
-	mops = &mbp22_ops;
+	mops = &mbp2_ops;
 	break;
 
-      case MACHINE_MACBOOK_21:
-	logmsg(LOG_INFO, "Running on a MacBook2,1 (detected via SMBIOS)");
+      case MACHINE_MACBOOK_11:
+	logmsg(LOG_INFO, "Running on a MacBook1,1 (SMBIOS)");
 
-	mops = &mb21_ops;
+	mops = &mb11_ops;
+	break;
+
+      case MACHINE_MACBOOK_12:
+	logmsg(LOG_INFO, "Running on a MacBook1,2 (SMBIOS)");
+
+	mops = &mb12_ops;
 	break;
 
       case MACHINE_MAC_UNKNOWN:
