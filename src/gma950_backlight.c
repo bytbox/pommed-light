@@ -242,7 +242,7 @@ gma950_backlight_step(int dir)
 
 
 #define PCI_ID_VENDOR_INTEL      0x8086
-#define PCI_ID_PRODUCT_GMA950    0x27A6
+#define PCI_ID_PRODUCT_GMA950    0x27A2
 
 /* Look for an Intel GMA950 */
 int
@@ -271,8 +271,8 @@ gma950_backlight_probe(void)
       if ((dev->vendor_id == PCI_ID_VENDOR_INTEL)
 	  && (dev->device_id == PCI_ID_PRODUCT_GMA950))
 	{
-	  address = dev->base_addr[2];
-	  length = dev->size[2];
+	  address = dev->base_addr[1];
+	  length = dev->size[1];
 	}
     }
 
