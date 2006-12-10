@@ -50,6 +50,8 @@
 /* Machine-specific operations */
 struct machine_ops *mops;
 
+/* MacBook Pro machines */
+
 /* MacBookPro1,2 (Core Duo) machine operations */
 struct machine_ops mbp12_ops = {
   .type = MACHINE_MACBOOKPRO_12,
@@ -66,6 +68,16 @@ struct machine_ops mbp22_ops = {
   .evdev_identify = evdev_is_geyser4,
 };
 
+
+/* MacBook machines */
+
+/* MacBook2,1 (Core2 Duo) machine operations */
+struct machine_ops mb21_ops = {
+  .type = MACHINE_MACBOOK_21,
+  .lcd_backlight_probe = gma950_backlight_probe,
+  .lcd_backlight_step = gma950_backlight_step,
+  .evdev_identify = evdev_is_geyser4,
+};
 
 
 /* debug mode */
@@ -148,8 +160,10 @@ check_machine_smbios(void)
 
   if (strcmp(prop, "MacBookPro1,2") == 0)
     ret = MACHINE_MACBOOKPRO_12;
-  if (strcmp(prop, "MacBookPro2,2") == 0)
+  else if (strcmp(prop, "MacBookPro2,2") == 0)
     ret = MACHINE_MACBOOKPRO_22;
+  else if (strcmp(prop, "MacBook2,1") == 0)
+    ret = MACHINE_MACBOOK_21;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", prop);
 
@@ -230,6 +244,12 @@ main (int argc, char **argv)
 	logmsg(LOG_INFO, "Running on a MacBookPro2,2 (detected via SMBIOS)");
 
 	mops = &mbp22_ops;
+	break;
+
+      case MACHINE_MACBOOK_21:
+	logmsg(LOG_INFO, "Running on a MacBook2,1 (detected via SMBIOS)");
+
+	mops = &mb21_ops;
 	break;
 
       case MACHINE_MAC_UNKNOWN:

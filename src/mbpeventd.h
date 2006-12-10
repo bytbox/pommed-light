@@ -6,7 +6,7 @@
 #define __MBPEVENTD_H__
 
 
-#define M_VERSION "0.4"
+#define M_VERSION "0.5"
 
 
 void
@@ -27,7 +27,8 @@ typedef enum
     MACHINE_UNKNOWN,
     MACHINE_MAC_UNKNOWN,
     MACHINE_MACBOOKPRO_12,
-    MACHINE_MACBOOKPRO_22
+    MACHINE_MACBOOKPRO_22,
+    MACHINE_MACBOOK_21,
   } machine_type;
 
 struct machine_ops
