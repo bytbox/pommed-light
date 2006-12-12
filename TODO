@@ -1,14 +1,6 @@
 TODO for mbpeventd
 ------------------
 
- * Machine support
- -----------------
-  - Core Duo MacBook SMBIOS identification
-
-  If you own one of these machines, please send me the output of the
-  getSystemId or sysid commands from libsmbios (libsmbios-bin in Debian).
-
-
  * General
  ---------
   - ALSA sound support
