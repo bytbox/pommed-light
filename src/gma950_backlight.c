@@ -45,11 +45,6 @@
  *
  * For the maximum I do not let the value exceed the value in the upper 15
  * bits.
- *
- * Turning the backlight off entirely is not supported (as this is supported
- * by the kernel itself).  This utility is only for setting the brightness
- * of the backlight when it is enabled.
- *
  */
 
 #include <stdio.h>
@@ -166,7 +161,7 @@ gma950_backlight_step(int dir)
   int ret;
 
   unsigned int val;
-  unsigned int newval;
+  unsigned int newval = 0;
 
   ret = gma950_backlight_map();
   if (ret < 0)
@@ -178,6 +173,9 @@ gma950_backlight_step(int dir)
     {
       newval = val + LCD_BCK_STEP;
 
+      if (newval < LCD_BACKLIGHT_MIN)
+	newval = LCD_BACKLIGHT_MIN;
+
       if (newval > LCD_BACKLIGHT_MAX)
 	newval = LCD_BACKLIGHT_MAX;
 
@@ -185,10 +183,12 @@ gma950_backlight_step(int dir)
     }
   else if (dir == STEP_DOWN)
     {
-      newval = val - LCD_BCK_STEP;
+      /* val is unsigned */
+      if (val > LCD_BCK_STEP)
+	newval = val - LCD_BCK_STEP;
 
       if (newval < LCD_BACKLIGHT_MIN)
-	newval = LCD_BACKLIGHT_MIN;
+	newval = 0x00;
 
       logdebug("LCD stepping -%d -> %d\n", LCD_BCK_STEP, newval);
     }
