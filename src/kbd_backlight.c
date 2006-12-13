@@ -214,7 +214,7 @@ kbd_backlight_ambient_check(void)
   if ((amb_r < 0) || (amb_l < 0))
     return;
 
-  if ((amb_r < KBD_AMBIENT_THRESHOLD) || (amb_l < KBD_AMBIENT_THRESHOLD))
+  if ((amb_r < KBD_AMBIENT_THRESHOLD) && (amb_l < KBD_AMBIENT_THRESHOLD))
     {
       logdebug("Ambient light lower threshold reached\n");
 
@@ -234,7 +234,7 @@ kbd_backlight_ambient_check(void)
     }
   else if (kbd_bck_status.auto_on)
     {
-      if ((amb_r > (2 * KBD_AMBIENT_THRESHOLD)) && (amb_l > (2 * KBD_AMBIENT_THRESHOLD)))
+      if ((amb_r > (2 * KBD_AMBIENT_THRESHOLD)) || (amb_l > (2 * KBD_AMBIENT_THRESHOLD)))
 	{
 	  logdebug("Ambient light upper threshold reached\n");
 
