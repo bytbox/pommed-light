@@ -35,6 +35,7 @@
 #include <linux/input.h>
 
 #include "mbpeventd.h"
+#include "evdev.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
 #include "cd_eject.h"

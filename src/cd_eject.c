@@ -25,6 +25,7 @@
 #include <sys/wait.h>
 
 #include "mbpeventd.h"
+#include "cd_eject.h"
 
 void
 cd_eject(void)
