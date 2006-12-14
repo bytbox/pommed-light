@@ -210,6 +210,9 @@ gma950_backlight_fix_config(void)
   if (lcd_gma950_cfg.init > GMA950_BACKLIGHT_MAX)
     lcd_gma950_cfg.init = GMA950_BACKLIGHT_MAX;
 
+  if (lcd_gma950_cfg.init < GMA950_BACKLIGHT_MIN)
+    lcd_gma950_cfg.init = 0x00;
+
   if (lcd_gma950_cfg.step > (GMA950_BACKLIGHT_MAX / 2))
     lcd_gma950_cfg.step = GMA950_BACKLIGHT_MAX / 2;
 }
