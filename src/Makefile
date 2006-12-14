@@ -1,11 +1,11 @@
 CC = gcc
 CFLAGS = -g -O2 -Wall
-LDFLAGS = -lz -lsmbios
+LDFLAGS = -lz -lsmbios -lconfuse
 
 LIBS = /usr/lib/libpci.a
 
 SOURCES = mbpeventd.c kbd_backlight.c ambient.c cd_eject.c evdev.c \
-		x1600_backlight.c gma950_backlight.c
+		x1600_backlight.c gma950_backlight.c conffile.c
 
 OBJS = $(SOURCES:%.c=%.o)
 
@@ -24,6 +24,8 @@ evdev.o: evdev.c mbpeventd.h kbd_backlight.h ambient.h cd_eject.h evdev.h
 x1600_backlight.o: x1600_backlight.c mbpeventd.h lcd_backlight.h
 
 gma950_backlight.o: gma950_backlight.c mbpeventd.h lcd_backlight.h
+
+conffile.o: conffile.c conffile.h
 
 clean:
 	rm -f mbpeventd $(OBJS)

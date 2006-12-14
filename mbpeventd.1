@@ -9,8 +9,10 @@
 .\" .fi        enable filling
 .\" .br        insert line break
 .\" .sp <n>    insert n+1 empty lines
+
 .SH NAME
 mbpeventd \- Apple MacBook Pro and MacBook hotkeys event handler
+
 .SH SYNOPSIS
 .B mbpeventd
 .RI [ options ]
@@ -28,6 +30,7 @@ level (only on the MacBook Pro) and the CD/DVD drive
 ejection. Additionally, mbpeventd monitors the ambient light sensors
 found on the MacBook Pro to automatically light up the keyboard
 backlight when the ambient light level gets too low.
+
 .SH OPTIONS
 .B mbpeventd
 accepts the following command-line options.
@@ -37,6 +40,12 @@ Print version information.
 .TP
 .B \-f
 Run in the foreground, printing messages to stdout/stderr.
+
+.SH FILES
+.TP
+.B /etc/mbpeventd.conf
+The configuration file for \fBmbpeventd\fP. See the comments in the
+file for the structure of the file and the available options.
 
 .SH AUTHOR
 .B mbpeventd

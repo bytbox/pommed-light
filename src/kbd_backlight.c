@@ -32,16 +32,9 @@
 #include <errno.h>
 
 #include "mbpeventd.h"
+#include "conffile.h"
 #include "kbd_backlight.h"
 #include "ambient.h"
-
-
-#define KBD_BCK_STEP            10
-#define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
-#define KBD_AMBIENT_THRESHOLD   20
-#define KBD_BACKLIGHT_DEFAULT   100
-#define KBD_BACKLIGHT_OFF       0
-#define KBD_BACKLIGHT_MAX       255
 
 
 static struct
@@ -169,21 +162,21 @@ kbd_backlight_step(int dir)
 
   if (dir == STEP_UP)
     {
-      newval = val + KBD_BCK_STEP;
+      newval = val + kbd_cfg.step;
 
       if (newval > KBD_BACKLIGHT_MAX)
 	newval = KBD_BACKLIGHT_MAX;
 
-      logdebug("KBD stepping +%d -> %d\n", KBD_BCK_STEP, newval);
+      logdebug("KBD stepping +%d -> %d\n", kbd_cfg.step, newval);
     }
   else if (dir == STEP_DOWN)
     {
-      newval = val - KBD_BCK_STEP;
+      newval = val - kbd_cfg.step;
 
       if (newval < KBD_BACKLIGHT_OFF)
 	newval = KBD_BACKLIGHT_OFF;
 
-      logdebug("KBD stepping -%d -> %d\n", KBD_BCK_STEP, newval);
+      logdebug("KBD stepping -%d -> %d\n", kbd_cfg.step, newval);
     }
   else
     return;
@@ -214,7 +207,7 @@ kbd_backlight_ambient_check(void)
   if ((amb_r < 0) || (amb_l < 0))
     return;
 
-  if ((amb_r < KBD_AMBIENT_THRESHOLD) && (amb_l < KBD_AMBIENT_THRESHOLD))
+  if ((amb_r < kbd_cfg.on_thresh) && (amb_l < kbd_cfg.on_thresh))
     {
       logdebug("Ambient light lower threshold reached\n");
 
@@ -230,11 +223,11 @@ kbd_backlight_ambient_check(void)
       kbd_bck_status.auto_on = 1;
       kbd_bck_status.off = 0;
 
-      kbd_backlight_set(KBD_BACKLIGHT_DEFAULT);
+      kbd_backlight_set(kbd_cfg.auto_lvl);
     }
   else if (kbd_bck_status.auto_on)
     {
-      if ((amb_r > (2 * KBD_AMBIENT_THRESHOLD)) || (amb_l > (2 * KBD_AMBIENT_THRESHOLD)))
+      if ((amb_r > kbd_cfg.off_thresh) || (amb_l > kbd_cfg.off_thresh))
 	{
 	  logdebug("Ambient light upper threshold reached\n");
 
@@ -247,4 +240,15 @@ kbd_backlight_ambient_check(void)
 
   kbd_bck_status.r_sens = amb_r;
   kbd_bck_status.l_sens = amb_l;
+}
+
+
+void
+kbd_backlight_fix_config(void)
+{
+  if (kbd_cfg.auto_lvl > KBD_BACKLIGHT_MAX)
+    kbd_cfg.auto_lvl = KBD_BACKLIGHT_MAX;
+
+  if (kbd_cfg.step > (KBD_BACKLIGHT_MAX / 2))
+    kbd_cfg.step = KBD_BACKLIGHT_MAX / 2;
 }

@@ -40,12 +40,8 @@
 #include <pci/pci.h>
 
 #include "mbpeventd.h"
+#include "conffile.h"
 #include "lcd_backlight.h"
-
-
-#define LCD_BCK_STEP            10
-#define LCD_BACKLIGHT_OFF       0
-#define LCD_BACKLIGHT_MAX       255
 
 
 static int fd = -1;
@@ -144,21 +140,21 @@ x1600_backlight_step(int dir)
 
   if (dir == STEP_UP)
     {
-      newval = val + LCD_BCK_STEP;
+      newval = val + lcd_x1600_cfg.step;
 
-      if (newval > LCD_BACKLIGHT_MAX)
-	newval = LCD_BACKLIGHT_MAX;
+      if (newval > X1600_BACKLIGHT_MAX)
+	newval = X1600_BACKLIGHT_MAX;
 
-      logdebug("LCD stepping +%d -> %d\n", LCD_BCK_STEP, newval);
+      logdebug("LCD stepping +%d -> %d\n", lcd_x1600_cfg.step, newval);
     }
   else if (dir == STEP_DOWN)
     {
-      newval = val - LCD_BCK_STEP;
+      newval = val - lcd_x1600_cfg.step;
 
-      if (newval < LCD_BACKLIGHT_OFF)
-	newval = LCD_BACKLIGHT_OFF;
+      if (newval < X1600_BACKLIGHT_OFF)
+	newval = X1600_BACKLIGHT_OFF;
 
-      logdebug("LCD stepping -%d -> %d\n", LCD_BCK_STEP, newval);
+      logdebug("LCD stepping -%d -> %d\n", lcd_x1600_cfg.step, newval);
     }
   else
     return;
@@ -178,6 +174,8 @@ x1600_backlight_probe(void)
 {
   struct pci_access *pacc;
   struct pci_dev *dev;
+
+  int ret;
 
   pacc = pci_alloc();
   if (pacc == NULL)
@@ -210,5 +208,28 @@ x1600_backlight_probe(void)
       return -1;
     }
 
+  /*
+   * Set the initial backlight level
+   * The value has been sanity checked already
+   */
+  ret = x1600_backlight_map();
+  if (ret < 0)
+    return 0;
+
+  x1600_backlight_set((unsigned char)lcd_x1600_cfg.init);
+
+  x1600_backlight_unmap();
+
   return 0;
+}
+
+
+void
+x1600_backlight_fix_config(void)
+{
+  if (lcd_x1600_cfg.init > X1600_BACKLIGHT_MAX)
+    lcd_x1600_cfg.init = X1600_BACKLIGHT_MAX;
+
+  if (lcd_x1600_cfg.step > (X1600_BACKLIGHT_MAX / 2))
+    lcd_x1600_cfg.step = X1600_BACKLIGHT_MAX / 2;
 }

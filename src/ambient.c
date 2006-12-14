@@ -31,9 +31,6 @@
 #include "ambient.h"
 
 
-#define KBD_AMBIENT_SENSOR      "/sys/devices/platform/applesmc/light"
-
-
 void
 ambient_get(int *r, int *l)
 {

@@ -45,6 +45,7 @@
 #include "lcd_backlight.h"
 #include "cd_eject.h"
 #include "evdev.h"
+#include "conffile.h"
 
 
 /* Machine-specific operations */
@@ -261,6 +262,14 @@ main (int argc, char **argv)
   logmsg(LOG_INFO, "mbpeventd v" M_VERSION " ($Rev$) MacBook Pro & MacBook hotkeys handler");
   logmsg(LOG_INFO, "Copyright (C) 2006 Julien BLACHE <jb@jblache.org>");
 
+  /* Load our configuration */
+  ret = config_load();
+  if (ret < 0)
+    {
+      exit(-1);
+    }
+
+  /* Identify the machine we're running on */
   machine = check_machine_smbios();
   switch (machine)
     {
@@ -397,7 +406,7 @@ main (int argc, char **argv)
 		evdev_process_events(fds[i].fd);
 	    }
 
-	  if (has_kbd_backlight())
+	  if (kbd_cfg.auto_on && has_kbd_backlight())
 	    {
 	      /* is it time to chek the ambient light sensors ? */
 	      gettimeofday(&tv_now, NULL);
@@ -423,7 +432,7 @@ main (int argc, char **argv)
 		}
 	    }
 	}
-      else if (has_kbd_backlight())
+      else if (kbd_cfg.auto_on && has_kbd_backlight())
 	{
 	  /* poll() timed out, check ambient light sensors */
 	  kbd_backlight_ambient_check();
@@ -433,6 +442,8 @@ main (int argc, char **argv)
 
   evdev_close(&fds, nfds);
   unlink(PIDFILE);
+
+  config_cleanup();
 
   logmsg(LOG_INFO, "Exiting");
 

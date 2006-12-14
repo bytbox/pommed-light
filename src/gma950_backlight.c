@@ -64,12 +64,11 @@
 #include <pci/pci.h>
 
 #include "mbpeventd.h"
+#include "conffile.h"
 #include "lcd_backlight.h"
 
 
-#define LCD_BCK_STEP            0x0f
-#define LCD_BACKLIGHT_MIN       0x1f
-static unsigned int LCD_BACKLIGHT_MAX;
+static unsigned int GMA950_BACKLIGHT_MAX;
 
 
 static int fd = -1;
@@ -112,7 +111,7 @@ gma950_backlight_get_max(void)
 static void
 gma950_backlight_set(unsigned int value)
 {
-  OUTREG(REGISTER_OFFSET, (LCD_BACKLIGHT_MAX << 17) | (value << 1));
+  OUTREG(REGISTER_OFFSET, (GMA950_BACKLIGHT_MAX << 17) | (value << 1));
 }
 
 
@@ -171,26 +170,26 @@ gma950_backlight_step(int dir)
 
   if (dir == STEP_UP)
     {
-      newval = val + LCD_BCK_STEP;
+      newval = val + lcd_gma950_cfg.step;
 
-      if (newval < LCD_BACKLIGHT_MIN)
-	newval = LCD_BACKLIGHT_MIN;
+      if (newval < GMA950_BACKLIGHT_MIN)
+	newval = GMA950_BACKLIGHT_MIN;
 
-      if (newval > LCD_BACKLIGHT_MAX)
-	newval = LCD_BACKLIGHT_MAX;
+      if (newval > GMA950_BACKLIGHT_MAX)
+	newval = GMA950_BACKLIGHT_MAX;
 
-      logdebug("LCD stepping +%d -> %d\n", LCD_BCK_STEP, newval);
+      logdebug("LCD stepping +%d -> %d\n", lcd_gma950_cfg.step, newval);
     }
   else if (dir == STEP_DOWN)
     {
       /* val is unsigned */
-      if (val > LCD_BCK_STEP)
-	newval = val - LCD_BCK_STEP;
+      if (val > lcd_gma950_cfg.step)
+	newval = val - lcd_gma950_cfg.step;
 
-      if (newval < LCD_BACKLIGHT_MIN)
+      if (newval < GMA950_BACKLIGHT_MIN)
 	newval = 0x00;
 
-      logdebug("LCD stepping -%d -> %d\n", LCD_BCK_STEP, newval);
+      logdebug("LCD stepping -%d -> %d\n", lcd_gma950_cfg.step, newval);
     }
   else
     return;
@@ -198,6 +197,21 @@ gma950_backlight_step(int dir)
   gma950_backlight_set(newval);
 
   gma950_backlight_unmap();
+}
+
+
+/*
+ * We are hardware-dependent for GMA950_BACKLIGHT_MAX,
+ * so here _fix_config() is static and called at probe time.
+ */
+static void
+gma950_backlight_fix_config(void)
+{
+  if (lcd_gma950_cfg.init > GMA950_BACKLIGHT_MAX)
+    lcd_gma950_cfg.init = GMA950_BACKLIGHT_MAX;
+
+  if (lcd_gma950_cfg.step > (GMA950_BACKLIGHT_MAX / 2))
+    lcd_gma950_cfg.step = GMA950_BACKLIGHT_MAX / 2;
 }
 
 
@@ -247,17 +261,20 @@ gma950_backlight_probe(void)
   /* Get the maximum backlight value */
   ret = gma950_backlight_map();
   if (ret < 0)
-    return -1;
-
-  LCD_BACKLIGHT_MAX = gma950_backlight_get_max();
-
-  gma950_backlight_unmap();
-
-  if (ret < 0)
     {
       logmsg(LOG_ERR, "Could not determine max backlight value");
       return -1;
     }
+
+  GMA950_BACKLIGHT_MAX = gma950_backlight_get_max();
+
+  /* Now, check the config and fix it if needed */
+  gma950_backlight_fix_config();
+
+  /* Set the initial backlight level */
+  gma950_backlight_set(lcd_gma950_cfg.init);
+
+  gma950_backlight_unmap();
 
   return 0;
 }

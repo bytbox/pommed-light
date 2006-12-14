@@ -6,7 +6,7 @@
 #define __MBPEVENTD_H__
 
 
-#define M_VERSION "0.7"
+#define M_VERSION "0.8"
 
 
 void
@@ -44,9 +44,12 @@ extern struct machine_ops *mops;
 
 
 #define PIDFILE                "/var/run/mbpeventd.pid"
+#define CONFFILE               "/etc/mbpeventd.conf"
+
 
 #define STEP_UP                 1
 #define STEP_DOWN               -1
+
 
 #define LOOP_TIMEOUT            200
 

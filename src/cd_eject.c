@@ -21,23 +21,55 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <syslog.h>
+
 #include "mbpeventd.h"
+#include "conffile.h"
 #include "cd_eject.h"
+
 
 void
 cd_eject(void)
 {
+  char cmd[128];
   int ret;
 
-  ret = system(CD_EJECT_CMD " " CD_DVD_DEVICE);
+  if (!eject_cfg.enabled)
+    return;
+
+  strcpy(cmd, CD_EJECT_CMD " ");
+  strncat(cmd, eject_cfg.device, sizeof(cmd) - 1);
+
+  ret = system(cmd);
 
   if (WEXITSTATUS(ret) != 0)
     {
       /* 127 means "shell not available" */
       if (WEXITSTATUS(ret) != 127)
-	system(CD_EJECT_CMD " " CD_CDROM_DEVICE);
+	logmsg(LOG_WARNING, "CD ejection failed, eject returned %d", WEXITSTATUS(ret));
+    }
+}
+
+
+void
+cd_eject_fix_config(void)
+{
+  if (eject_cfg.device == NULL)
+    {
+      eject_cfg.enabled = 0;
+      return;
+    }
+
+  if (strlen(eject_cfg.device) > 100)
+    {
+      eject_cfg.enabled = 0;
+
+      logmsg(LOG_INFO, "CD/DVD device path too long, CD ejection disabled");
+
+      return;
     }
 }
