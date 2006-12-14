@@ -190,6 +190,19 @@ check_machine_smbios(void)
 }
 
 
+static void
+usage(void)
+{
+  printf("mbpeventd v" M_VERSION " ($Rev$) MacBook Pro & MacBook hotkeys handler\n");
+  printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
+
+  printf("Usage:\n");
+  printf("\tmpbeventd\t-- start mbpeventd as a daemon\n");
+  printf("\tmbpeventd -v\t-- print version and exit\n");
+  printf("\tmbpeventd -f\t-- run in the foreground with debug messages\n");
+}
+
+
 void
 sig_int_term_handler(int signal)
 {
@@ -233,7 +246,7 @@ main (int argc, char **argv)
 	    break;
 
 	  default:
-	    fprintf(stderr, "Unknown option -%c\n", c);
+	    usage();
 
 	    exit(-1);
 	    break;
