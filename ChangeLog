@@ -1,0 +1,8 @@
+version 0.8:
+	- wait for both light sensors to be under the threshold before
+	lighting up the keyboard backlight; switch it off as soon as one
+	of the sensors gets past the threshold.
+
+version 0.7:
+	- allow MacBook users to switch off the LCD backlight entirely
+	- fix model identifier string for the Core2 Duo MacBook
