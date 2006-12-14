@@ -35,6 +35,7 @@
 #include <linux/input.h>
 
 #include "mbpeventd.h"
+#include "conffile.h"
 #include "evdev.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
@@ -130,7 +131,26 @@ evdev_process_events(int fd)
 	    cd_eject();
 	    break;
 
+	  case K_IR_FFWD:
+	    logdebug("\nKEY: IR fast forward\n");
+	    break;
+
+	  case K_IR_REWD:
+	    logdebug("\nKEY: IR rewind\n");
+	    break;
+
+	  case K_IR_PLAY:
+	    logdebug("\nKEY: IR play/pause\n");
+	    break;
+
+	  case K_IR_MENU:
+	    logdebug("\nKEY: IR menu\n");
+	    break;
+
 	  default:
+#if 0
+	    logdebug("\nKEY: %x\n", ev.code);
+#endif /* 0 */
 	    break;
 	}
     }
@@ -158,6 +178,16 @@ evdev_is_geyser4(unsigned short vendor, unsigned short product)
   return ((product == USB_PRODUCT_ID_GEYSER4_ANSI)
 	  || (product == USB_PRODUCT_ID_GEYSER4_ISO)
 	  || (product == USB_PRODUCT_ID_GEYSER4_JIS));
+}
+
+/* Apple Remote IR Receiver */
+static int
+evdev_is_appleir(unsigned short vendor, unsigned short product)
+{
+  if (vendor != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  return (product == USB_PRODUCT_ID_APPLEIR);
 }
 
 
@@ -192,7 +222,8 @@ evdev_open(struct pollfd **fds)
 
       ioctl(fd[i], EVIOCGID, id);
 
-      if (!mops->evdev_identify(id[ID_VENDOR], id[ID_PRODUCT]))
+      if ((!mops->evdev_identify(id[ID_VENDOR], id[ID_PRODUCT]))
+	  && !(appleir_cfg.enabled && evdev_is_appleir(id[ID_VENDOR], id[ID_PRODUCT])))
 	{
 	  logdebug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
 

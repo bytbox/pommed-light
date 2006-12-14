@@ -41,6 +41,7 @@ struct _audio_cfg audio_cfg;
 #endif /* 0 */
 struct _kbd_cfg kbd_cfg;
 struct _eject_cfg eject_cfg;
+struct _appleir_cfg appleir_cfg;
 
 
 /* Config file structure */
@@ -86,6 +87,13 @@ static cfg_opt_t eject_opts[] =
     CFG_END()
   };
 
+static cfg_opt_t appleir_opts[] =
+  {
+    CFG_BOOL("enabled", 0, CFGF_NONE),
+    CFG_END()
+  };
+
+
 static cfg_opt_t opts[] =
   {
     CFG_SEC("lcd_x1600", lcd_x1600_opts, CFGF_NONE),
@@ -95,6 +103,7 @@ static cfg_opt_t opts[] =
 #endif /* 0 */
     CFG_SEC("kbd", kbd_opts, CFGF_NONE),
     CFG_SEC("eject", eject_opts, CFGF_NONE),
+    CFG_SEC("appleir", appleir_opts, CFGF_NONE),
     CFG_END()
   };
 
@@ -138,6 +147,8 @@ config_print(void)
   printf(" + CD eject:\n");
   printf("    enabled: %s\n", (eject_cfg.enabled) ? "yes" : "no");
   printf("    device: %s\n", eject_cfg.device);
+  printf(" + Apple Remote IR Receiver:\n");
+  printf("    enabled: %s\n", (appleir_cfg.enabled) ? "yes" : "no");
 }
 
 
@@ -230,6 +241,9 @@ config_load(void)
   eject_cfg.enabled = cfg_getbool(sec, "enabled");
   eject_cfg.device = strdup(cfg_getstr(sec, "device"));
   cd_eject_fix_config();
+
+  sec = cfg_getsec(cfg, "appleir");
+  appleir_cfg.enabled = cfg_getbool(sec, "enabled");
 
   cfg_free(cfg);
 

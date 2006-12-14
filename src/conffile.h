@@ -36,6 +36,10 @@ struct _eject_cfg {
   char *device;
 };
 
+struct _appleir_cfg {
+  int enabled;
+};
+
 
 extern struct _lcd_x1600_cfg lcd_x1600_cfg;
 extern struct _lcd_gma950_cfg lcd_gma950_cfg;
@@ -44,6 +48,7 @@ extern struct _audio_cfg audio_cfg;
 #endif /* 0 */
 extern struct _kbd_cfg kbd_cfg;
 extern struct _eject_cfg eject_cfg;
+extern struct _appleir_cfg appleir_cfg;
 
 
 int
@@ -51,5 +56,6 @@ config_load(void);
 
 void
 config_cleanup(void);
+
 
 #endif /* !__CONFFILE_H__ */
