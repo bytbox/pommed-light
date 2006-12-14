@@ -2,7 +2,7 @@
 #define __EVDEV_H__
 
 void
-process_evdev_events(int fd);
+evdev_process_events(int fd);
 
 int
 evdev_is_geyser3(unsigned short vendor, unsigned short product);
@@ -11,12 +11,12 @@ int
 evdev_is_geyser4(unsigned short vendor, unsigned short product);
 
 int
-open_evdev(struct pollfd **fds);
+evdev_open(struct pollfd **fds);
 
 void
-close_evdev(struct pollfd **fds, int nfds);
+evdev_close(struct pollfd **fds, int nfds);
 
 int
-reopen_evdev(struct pollfd **fds, int nfds);
+evdev_reopen(struct pollfd **fds, int nfds);
 
 #endif /* !__EVDEV_H__ */

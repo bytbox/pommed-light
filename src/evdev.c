@@ -49,7 +49,7 @@
 
 
 void
-process_evdev_events(int fd)
+evdev_process_events(int fd)
 {
   int ret;
 
@@ -161,7 +161,7 @@ evdev_is_geyser4(unsigned short vendor, unsigned short product)
 
 
 int
-open_evdev(struct pollfd **fds)
+evdev_open(struct pollfd **fds)
 {
   int ret;
   int i, j;
@@ -259,7 +259,7 @@ open_evdev(struct pollfd **fds)
 }
 
 void
-close_evdev(struct pollfd **fds, int nfds)
+evdev_close(struct pollfd **fds, int nfds)
 {
   int i;
 
@@ -276,11 +276,11 @@ close_evdev(struct pollfd **fds, int nfds)
 
 
 int
-reopen_evdev(struct pollfd **fds, int nfds)
+evdev_reopen(struct pollfd **fds, int nfds)
 {
   int i;
 
-  close_evdev(fds, nfds);
+  evdev_close(fds, nfds);
 
   /* When resuming, we need to reopen event devices which
    * disappear at suspend time. We need to wait for udev to
@@ -291,7 +291,7 @@ reopen_evdev(struct pollfd **fds, int nfds)
     {
       usleep(300000);
 
-      nfds = open_evdev(fds);
+      nfds = evdev_open(fds);
 
       if (nfds > 0)
 	break;

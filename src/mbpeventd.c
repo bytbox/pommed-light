@@ -305,7 +305,7 @@ main (int argc, char **argv)
       exit(1);
     }
 
-  nfds = open_evdev(&fds);
+  nfds = evdev_open(&fds);
   if (nfds < 1)
     {
       logmsg(LOG_ERR, "No suitable event devices found");
@@ -325,7 +325,8 @@ main (int argc, char **argv)
 	{
 	  logmsg(LOG_ERR, "daemon() failed: %s", strerror(errno));
 
-	  close_evdev(&fds, nfds);
+	  evdev_close(&fds, nfds);
+
 	  exit(-1);
 	}
     }
@@ -335,7 +336,8 @@ main (int argc, char **argv)
     {
       logmsg(LOG_WARNING, "Could not open pidfile %s: %s", PIDFILE, strerror(errno));
 
-      close_evdev(&fds, nfds);
+      evdev_close(&fds, nfds);
+
       exit(-1);
     }
   fprintf(pidfile, "%d\n", getpid());
@@ -354,7 +356,7 @@ main (int argc, char **argv)
       /* Attempt to reopen event devices, typically after resuming */
       if (reopen)
 	{
-	  nfds = reopen_evdev(&fds, nfds);
+	  nfds = evdev_reopen(&fds, nfds);
 
 	  if (nfds < 1)
 	    {
@@ -392,7 +394,7 @@ main (int argc, char **argv)
 		}
 
 	      if (fds[i].revents & POLLIN)
-		process_evdev_events(fds[i].fd);
+		evdev_process_events(fds[i].fd);
 	    }
 
 	  if (has_kbd_backlight())
@@ -429,7 +431,7 @@ main (int argc, char **argv)
 	}
     }
 
-  close_evdev(&fds, nfds);
+  evdev_close(&fds, nfds);
   unlink(PIDFILE);
 
   logmsg(LOG_INFO, "Exiting");
