@@ -11,21 +11,21 @@ OBJS = $(SOURCES:%.c=%.o)
 
 mbpeventd: $(OBJS) $(LIBS)
 
-mbpeventd.o: mbpeventd.c mbpeventd.h
+mbpeventd.o: mbpeventd.c mbpeventd.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h
 
-kbd_backlight.o: kbd_backlight.c mbpeventd.h kbd_backlight.h ambient.h
+kbd_backlight.o: kbd_backlight.c kbd_backlight.h mbpeventd.h ambient.h conffile.h
 
-ambient.o: ambient.c mbpeventd.h ambient.h
+ambient.o: ambient.c ambient.h mbpeventd.h
 
-cd_eject.o: cd_eject.c mbpeventd.h cd_eject.h
+cd_eject.o: cd_eject.c cd_eject.h mbpeventd.h conffile.h
 
-evdev.o: evdev.c mbpeventd.h kbd_backlight.h ambient.h cd_eject.h evdev.h
+evdev.o: evdev.c evdev.h mbpeventd.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h
 
-x1600_backlight.o: x1600_backlight.c mbpeventd.h lcd_backlight.h
+x1600_backlight.o: x1600_backlight.c mbpeventd.h lcd_backlight.h conffile.h
 
-gma950_backlight.o: gma950_backlight.c mbpeventd.h lcd_backlight.h
+gma950_backlight.o: gma950_backlight.c mbpeventd.h lcd_backlight.h conffile.h
 
-conffile.o: conffile.c conffile.h
+conffile.o: conffile.c conffile.h mbpeventd.h lcd_backlight.h kbd_backlight.h cd_eject.h
 
 audio.o: audio.c audio.h mbpeventd.h
 
