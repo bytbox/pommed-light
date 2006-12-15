@@ -3,7 +3,6 @@ TODO for mbpeventd
 
  * General
  ---------
-  - ALSA sound support
   - use ambient light sensor
     - for automatic LCD backlight tweaking (powersaving)
     - for (better) automatic keyboard backlight tweaking

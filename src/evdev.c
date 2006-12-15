@@ -40,6 +40,7 @@
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
 #include "cd_eject.h"
+#include "audio.h"
 
 
 #define BITS_PER_LONG (sizeof(long) * 8)
@@ -84,14 +85,23 @@ evdev_process_events(int fd)
 
 	  case K_AUDIO_MUTE:
 	    logdebug("\nKEY: audio mute\n");
+
+	    if (audio_change(MODE_MUTE, -1) < 0)
+	      logdebug("Was not able to (un)mute volume...\n");
 	    break;
 
 	  case K_AUDIO_DOWN:
 	    logdebug("\nKEY: audio down\n");
+
+            if (audio_change(MODE_VOLUME, -10) < 0)
+	      logdebug("Was not able to decrease volume...\n");
 	    break;
 
 	  case K_AUDIO_UP:
 	    logdebug("\nKEY: audio up\n");
+
+ 	    if (audio_change(MODE_VOLUME, 10) < 0)
+	      logdebug("Was not able to increase volume...\n");
 	    break;
 
 	  case K_VIDEO_TOGGLE:

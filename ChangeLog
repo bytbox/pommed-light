@@ -1,3 +1,7 @@
+version 0.9:
+	- Added preliminary audio support: increase and decrease PCM, mute and
+	unmute both Headphone and Front
+
 version 0.8:
 	- wait for both light sensors to be under the threshold before
 	lighting up the keyboard backlight; switch it off as soon as one
