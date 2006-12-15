@@ -55,7 +55,7 @@ static cfg_opt_t lcd_x1600_opts[] =
 
 static cfg_opt_t lcd_gma950_opts[] =
   {
-    CFG_INT("init", 0x1f, CFGF_NONE),
+    CFG_INT("init", 0x6f, CFGF_NONE),
     CFG_INT("step", 0x0f, CFGF_NONE),
     CFG_END()
   };
