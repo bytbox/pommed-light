@@ -6,11 +6,17 @@
 #define __AUDIO_H__
 
 
-#define MODE_MUTE   0
-#define MODE_VOLUME 1
+void
+audio_step(int dir);
+
+void
+audio_toggle_mute(void);
 
 int
-audio_change(int mode, int value); 
+audio_init(void);
+
+void
+audio_cleanup(void);
 
 
 #endif /* !__AUDIO_H__ */

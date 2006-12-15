@@ -86,22 +86,19 @@ evdev_process_events(int fd)
 	  case K_AUDIO_MUTE:
 	    logdebug("\nKEY: audio mute\n");
 
-	    if (audio_change(MODE_MUTE, -1) < 0)
-	      logdebug("Was not able to (un)mute volume...\n");
+	    audio_toggle_mute();
 	    break;
 
 	  case K_AUDIO_DOWN:
 	    logdebug("\nKEY: audio down\n");
 
-            if (audio_change(MODE_VOLUME, -10) < 0)
-	      logdebug("Was not able to decrease volume...\n");
+	    audio_step(STEP_DOWN);
 	    break;
 
 	  case K_AUDIO_UP:
 	    logdebug("\nKEY: audio up\n");
 
- 	    if (audio_change(MODE_VOLUME, 10) < 0)
-	      logdebug("Was not able to increase volume...\n");
+	    audio_step(STEP_UP);
 	    break;
 
 	  case K_VIDEO_TOGGLE:

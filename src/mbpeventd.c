@@ -46,6 +46,7 @@
 #include "cd_eject.h"
 #include "evdev.h"
 #include "conffile.h"
+#include "audio.h"
 
 
 /* Machine-specific operations */
@@ -324,6 +325,12 @@ main (int argc, char **argv)
 
   if (has_kbd_backlight())
     kbd_backlight_status_init();
+
+  ret = audio_init();
+  if (ret < 0)
+    {
+      logmsg(LOG_WARNING, "Audio initialization failed, audio support disabled");
+    }
 
   if (!debug)
     {
