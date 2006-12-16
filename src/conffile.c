@@ -62,7 +62,7 @@ static cfg_opt_t lcd_gma950_opts[] =
 static cfg_opt_t audio_opts[] =
   {
     CFG_STR("card", "default", CFGF_NONE),
-    CFG_INT("init", 80, CFGF_NONE),
+    CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 10, CFGF_NONE),
     CFG_STR("volume", "PCM", CFGF_NONE),
     CFG_STR("speakers", "Front", CFGF_NONE),
