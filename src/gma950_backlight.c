@@ -207,10 +207,14 @@ gma950_backlight_step(int dir)
 static void
 gma950_backlight_fix_config(void)
 {
+  if (lcd_gma950_cfg.init < 0)
+    lcd_gma950_cfg.init = -1;
+
   if (lcd_gma950_cfg.init > GMA950_BACKLIGHT_MAX)
     lcd_gma950_cfg.init = GMA950_BACKLIGHT_MAX;
 
-  if (lcd_gma950_cfg.init < GMA950_BACKLIGHT_MIN)
+  if ((lcd_gma950_cfg.init < GMA950_BACKLIGHT_MIN)
+      && (lcd_gma950_cfg.init > 0))
     lcd_gma950_cfg.init = 0x00;
 
   if (lcd_gma950_cfg.step < 1)
@@ -278,7 +282,8 @@ gma950_backlight_probe(void)
   gma950_backlight_fix_config();
 
   /* Set the initial backlight level */
-  gma950_backlight_set(lcd_gma950_cfg.init);
+  if (lcd_gma950_cfg.init > -1)
+    gma950_backlight_set(lcd_gma950_cfg.init);
 
   gma950_backlight_unmap();
 

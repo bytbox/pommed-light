@@ -226,7 +226,7 @@ audio_init(void)
   logdebug("Audio init: min %ld, max %ld, step %ld\n", vol_min, vol_max, vol_step);
 
   /* Set initial volume if enabled */
-  if (audio_cfg.init != -1)
+  if (audio_cfg.init > -1)
     {
       dvol *= (double)audio_cfg.init;
 

@@ -212,13 +212,16 @@ x1600_backlight_probe(void)
    * Set the initial backlight level
    * The value has been sanity checked already
    */
-  ret = x1600_backlight_map();
-  if (ret < 0)
-    return 0;
+  if (lcd_x1600_cfg.init > -1)
+    {
+      ret = x1600_backlight_map();
+      if (ret < 0)
+	return 0;
 
-  x1600_backlight_set((unsigned char)lcd_x1600_cfg.init);
+      x1600_backlight_set((unsigned char)lcd_x1600_cfg.init);
 
-  x1600_backlight_unmap();
+      x1600_backlight_unmap();
+    }
 
   return 0;
 }
@@ -227,6 +230,9 @@ x1600_backlight_probe(void)
 void
 x1600_backlight_fix_config(void)
 {
+  if (lcd_x1600_cfg.init < 0)
+    lcd_x1600_cfg.init = -1;
+
   if (lcd_x1600_cfg.init > X1600_BACKLIGHT_MAX)
     lcd_x1600_cfg.init = X1600_BACKLIGHT_MAX;
 

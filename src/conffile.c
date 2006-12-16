@@ -47,14 +47,14 @@ struct _appleir_cfg appleir_cfg;
 
 static cfg_opt_t lcd_x1600_opts[] =
   {
-    CFG_INT("init", 200, CFGF_NONE),
+    CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 10, CFGF_NONE),
     CFG_END()
   };
 
 static cfg_opt_t lcd_gma950_opts[] =
   {
-    CFG_INT("init", 0x6f, CFGF_NONE),
+    CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 0x0f, CFGF_NONE),
     CFG_END()
   };
@@ -185,10 +185,8 @@ config_load(void)
 
   /* Set up config values validation */
   /* lcd_x1600 */
-  cfg_set_validate_func(cfg, "lcd_x1600|init", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_x1600|step", config_validate_positive_integer);
   /* lcd_gma950 */
-  cfg_set_validate_func(cfg, "lcd_gma950|init", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_gma950|step", config_validate_positive_integer);
   /* audio */
   cfg_set_validate_func(cfg, "audio|card", config_validate_string);
