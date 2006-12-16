@@ -15,13 +15,14 @@ struct _lcd_gma950_cfg {
   unsigned int step;
 };
 
-#if 0
 struct _audio_cfg {
-  char *mixer;
+  char *card;
   int init;
   int step;
+  char *vol;
+  char *spkr;
+  char *head;
 };
-#endif /* 0 */
 
 struct _kbd_cfg {
   int auto_lvl;
@@ -43,9 +44,7 @@ struct _appleir_cfg {
 
 extern struct _lcd_x1600_cfg lcd_x1600_cfg;
 extern struct _lcd_gma950_cfg lcd_gma950_cfg;
-#if 0
 extern struct _audio_cfg audio_cfg;
-#endif /* 0 */
 extern struct _kbd_cfg kbd_cfg;
 extern struct _eject_cfg eject_cfg;
 extern struct _appleir_cfg appleir_cfg;

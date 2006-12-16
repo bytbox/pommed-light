@@ -25,9 +25,9 @@ x1600_backlight.o: x1600_backlight.c mbpeventd.h lcd_backlight.h conffile.h
 
 gma950_backlight.o: gma950_backlight.c mbpeventd.h lcd_backlight.h conffile.h
 
-conffile.o: conffile.c conffile.h mbpeventd.h lcd_backlight.h kbd_backlight.h cd_eject.h
+conffile.o: conffile.c conffile.h mbpeventd.h lcd_backlight.h kbd_backlight.h cd_eject.h audio.h
 
-audio.o: audio.c audio.h mbpeventd.h
+audio.o: audio.c audio.h mbpeventd.h conffile.h
 
 clean:
 	rm -f mbpeventd $(OBJS)

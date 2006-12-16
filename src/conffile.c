@@ -32,13 +32,12 @@
 #include "lcd_backlight.h"
 #include "kbd_backlight.h"
 #include "cd_eject.h"
+#include "audio.h"
 
 
 struct _lcd_x1600_cfg lcd_x1600_cfg;
 struct _lcd_gma950_cfg lcd_gma950_cfg;
-#if 0
 struct _audio_cfg audio_cfg;
-#endif /* 0 */
 struct _kbd_cfg kbd_cfg;
 struct _eject_cfg eject_cfg;
 struct _appleir_cfg appleir_cfg;
@@ -60,15 +59,16 @@ static cfg_opt_t lcd_gma950_opts[] =
     CFG_END()
   };
 
-#if 0
 static cfg_opt_t audio_opts[] =
   {
-    CFG_STR("mixer", "foobar", CFGF_NONE),
-    CFG_INT("init", 50, CFGF_NONE),
+    CFG_STR("card", "default", CFGF_NONE),
+    CFG_INT("init", 80, CFGF_NONE),
     CFG_INT("step", 10, CFGF_NONE),
+    CFG_STR("volume", "PCM", CFGF_NONE),
+    CFG_STR("speakers", "Front", CFGF_NONE),
+    CFG_STR("headphones", "Headphone", CFGF_NONE),
     CFG_END()
   };
-#endif /* 0 */
 
 static cfg_opt_t kbd_opts[] =
   {
@@ -98,9 +98,7 @@ static cfg_opt_t opts[] =
   {
     CFG_SEC("lcd_x1600", lcd_x1600_opts, CFGF_NONE),
     CFG_SEC("lcd_gma950", lcd_gma950_opts, CFGF_NONE),
-#if 0
     CFG_SEC("audio", audio_opts, CFGF_NONE),
-#endif /* 0 */
     CFG_SEC("kbd", kbd_opts, CFGF_NONE),
     CFG_SEC("eject", eject_opts, CFGF_NONE),
     CFG_SEC("appleir", appleir_opts, CFGF_NONE),
@@ -132,12 +130,13 @@ config_print(void)
   printf(" + Intel GMA950 backlight control:\n");
   printf("    initial level: 0x%x\n", lcd_gma950_cfg.init);
   printf("    step: 0x%x\n", lcd_gma950_cfg.step);
-#if 0
   printf(" + Audio volume control:\n");
-  printf("    mixer device: %s\n", audio_cfg.mixer);
-  printf("    initial volume: %d\n", audio_cfg.init);
-  printf("    step: %d\n", audio_cfg.step);
-#endif /* 0 */
+  printf("    card: %s\n", audio_cfg.card);
+  printf("    initial volume: %d%%\n", audio_cfg.init);
+  printf("    step: %d%%\n", audio_cfg.step);
+  printf("    volume element: %s\n", audio_cfg.vol);
+  printf("    speaker element: %s\n", audio_cfg.spkr);
+  printf("    headphones element: %s\n", audio_cfg.head);
   printf(" + Keyboard backlight control:\n");
   printf("    default level: %d\n", kbd_cfg.auto_lvl);
   printf("    step: %d\n", kbd_cfg.step);
@@ -176,11 +175,8 @@ config_load(void)
   /* lcd_gma950 */
   cfg_set_validate_func(cfg, "lcd_gma950|init", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_gma950|step", config_validate_positive_integer);
-#if 0
   /* audio */
-  cfg_set_validate_func(cfg, "audio|init", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "audio|step", config_validate_positive_integer);
-#endif /* 0 */
   /* kbd */
   cfg_set_validate_func(cfg, "kbd|default", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "kbd|step", config_validate_positive_integer);
@@ -221,13 +217,14 @@ config_load(void)
   /* No _fix_config() call here, as we're hardware-dependent
    * for the max backlight value */
 
-#if 0
   sec = cfg_getsec(cfg, "audio");
-  audio_cfg.mixer = strdup(cfg_getstr(sec, "mixer"));
+  audio_cfg.card = strdup(cfg_getstr(sec, "card"));
   audio_cfg.init = cfg_getint(sec, "init");
   audio_cfg.step = cfg_getint(sec, "step");
+  audio_cfg.vol = strdup(cfg_getstr(sec, "volume"));
+  audio_cfg.spkr = strdup(cfg_getstr(sec, "speakers"));
+  audio_cfg.head = strdup(cfg_getstr(sec, "headphones"));
   audio_fix_config();
-#endif /* 0 */
 
   sec = cfg_getsec(cfg, "kbd");
   kbd_cfg.auto_lvl = cfg_getint(sec, "default");
@@ -256,8 +253,10 @@ config_load(void)
 void
 config_cleanup(void)
 {
-#if 0
-  free(audio_cfg.mixer);
-#endif /* 0 */
+  free(audio_cfg.card);
+  free(audio_cfg.vol);
+  free(audio_cfg.spkr);
+  free(audio_cfg.head);
+
   free(eject_cfg.device);
 }

@@ -18,5 +18,8 @@ audio_init(void);
 void
 audio_cleanup(void);
 
+void
+audio_fix_config(void);
+
 
 #endif /* !__AUDIO_H__ */

@@ -26,12 +26,13 @@
 #include <alsa/asoundlib.h>
 
 #include "mbpeventd.h"
+#include "conffile.h"
 #include "audio.h"
 
 
 static snd_mixer_t *mixer_hdl;
-static snd_mixer_elem_t *pcm_elem;
-static snd_mixer_elem_t *front_elem;
+static snd_mixer_elem_t *vol_elem;
+static snd_mixer_elem_t *spkr_elem;
 static snd_mixer_elem_t *head_elem;
 
 static long vol_min;
@@ -48,15 +49,15 @@ audio_step(int dir)
   if (mixer_hdl == NULL)
     return;
 
-  if (pcm_elem == NULL)
+  if (vol_elem == NULL)
     return;
 
   snd_mixer_handle_events(mixer_hdl);
 
-  if (!snd_mixer_selem_is_active(pcm_elem))
+  if (!snd_mixer_selem_is_active(vol_elem))
     return;
 
-  snd_mixer_selem_get_playback_volume(pcm_elem, 0, &vol);
+  snd_mixer_selem_get_playback_volume(vol_elem, 0, &vol);
 
   logdebug("Mixer volume: %ld\n", vol);
 
@@ -81,10 +82,10 @@ audio_step(int dir)
   else
     return;
 
-  snd_mixer_selem_set_playback_volume(pcm_elem, 0, newvol);
+  snd_mixer_selem_set_playback_volume(vol_elem, 0, newvol);
 
-  if (snd_mixer_selem_is_playback_mono(pcm_elem) == 0)
-    snd_mixer_selem_set_playback_volume(pcm_elem, 1, newvol);  
+  if (snd_mixer_selem_is_playback_mono(vol_elem) == 0)
+    snd_mixer_selem_set_playback_volume(vol_elem, 1, newvol);
 }
 
 
@@ -120,8 +121,8 @@ audio_toggle_mute(void)
 
   snd_mixer_handle_events(mixer_hdl);
 
-  if (front_elem != NULL)
-    audio_toggle_mute_elem(front_elem);
+  if (spkr_elem != NULL)
+    audio_toggle_mute_elem(spkr_elem);
 
   if (head_elem != NULL)
     audio_toggle_mute_elem(head_elem);
@@ -134,10 +135,12 @@ audio_init(void)
   snd_mixer_elem_t *elem;
   snd_mixer_selem_id_t *sid;
 
+  double dvol;
+
   int ret;
 
-  pcm_elem = NULL;
-  front_elem = NULL;
+  vol_elem = NULL;
+  spkr_elem = NULL;
   head_elem = NULL;
 
   ret = snd_mixer_open(&mixer_hdl, 0);
@@ -150,7 +153,7 @@ audio_init(void)
       return -1;
     }
 
-  ret = snd_mixer_attach(mixer_hdl, "default");
+  ret = snd_mixer_attach(mixer_hdl, audio_cfg.card);
   if (ret < 0)
     {
       logdebug("Failed to attach mixer: %s\n", snd_strerror(ret));
@@ -165,7 +168,7 @@ audio_init(void)
     {
       logdebug("Failed to register mixer: %s\n", snd_strerror(ret));
 
-      snd_mixer_detach(mixer_hdl, "default");
+      snd_mixer_detach(mixer_hdl, audio_cfg.card);
       snd_mixer_close(mixer_hdl);
 
       return -1;
@@ -176,7 +179,7 @@ audio_init(void)
     {
       logdebug("Failed to load mixer: %s\n", snd_strerror(ret));
 
-      snd_mixer_detach(mixer_hdl, "default");
+      snd_mixer_detach(mixer_hdl, audio_cfg.card);
       snd_mixer_close(mixer_hdl);
 
       return -1;
@@ -190,22 +193,22 @@ audio_init(void)
     {
       snd_mixer_selem_get_id(elem, sid);
 
-      if (strcmp(snd_mixer_selem_id_get_name(sid), "PCM") == 0)
-	pcm_elem = elem;
+      if (strcmp(snd_mixer_selem_id_get_name(sid), audio_cfg.vol) == 0)
+	vol_elem = elem;
 
-      if (strcmp(snd_mixer_selem_id_get_name(sid), "Front") == 0)
-	front_elem = elem;
+      if (strcmp(snd_mixer_selem_id_get_name(sid), audio_cfg.spkr) == 0)
+	spkr_elem = elem;
 
-      if (strcmp(snd_mixer_selem_id_get_name(sid), "Headphone") == 0)
+      if (strcmp(snd_mixer_selem_id_get_name(sid), audio_cfg.head) == 0)
 	head_elem = elem;
     }
 
-  logdebug("Audio status: pcm %s, front %s, headphones %s\n",
-	   (pcm_elem == NULL) ? "NOK" : "OK",
-	   (front_elem == NULL) ? "NOK" : "OK",
+  logdebug("Audio init: volume %s, speakers %s, headphones %s\n",
+	   (vol_elem == NULL) ? "NOK" : "OK",
+	   (spkr_elem == NULL) ? "NOK" : "OK",
 	   (head_elem == NULL) ? "NOK" : "OK");
 
-  if ((pcm_elem == NULL) || ((front_elem == NULL) && (head_elem == NULL)))
+  if ((vol_elem == NULL) || ((spkr_elem == NULL) && (head_elem == NULL)))
     {
       logdebug("Failed to open required mixer elements\n");
 
@@ -215,11 +218,26 @@ audio_init(void)
     }
 
   /* Get min & max volume */
-  snd_mixer_selem_get_playback_volume_range(pcm_elem, &vol_min, &vol_max);
+  snd_mixer_selem_get_playback_volume_range(vol_elem, &vol_min, &vol_max);
 
-  vol_step = (vol_max - vol_min) / 10;
+  dvol = (double)(vol_max - vol_min) / 100.0;
+  vol_step = (long)(dvol * (double)audio_cfg.step);
 
-  logdebug("Mixer: min %ld, max %ld, step %ld\n", vol_min, vol_max, vol_step);
+  logdebug("Audio init: min %ld, max %ld, step %ld\n", vol_min, vol_max, vol_step);
+
+  /* Set initial volume if enabled */
+  if (audio_cfg.init != -1)
+    {
+      dvol *= (double)audio_cfg.init;
+
+      if ((long)dvol > vol_max)
+	dvol = (double)vol_max;
+
+      snd_mixer_selem_set_playback_volume(vol_elem, 0, (long)dvol);
+
+      if (snd_mixer_selem_is_playback_mono(vol_elem) == 0)
+	snd_mixer_selem_set_playback_volume(vol_elem, 1, (long)dvol);      
+    }
 
   return 0;
 }
@@ -229,9 +247,26 @@ audio_cleanup(void)
 {
   if (mixer_hdl != NULL)
     {
-      snd_mixer_detach(mixer_hdl, "default");
+      snd_mixer_detach(mixer_hdl, audio_cfg.card);
       snd_mixer_close(mixer_hdl);
 
       mixer_hdl = NULL;
     }
+}
+
+
+void
+audio_fix_config(void)
+{
+  if (audio_cfg.init < 0)
+    audio_cfg.init = -1;
+
+  if (audio_cfg.init > 100)
+    audio_cfg.init = 100;
+
+  if (audio_cfg.step < 1)
+    audio_cfg.step = 1;
+
+  if (audio_cfg.step > 50)
+    audio_cfg.step = 50;
 }
