@@ -120,6 +120,21 @@ config_validate_positive_integer(cfg_t *cfg, cfg_opt_t *opt)
   return 0;
 }
 
+static int
+config_validate_string(cfg_t *cfg, cfg_opt_t *opt)
+{
+  char *value = cfg_opt_getnstr(opt, cfg_opt_size(opt) - 1);
+
+  if (strlen(value) == 0)
+    {
+      cfg_error(cfg, "Error: Value for '%s/%s' must be a non-zero string", cfg->name, opt->name);
+      return -1;
+    }
+
+  return 0;
+}
+
+
 static void
 config_print(void)
 {
@@ -176,12 +191,18 @@ config_load(void)
   cfg_set_validate_func(cfg, "lcd_gma950|init", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_gma950|step", config_validate_positive_integer);
   /* audio */
+  cfg_set_validate_func(cfg, "audio|card", config_validate_string);
   cfg_set_validate_func(cfg, "audio|step", config_validate_positive_integer);
+  cfg_set_validate_func(cfg, "audio|volume", config_validate_string);
+  cfg_set_validate_func(cfg, "audio|speakers", config_validate_string);
+  cfg_set_validate_func(cfg, "audio|headphones", config_validate_string);
   /* kbd */
   cfg_set_validate_func(cfg, "kbd|default", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "kbd|step", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "kbd|on_threshold", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "kbd|off_threshold", config_validate_positive_integer);
+  /* CD eject */
+  cfg_set_validate_func(cfg, "eject|device", config_validate_string);
 
   /* 
    * Do the actual parsing.
