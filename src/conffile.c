@@ -147,7 +147,7 @@ config_print(void)
   printf("    step: 0x%x\n", lcd_gma950_cfg.step);
   printf(" + Audio volume control:\n");
   printf("    card: %s\n", audio_cfg.card);
-  printf("    initial volume: %d%%\n", audio_cfg.init);
+  printf("    initial volume: %d%s\n", audio_cfg.init, (audio_cfg.init > -1) ? "%" : "");
   printf("    step: %d%%\n", audio_cfg.step);
   printf("    volume element: %s\n", audio_cfg.vol);
   printf("    speaker element: %s\n", audio_cfg.spkr);
