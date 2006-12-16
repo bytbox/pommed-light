@@ -230,6 +230,9 @@ x1600_backlight_fix_config(void)
   if (lcd_x1600_cfg.init > X1600_BACKLIGHT_MAX)
     lcd_x1600_cfg.init = X1600_BACKLIGHT_MAX;
 
+  if (lcd_x1600_cfg.step < 1)
+    lcd_x1600_cfg.step = 1;
+
   if (lcd_x1600_cfg.step > (X1600_BACKLIGHT_MAX / 2))
     lcd_x1600_cfg.step = X1600_BACKLIGHT_MAX / 2;
 }

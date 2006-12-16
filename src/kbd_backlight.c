@@ -249,6 +249,9 @@ kbd_backlight_fix_config(void)
   if (kbd_cfg.auto_lvl > KBD_BACKLIGHT_MAX)
     kbd_cfg.auto_lvl = KBD_BACKLIGHT_MAX;
 
+  if (kbd_cfg.step < 1)
+    kbd_cfg.step = 1;
+
   if (kbd_cfg.step > (KBD_BACKLIGHT_MAX / 2))
     kbd_cfg.step = KBD_BACKLIGHT_MAX / 2;
 }
