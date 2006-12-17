@@ -22,7 +22,7 @@ void
 kbd_backlight_step(int dir);
 
 void
-kbd_backlight_status_init(void);
+kbd_backlight_init(void);
 
 void
 kbd_backlight_ambient_check(void);

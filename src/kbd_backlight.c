@@ -185,7 +185,7 @@ kbd_backlight_step(int dir)
 }
 
 void
-kbd_backlight_status_init(void)
+kbd_backlight_init(void)
 {
   kbd_bck_status.auto_on = 0;
   kbd_bck_status.off = 0;
