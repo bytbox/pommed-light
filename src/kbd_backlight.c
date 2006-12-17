@@ -190,6 +190,15 @@ kbd_backlight_status_init(void)
   kbd_bck_status.auto_on = 0;
   kbd_bck_status.off = 0;
 
+  if (!has_kbd_backlight())
+    {
+      kbd_bck_status.value = 0;
+      kbd_bck_status.r_sens = 0;
+      kbd_bck_status.l_sens = 0;
+
+      return;
+    }
+
   kbd_bck_status.value = kbd_backlight_get();
   if (kbd_bck_status.value < 0)
     kbd_bck_status.value = 0;

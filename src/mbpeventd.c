@@ -323,8 +323,7 @@ main (int argc, char **argv)
       exit(1);
     }
 
-  if (has_kbd_backlight())
-    kbd_backlight_status_init();
+  kbd_backlight_status_init();
 
   ret = audio_init();
   if (ret < 0)
