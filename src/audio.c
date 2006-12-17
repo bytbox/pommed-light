@@ -38,6 +38,7 @@ static snd_mixer_elem_t *head_elem;
 static long vol_min;
 static long vol_max;
 static long vol_step;
+static int play;
 
 
 void
@@ -90,26 +91,15 @@ audio_step(int dir)
 
 
 static void
-audio_toggle_mute_elem(snd_mixer_elem_t *elem)
+audio_set_mute_elem(snd_mixer_elem_t *elem)
 {
-  int play_sw[2];
-
   if (snd_mixer_selem_is_active(elem)
       && snd_mixer_selem_has_playback_switch(elem))
     {
-      snd_mixer_selem_get_playback_switch(elem, 0, &play_sw[0]);
-      play_sw[0] = 1 - play_sw[0];
+      snd_mixer_selem_set_playback_switch(elem, 0, play);
 
       if (snd_mixer_selem_is_playback_mono(elem) == 0)
-	{
-	  snd_mixer_selem_get_playback_switch(elem, 1, &play_sw[1]);
-	  play_sw[1] = 1 - play_sw[1];
-	}
-
-      snd_mixer_selem_set_playback_switch(elem, 0, play_sw[0]);
-
-      if (snd_mixer_selem_is_playback_mono(elem) == 0)
-	snd_mixer_selem_set_playback_switch(elem, 1, play_sw[1]);
+	snd_mixer_selem_set_playback_switch(elem, 1, play);
     }
 }
 
@@ -121,11 +111,13 @@ audio_toggle_mute(void)
 
   snd_mixer_handle_events(mixer_hdl);
 
+  play = !play;
+
   if (spkr_elem != NULL)
-    audio_toggle_mute_elem(spkr_elem);
+    audio_set_mute_elem(spkr_elem);
 
   if (head_elem != NULL)
-    audio_toggle_mute_elem(head_elem);
+    audio_set_mute_elem(head_elem);
 }
 
 
@@ -142,6 +134,8 @@ audio_init(void)
   vol_elem = NULL;
   spkr_elem = NULL;
   head_elem = NULL;
+
+  play = 1;
 
   ret = snd_mixer_open(&mixer_hdl, 0);
   if (ret < 0)
