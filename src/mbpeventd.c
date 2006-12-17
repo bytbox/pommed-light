@@ -399,9 +399,7 @@ main (int argc, char **argv)
 	  for (i = 0; i < nfds; i++)
 	    {
 	      /* the event devices cease to exist when suspending */
-	      if ((fds[i].revents & POLLERR)
-		  || (fds[i].revents & POLLHUP)
-		  || (fds[i].revents & POLLNVAL))
+	      if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
 		{
 		  logmsg(LOG_WARNING, "Error condition signaled on evdev, reopening");
 		  reopen = 1;
