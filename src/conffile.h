@@ -5,6 +5,10 @@
 #ifndef __CONFFILE_H__
 #define __CONFFILE_H__
 
+struct _general_cfg {
+  int fnmode;
+};
+
 struct _lcd_x1600_cfg {
   int init;
   int step;
@@ -42,6 +46,7 @@ struct _appleir_cfg {
 };
 
 
+extern struct _general_cfg general_cfg;
 extern struct _lcd_x1600_cfg lcd_x1600_cfg;
 extern struct _lcd_gma950_cfg lcd_gma950_cfg;
 extern struct _audio_cfg audio_cfg;

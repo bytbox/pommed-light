@@ -35,6 +35,7 @@
 #include "audio.h"
 
 
+struct _general_cfg general_cfg;
 struct _lcd_x1600_cfg lcd_x1600_cfg;
 struct _lcd_gma950_cfg lcd_gma950_cfg;
 struct _audio_cfg audio_cfg;
@@ -44,6 +45,12 @@ struct _appleir_cfg appleir_cfg;
 
 
 /* Config file structure */
+
+static cfg_opt_t general_opts[] =
+  {
+    CFG_INT("fnmode", 1, CFGF_NONE),
+    CFG_END()
+  };
 
 static cfg_opt_t lcd_x1600_opts[] =
   {
@@ -96,6 +103,7 @@ static cfg_opt_t appleir_opts[] =
 
 static cfg_opt_t opts[] =
   {
+    CFG_SEC("general", general_opts, CFGF_NONE),
     CFG_SEC("lcd_x1600", lcd_x1600_opts, CFGF_NONE),
     CFG_SEC("lcd_gma950", lcd_gma950_opts, CFGF_NONE),
     CFG_SEC("audio", audio_opts, CFGF_NONE),
@@ -139,6 +147,8 @@ static void
 config_print(void)
 {
   printf("mbpeventd configuration:\n");
+  printf(" + General settings:\n");
+  printf("    fnmode: %d\n", general_cfg.fnmode);
   printf(" + ATI X1600 backlight control:\n");
   printf("    initial level: %d\n", lcd_x1600_cfg.init);
   printf("    step: %d\n", lcd_x1600_cfg.step);
@@ -184,6 +194,8 @@ config_load(void)
     }
 
   /* Set up config values validation */
+  /* general */
+  cfg_set_validate_func(cfg, "general|fnmode", config_validate_positive_integer);
   /* lcd_x1600 */
   cfg_set_validate_func(cfg, "lcd_x1600|step", config_validate_positive_integer);
   /* lcd_gma950 */
@@ -225,6 +237,9 @@ config_load(void)
     }
 
   /* Fill up the structs */
+  sec = cfg_getsec(cfg, "general");
+  general_cfg.fnmode = cfg_getint(sec, "fnmode");
+
   sec = cfg_getsec(cfg, "lcd_x1600");
   lcd_x1600_cfg.init = cfg_getint(sec, "init");
   lcd_x1600_cfg.step = cfg_getint(sec, "step");

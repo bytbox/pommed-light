@@ -138,6 +138,27 @@ logmsg(int level, char *fmt, ...)
 }
 
 
+void
+kbd_set_fnmode(void)
+{
+  FILE *fp;
+
+  if ((general_cfg.fnmode < 1) || (general_cfg.fnmode > 2))
+    general_cfg.fnmode = 1;
+
+  fp = fopen(KBD_FNMODE_FILE, "a");
+  if (fp == NULL)
+    {
+      logmsg(LOG_INFO, "Could not open %s: %s", KBD_FNMODE_FILE, strerror(errno));
+      return;
+    }
+
+  fprintf(fp, "%d", general_cfg.fnmode);
+
+  fclose(fp);
+}
+
+
 static machine_type
 check_machine_smbios(void)
 {
@@ -323,6 +344,7 @@ main (int argc, char **argv)
       exit(1);
     }
 
+  kbd_set_fnmode();
   kbd_backlight_init();
 
   ret = audio_init();
@@ -379,6 +401,12 @@ main (int argc, char **argv)
 
 	      break;
 	    }
+
+	  /* Re-set the keyboard mode
+	   * When we need to reopen the event devices, it means we've
+	   * just resumed from sleep
+	   */
+	  kbd_set_fnmode();
 
 	  reopen = 0;
 	}

@@ -21,6 +21,10 @@ extern int debug;
 #endif
 
 
+void
+kbd_set_fnmode(void);
+
+
 typedef enum
   {
     MACHINE_ERROR = -1,
@@ -46,6 +50,7 @@ extern struct machine_ops *mops;
 #define PIDFILE                "/var/run/mbpeventd.pid"
 #define CONFFILE               "/etc/mbpeventd.conf"
 
+#define KBD_FNMODE_FILE        "/sys/module/usbhid/parameters/pb_fnmode"
 
 #define STEP_UP                 1
 #define STEP_DOWN               -1
