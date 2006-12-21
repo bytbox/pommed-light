@@ -91,10 +91,9 @@ kbd_backlight_get(void)
 static void
 kbd_backlight_set(int val)
 {
-  int fd;
-  int ret;
   int curval;
-  char buf[8];
+
+  FILE *fp;
 
   curval = kbd_backlight_get();
 
@@ -124,23 +123,18 @@ kbd_backlight_set(int val)
   if ((val < KBD_BACKLIGHT_OFF) || (val > KBD_BACKLIGHT_MAX))
     return;
 
-  fd = open(KBD_BACKLIGHT, O_RDWR | O_APPEND);
-  if (fd < 0)
+  fp = fopen(KBD_BACKLIGHT, "a");
+  if (fp == NULL)
     {
       logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno));
       return;
     }
 
-  ret = snprintf(buf, 8, "%d\n", val);
+  fprintf(fp, "%d", val);
 
-  if ((ret <= 0) || (ret > 7))
-    return;
-
-  ret = write(fd, buf, ret);
+  fclose(fp);
 
   logdebug("KBD backlight value set to %d\n", val);
-
-  close(fd);
 }
 
 void
