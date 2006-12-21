@@ -324,11 +324,11 @@ evdev_reopen(struct pollfd **fds, int nfds)
   /* When resuming, we need to reopen event devices which
    * disappear at suspend time. We need to wait for udev to
    * recreate the device nodes.
-   * Wait for up to 3 seconds, 10 * 0.3 seconds
+   * Wait for up to 12 seconds, 24 * 0.5 seconds
    */
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 24; i++)
     {
-      usleep(300000);
+      usleep(500000);
 
       nfds = evdev_open(fds);
 
