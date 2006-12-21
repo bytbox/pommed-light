@@ -3,6 +3,7 @@ TODO for mbpeventd
 
  * General
  ---------
+  - external screen toggle
   - use ambient light sensor
     - for automatic LCD backlight tweaking (powersaving)
     - for (better) automatic keyboard backlight tweaking
