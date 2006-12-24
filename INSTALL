@@ -1,0 +1,73 @@
+Installation instructions for pommed
+------------------------------------
+
+pommed  - the daemon
+gpomme  - GTK+ client
+wmpomme - WindowMaker client
+
+
+Building
+--------
+
+pommed requires:
+ - libsmbios (and zlib)
+ - libconfuse
+ - libdbus
+ - libasound
+
+gpomme requires:
+ - libdbus
+ - libasound
+ - libaudiofile
+ - GTK+ 2.0
+
+wmpomme requires:
+ - X11 libs
+ - libdbus
+
+
+To build everything, just run make from the top-level directory, or:
+ - make pommed, to build pommed
+ - make gpomme, to build gpomme
+ - make wmpomme, to build wmpomme
+
+
+Installing
+----------
+
+To install pommed:
+ - copy pommed somewhere in your PATH (/usr/bin)
+ - copy pommed.conf in /etc
+ - copy dbus-policy.conf as /etc/dbus-1/system.d/pommed.conf
+ - restart dbus
+
+To install gpomme:
+ - copy gpomme somewhere in your PATH (/usr/bin)
+ - install gpomme/themes as /usr/share/gpomme/themes
+ - install gpomme/po/$lang.mo as /usr/share/locale/$lang/LC_MESSAGES/gpomme.mo
+ - copy gpomme/gpomme.desktop in /usr/share/applications
+
+To install wmpomme:
+ - copy wmpomme somewhere in your PATH (/usr/bin)
+
+
+Using
+-----
+
+pommed
+------
+
+Launch pommed at startup, a simple init script will do.
+
+
+gpomme
+------
+
+Launch gpomme at session startup, using whatever interface your desktop
+environment provides for that.
+
+
+wmpomme
+-------
+
+Run wmpomme and add it to your dock.
