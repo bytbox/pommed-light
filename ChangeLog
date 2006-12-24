@@ -1,3 +1,6 @@
+ChangeLog for pommed
+--------------------
+
 version 1.0:
 	- Added fnmode setting
 	- Added DBus support: signals and get methods
