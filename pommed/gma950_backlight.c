@@ -1,11 +1,13 @@
 /*
+ * pommed - Apple laptops hotkeys handler daemon
+ *
  * MacBook Backlight Control (Intel GMA950)
  *
  * $Id$
  *
  * Copyright (C) 2006 Ryan Lortie <desrt@desrt.ca>
  * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
- *  + Adapted for mbpeventd
+ *  + Adapted for pommed
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of version 2 of the GNU General Public License as
@@ -63,7 +65,7 @@
 
 #include <pci/pci.h>
 
-#include "mbpeventd.h"
+#include "pommed.h"
 #include "conffile.h"
 #include "lcd_backlight.h"
 #include "dbus.h"

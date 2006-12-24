@@ -2,8 +2,8 @@
  * $Id$
  */
 
-#ifndef __MBPEVENTD_H__
-#define __MBPEVENTD_H__
+#ifndef __POMMED_H__
+#define __POMMED_H__
 
 
 #define M_VERSION "1.0"
@@ -47,8 +47,8 @@ struct machine_ops
 extern struct machine_ops *mops;
 
 
-#define PIDFILE                "/var/run/mbpeventd.pid"
-#define CONFFILE               "/etc/mbpeventd.conf"
+#define PIDFILE                "/var/run/pommed.pid"
+#define CONFFILE               "/etc/pommed.conf"
 
 #define KBD_FNMODE_FILE        "/sys/module/usbhid/parameters/pb_fnmode"
 
@@ -58,4 +58,4 @@ extern struct machine_ops *mops;
 
 #define LOOP_TIMEOUT            200
 
-#endif /* !__MBPEVENTD_H__ */
+#endif /* !__POMMED_H__ */

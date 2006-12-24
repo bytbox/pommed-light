@@ -1,5 +1,5 @@
 /*
- * mbpeventd - MacBook Pro hotkey handler daemon
+ * pommed - Apple laptops hotkeys handler daemon
  *
  * $Id$
  *
@@ -40,7 +40,7 @@
 
 #include <getopt.h>
 
-#include "mbpeventd.h"
+#include "pommed.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
 #include "cd_eject.h"
@@ -217,13 +217,13 @@ check_machine_smbios(void)
 static void
 usage(void)
 {
-  printf("mbpeventd v" M_VERSION " ($Rev$) MacBook Pro & MacBook hotkeys handler\n");
+  printf("pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler\n");
   printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
 
   printf("Usage:\n");
-  printf("\tmpbeventd\t-- start mbpeventd as a daemon\n");
-  printf("\tmbpeventd -v\t-- print version and exit\n");
-  printf("\tmbpeventd -f\t-- run in the foreground with debug messages\n");
+  printf("\tpommed\t-- start pommed as a daemon\n");
+  printf("\tpommed -v\t-- print version and exit\n");
+  printf("\tpommed -f\t-- run in the foreground with debug messages\n");
 }
 
 
@@ -263,7 +263,7 @@ main (int argc, char **argv)
 	    break;
 
 	  case 'v':
-	    printf("mbpeventd v" M_VERSION " ($Rev$) MacBook Pro & MacBook hotkeys handler\n");
+	    printf("pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler\n");
 	    printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
 
 	    exit(0);
@@ -279,10 +279,10 @@ main (int argc, char **argv)
 
   if (!debug)
     {
-      openlog("mbpeventd", LOG_PID, LOG_DAEMON);
+      openlog("pommed", LOG_PID, LOG_DAEMON);
     }
 
-  logmsg(LOG_INFO, "mbpeventd v" M_VERSION " ($Rev$) MacBook Pro & MacBook hotkeys handler");
+  logmsg(LOG_INFO, "pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler");
   logmsg(LOG_INFO, "Copyright (C) 2006 Julien BLACHE <jb@jblache.org>");
 
   /* Load our configuration */

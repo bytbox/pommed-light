@@ -1,5 +1,5 @@
 /*
- * mbpeventd - MacBook Pro hotkey handler daemon
+ * pommed - Apple laptops hotkeys handler daemon
  *
  * $Id$
  *
@@ -27,7 +27,7 @@
 
 #include <syslog.h>
 
-#include "mbpeventd.h"
+#include "pommed.h"
 #include "conffile.h"
 #include "cd_eject.h"
 #include "dbus.h"

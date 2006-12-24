@@ -1,5 +1,5 @@
 /*
- * mbpeventd - MacBook Pro hotkey handler daemon
+ * pommed - Apple laptops hotkeys handler daemon
  *
  * $Id$
  *
@@ -25,7 +25,7 @@
 
 #include <alsa/asoundlib.h>
 
-#include "mbpeventd.h"
+#include "pommed.h"
 #include "conffile.h"
 #include "audio.h"
 #include "dbus.h"

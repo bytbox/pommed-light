@@ -1,5 +1,5 @@
 /*
- * mbpeventd - MacBook Pro hotkey handler daemon
+ * pommed - Apple laptops hotkeys handler daemon
  *
  * $Id$
  *
@@ -27,7 +27,7 @@
 
 #include <confuse.h>
 
-#include "mbpeventd.h"
+#include "pommed.h"
 #include "conffile.h"
 #include "lcd_backlight.h"
 #include "kbd_backlight.h"
@@ -146,7 +146,7 @@ config_validate_string(cfg_t *cfg, cfg_opt_t *opt)
 static void
 config_print(void)
 {
-  printf("mbpeventd configuration:\n");
+  printf("pommed configuration:\n");
   printf(" + General settings:\n");
   printf("    fnmode: %d\n", general_cfg.fnmode);
   printf(" + ATI X1600 backlight control:\n");
