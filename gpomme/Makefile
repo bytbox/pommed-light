@@ -16,8 +16,14 @@ CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CF
 LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS)
 
 SOURCES = gpomme.c theme.c audio.c ../dbus-client/dbus-client.c
+POFILES = po/fr.po po/de.po
 
 OBJS = $(SOURCES:%.c=%.o)
+MOFILES = $(POFILES:%.po=%.mo)
+
+all: gpomme mo
+
+mo: $(MOFILES)
 
 gpomme: $(OBJS) $(LIBS)
 
@@ -29,6 +35,10 @@ audio.o: audio.c audio.h gpomme.h
 
 ../dbus-client/dbus-client.o: ../dbus-client/dbus-client.c ../dbus-client/dbus-client.h
 
+%.mo: %.po
+	@echo Building $@...
+	@msgfmt --statistics -o $@ $<
+
 clean:
-	rm -f gpomme $(OBJS)
-	rm -f *~
+	rm -f gpomme $(OBJS) $(MOFILES)
+	rm -f *~ po/*~
