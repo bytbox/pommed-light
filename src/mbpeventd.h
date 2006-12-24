@@ -6,7 +6,7 @@
 #define __MBPEVENTD_H__
 
 
-#define M_VERSION "0.9"
+#define M_VERSION "1.0"
 
 
 void
