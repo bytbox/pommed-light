@@ -9,16 +9,15 @@
 #define M_VERSION "1.0"
 
 
+extern int debug;
+extern int console;
+
+
 void
 logmsg(int level, char *fmt, ...);
 
-#ifdef DEBUG
-# define logdebug(fmt, args...) printf(fmt, ##args);
-# define debug 1
-#else
-# define logdebug(fmt, args...)
-extern int debug;
-#endif
+void
+logdebug(char *fmt, ...);
 
 
 void

@@ -278,7 +278,7 @@ config_load(void)
 
   cfg_free(cfg);
 
-  if (debug)
+  if (console)
     config_print();
 
   return 0;

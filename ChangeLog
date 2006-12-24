@@ -5,6 +5,7 @@ version 1.0:
 	- Renamed to pommed in anticipation of the PowerBook support
 	- Added fnmode setting
 	- Added DBus support: signals and get methods
+	- Add -d option to pommed, displays debug messages (replaces -DDEBUG)
 
 version 0.9:
 	- Added preliminary audio support: increase and decrease PCM, mute and

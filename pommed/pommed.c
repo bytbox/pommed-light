@@ -92,9 +92,8 @@ struct machine_ops mb2_ops = {
 
 
 /* debug mode */
-#ifndef DEBUG
 int debug = 0;
-#endif
+int console = 0;
 
 
 /* Used by signal handlers */
@@ -108,32 +107,45 @@ logmsg(int level, char *fmt, ...)
 
   va_start(ap, fmt);
 
-  if (debug)
+  if (console)
     {
       switch (level)
 	{
 	  case LOG_INFO:
-	    fprintf(stderr, "I: ");
+	    fprintf(stdout, "I: ");
 	    break;
 
 	  case LOG_WARNING:
-	    fprintf(stderr, "W: ");
+	    fprintf(stdout, "W: ");
 	    break;
 
 	  case LOG_ERR:
-	    fprintf(stderr, "E: ");
+	    fprintf(stdout, "E: ");
 	    break;
 
 	  default:
 	    break;
 	}
-      vfprintf(stderr, fmt, ap);
-      fprintf(stderr, "\n");
+      vfprintf(stdout, fmt, ap);
+      fprintf(stdout, "\n");
     }
   else
     {
       vsyslog(level | LOG_DAEMON, fmt, ap);
     }
+
+  va_end(ap);
+}
+
+void
+logdebug(char *fmt, ...)
+{
+  va_list ap;
+
+  va_start(ap, fmt);
+
+  if (debug)
+    vfprintf(stderr, fmt, ap);
 
   va_end(ap);
 }
@@ -223,7 +235,8 @@ usage(void)
   printf("Usage:\n");
   printf("\tpommed\t-- start pommed as a daemon\n");
   printf("\tpommed -v\t-- print version and exit\n");
-  printf("\tpommed -f\t-- run in the foreground with debug messages\n");
+  printf("\tpommed -f\t-- run in the foreground with log messages\n");
+  printf("\tpommed -d\t-- run in the foreground with debug messages\n");
 }
 
 
@@ -252,14 +265,17 @@ main (int argc, char **argv)
   struct timeval tv_als;
   struct timeval tv_diff;
 
-  while ((c = getopt(argc, argv, "fv")) != -1)
+  while ((c = getopt(argc, argv, "fdv")) != -1)
     {
       switch (c)
 	{
 	  case 'f':
-#ifndef DEBUG
+	    console = 1;
+	    break;
+
+	  case 'd':
 	    debug = 1;
-#endif
+	    console = 1;
 	    break;
 
 	  case 'v':
@@ -277,7 +293,7 @@ main (int argc, char **argv)
 	}
     }
 
-  if (!debug)
+  if (!console)
     {
       openlog("pommed", LOG_PID, LOG_DAEMON);
     }
@@ -360,7 +376,7 @@ main (int argc, char **argv)
       logmsg(LOG_WARNING, "Could not connect to DBus system bus");
     }
 
-  if (!debug)
+  if (!console)
     {
       /*
        * Detach from the console
@@ -490,7 +506,7 @@ main (int argc, char **argv)
 
   logmsg(LOG_INFO, "Exiting");
 
-  if (!debug)
+  if (!console)
     closelog();
 
   unlink(PIDFILE);
