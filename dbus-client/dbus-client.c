@@ -1,5 +1,5 @@
 /*
- * dbus-client.c -- shared DBus client routines for mbpeventd
+ * dbus-client.c -- shared DBus client routines for pommed clients
  *
  * $Id$
  *
@@ -41,8 +41,8 @@ mbp_call_lcd_getlevel(DBusPendingCallNotifyFunction cb, void *userdata)
 
   int ret;
 
-  msg = dbus_message_new_method_call("mbp.eventd", "/mbp/eventd/lcdBacklight",
-				     "mbp.eventd.lcdBacklight", "getLevel");
+  msg = dbus_message_new_method_call("org.pommed", "/org/pommed/lcdBacklight",
+				     "org.pommed.lcdBacklight", "getLevel");
 
   if (msg == NULL)
     {
@@ -80,8 +80,8 @@ mbp_call_kbd_getlevel(DBusPendingCallNotifyFunction cb, void *userdata)
 
   int ret;
 
-  msg = dbus_message_new_method_call("mbp.eventd", "/mbp/eventd/kbdBacklight",
-				     "mbp.eventd.kbdBacklight", "getLevel");
+  msg = dbus_message_new_method_call("org.pommed", "/org/pommed/kbdBacklight",
+				     "org.pommed.kbdBacklight", "getLevel");
 
   if (msg == NULL)
     {
@@ -119,8 +119,8 @@ mbp_call_ambient_getlevel(DBusPendingCallNotifyFunction cb, void *userdata)
 
   int ret;
 
-  msg = dbus_message_new_method_call("mbp.eventd", "/mbp/eventd/ambient",
-				     "mbp.eventd.ambient", "getLevel");
+  msg = dbus_message_new_method_call("org.pommed", "/org/pommed/ambient",
+				     "org.pommed.ambient", "getLevel");
 
   if (msg == NULL)
     {
@@ -170,8 +170,8 @@ mbp_call_audio_getvolume(DBusPendingCallNotifyFunction cb, void *userdata)
 
   int ret;
 
-  msg = dbus_message_new_method_call("mbp.eventd", "/mbp/eventd/audio",
-				     "mbp.eventd.audio", "getVolume");
+  msg = dbus_message_new_method_call("org.pommed", "/org/pommed/audio",
+				     "org.pommed.audio", "getVolume");
 
   if (msg == NULL)
     {
@@ -209,8 +209,8 @@ mbp_call_audio_getmute(DBusPendingCallNotifyFunction cb, void *userdata)
 
   int ret;
 
-  msg = dbus_message_new_method_call("mbp.eventd", "/mbp/eventd/audio",
-				     "mbp.eventd.audio", "getMute");
+  msg = dbus_message_new_method_call("org.pommed", "/org/pommed/audio",
+				     "org.pommed.audio", "getMute");
 
   if (msg == NULL)
     {
@@ -318,42 +318,42 @@ mbp_dbus_init(DBusError *error, unsigned int signals)
   dbus_connection_set_exit_on_disconnect(conn, FALSE);
 
   if ((signals & MBP_DBUS_SIG_LCD)
-      && (bus_add_match(conn, "type='signal',path='/mbp/eventd/notify/lcdBacklight',interface='mbp.eventd.signal.lcdBacklight'") < 0))
+      && (bus_add_match(conn, "type='signal',path='/org/pommed/notify/lcdBacklight',interface='org.pommed.signal.lcdBacklight'") < 0))
     {
       mbp_dbus_cleanup();
       return NULL;
     }
 
   if ((signals & MBP_DBUS_SIG_KBD)
-      && (bus_add_match(conn, "type='signal',path='/mbp/eventd/notify/kbdBacklight',interface='mbp.eventd.signal.kbdBacklight'") < 0))
+      && (bus_add_match(conn, "type='signal',path='/org/pommed/notify/kbdBacklight',interface='org.pommed.signal.kbdBacklight'") < 0))
     {
       mbp_dbus_cleanup();
       return NULL;
     }
 
   if ((signals & MBP_DBUS_SIG_VOL)
-      && (bus_add_match(conn, "type='signal',path='/mbp/eventd/notify/audioVolume',interface='mbp.eventd.signal.audioVolume'") < 0))
+      && (bus_add_match(conn, "type='signal',path='/org/pommed/notify/audioVolume',interface='org.pommed.signal.audioVolume'") < 0))
     {
       mbp_dbus_cleanup();
       return NULL;
     }
 
   if ((signals & MBP_DBUS_SIG_MUTE)
-      &&(bus_add_match(conn, "type='signal',path='/mbp/eventd/notify/audioMute',interface='mbp.eventd.signal.audioMute'") < 0))
+      && (bus_add_match(conn, "type='signal',path='/org/pommed/notify/audioMute',interface='org.pommed.signal.audioMute'") < 0))
     {
       mbp_dbus_cleanup();
       return NULL;
     }
 
   if ((signals & MBP_DBUS_SIG_LIGHT)
-      && (bus_add_match(conn, "type='signal',path='/mbp/eventd/notify/ambientLight',interface='mbp.eventd.signal.ambientLight'") < 0))
+      && (bus_add_match(conn, "type='signal',path='/org/pommed/notify/ambientLight',interface='org.pommed.signal.ambientLight'") < 0))
     {
       mbp_dbus_cleanup();
       return NULL;
     }
 
   if ((signals & MBP_DBUS_SIG_EJECT)
-      && (bus_add_match(conn, "type='signal',path='/mbp/eventd/notify/cdEject',interface='mbp.eventd.signal.cdEject'") < 0))
+      && (bus_add_match(conn, "type='signal',path='/org/pommed/notify/cdEject',interface='org.pommed.signal.cdEject'") < 0))
     {
       mbp_dbus_cleanup();
       return NULL;

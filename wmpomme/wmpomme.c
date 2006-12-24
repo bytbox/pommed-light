@@ -134,7 +134,7 @@ mbp_dbus_listen(int timeout)
       if (msg == NULL)
 	return;
 
-      if (dbus_message_is_signal(msg, "mbp.eventd.signal.ambientLight", "ambientLight"))
+      if (dbus_message_is_signal(msg, "org.pommed.signal.ambientLight", "ambientLight"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_UINT32, &mbp.ambient_l,
@@ -144,7 +144,7 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &mbp.ambient_max,
 				DBUS_TYPE_INVALID);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.lcdBacklight", "lcdBacklight"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.lcdBacklight", "lcdBacklight"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_UINT32, &mbp.lcd_lvl,
@@ -152,7 +152,7 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &mbp.lcd_max,
 				DBUS_TYPE_INVALID);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.kbdBacklight", "kbdBacklight"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.kbdBacklight", "kbdBacklight"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_UINT32, &mbp.kbd_lvl,
@@ -160,7 +160,7 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &mbp.kbd_max,
 				DBUS_TYPE_INVALID);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.audioVolume", "audioVolume"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.audioVolume", "audioVolume"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_UINT32, &mbp.snd_lvl,
@@ -168,7 +168,7 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &mbp.snd_max,
 				DBUS_TYPE_INVALID);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.audioMute", "audioMute"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.audioMute", "audioMute"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_BOOLEAN, &mbp.snd_mute,

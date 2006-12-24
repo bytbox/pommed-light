@@ -274,7 +274,7 @@ mbp_dbus_listen(gpointer userdata)
       if (msg == NULL)
 	return TRUE;
 
-      if (dbus_message_is_signal(msg, "mbp.eventd.signal.lcdBacklight", "lcdBacklight"))
+      if (dbus_message_is_signal(msg, "org.pommed.signal.lcdBacklight", "lcdBacklight"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_UINT32, &cur,
@@ -286,7 +286,7 @@ mbp_dbus_listen(gpointer userdata)
 
 	  show_window(IMG_LCD_BCK, _("LCD backlight level"), ratio);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.kbdBacklight", "kbdBacklight"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.kbdBacklight", "kbdBacklight"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_UINT32, &cur,
@@ -298,7 +298,7 @@ mbp_dbus_listen(gpointer userdata)
 
 	  show_window(IMG_KBD_BCK, _("Keyboard backlight level"), ratio);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.audioVolume", "audioVolume"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.audioVolume", "audioVolume"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_UINT32, &cur,
@@ -316,7 +316,7 @@ mbp_dbus_listen(gpointer userdata)
 	  else
 	    show_window(IMG_AUDIO_VOL_OFF, _("Sound volume (muted)"), ratio);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.audioMute", "audioMute"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.audioMute", "audioMute"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_BOOLEAN, &mbp.muted,
@@ -327,7 +327,7 @@ mbp_dbus_listen(gpointer userdata)
 	  else
 	    show_window(IMG_AUDIO_MUTE, _("Sound unmuted"), -1.0);
 	}
-      else if (dbus_message_is_signal(msg, "mbp.eventd.signal.cdEject", "cdEject"))
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.cdEject", "cdEject"))
 	{
 	  show_window(IMG_CD_EJECT, _("Eject"), -1.0);
 	}

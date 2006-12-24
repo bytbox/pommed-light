@@ -49,8 +49,8 @@ mbpdbus_send_lcd_backlight(int cur, int prev)
 
   logdebug("DBus lcdBacklight: %d %d\n", cur, prev);
 
-  msg = dbus_message_new_signal("/mbp/eventd/notify/lcdBacklight",
-				"mbp.eventd.signal.lcdBacklight",
+  msg = dbus_message_new_signal("/org/pommed/notify/lcdBacklight",
+				"org.pommed.signal.lcdBacklight",
 				"lcdBacklight");
   if (msg == NULL)
     {
@@ -100,8 +100,8 @@ mbpdbus_send_kbd_backlight(int cur, int prev)
 
   logdebug("DBus kbdBacklight: %d %d\n", cur, prev);
 
-  msg = dbus_message_new_signal("/mbp/eventd/notify/kbdBacklight",
-				"mbp.eventd.signal.kbdBacklight",
+  msg = dbus_message_new_signal("/org/pommed/notify/kbdBacklight",
+				"org.pommed.signal.kbdBacklight",
 				"kbdBacklight");
   if (msg == NULL)
     {
@@ -151,8 +151,8 @@ mbpdbus_send_ambient_light(int l, int l_prev, int r, int r_prev)
 
   logdebug("DBus ambientLight: %d %d %d %d\n", l, l_prev, r, r_prev);
 
-  msg = dbus_message_new_signal("/mbp/eventd/notify/ambientLight",
-				"mbp.eventd.signal.ambientLight",
+  msg = dbus_message_new_signal("/org/pommed/notify/ambientLight",
+				"org.pommed.signal.ambientLight",
 				"ambientLight");
   if (msg == NULL)
     {
@@ -204,8 +204,8 @@ mbpdbus_send_audio_volume(int cur, int prev)
 
   logdebug("DBus audioVolume: %d %d\n", cur, prev);
 
-  msg = dbus_message_new_signal("/mbp/eventd/notify/audioVolume",
-				"mbp.eventd.signal.audioVolume",
+  msg = dbus_message_new_signal("/org/pommed/notify/audioVolume",
+				"org.pommed.signal.audioVolume",
 				"audioVolume");
   if (msg == NULL)
     {
@@ -255,8 +255,8 @@ mbpdbus_send_audio_mute(int mute)
 
   logdebug("DBus audioMute: %d\n", mute);
 
-  msg = dbus_message_new_signal("/mbp/eventd/notify/audioMute",
-				"mbp.eventd.signal.audioMute",
+  msg = dbus_message_new_signal("/org/pommed/notify/audioMute",
+				"org.pommed.signal.audioMute",
 				"audioMute");
   if (msg == NULL)
     {
@@ -304,8 +304,8 @@ mbpdbus_send_cd_eject(void)
 
   logdebug("DBus CD eject\n");
 
-  msg = dbus_message_new_signal("/mbp/eventd/notify/cdEject",
-				"mbp.eventd.signal.cdEject",
+  msg = dbus_message_new_signal("/org/pommed/notify/cdEject",
+				"org.pommed.signal.cdEject",
 				"cdEject");
   if (msg == NULL)
     {
@@ -588,15 +588,15 @@ mbpdbus_process_requests(void)
 	  break;
 	}
 
-      if (dbus_message_is_method_call(msg, "mbp.eventd.lcdBacklight", "getLevel"))
+      if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "getLevel"))
 	process_lcd_level_call(msg);
-      else if (dbus_message_is_method_call(msg, "mbp.eventd.kbdBacklight", "getLevel"))
+      else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "getLevel"))
 	process_kbd_level_call(msg);
-      else if (dbus_message_is_method_call(msg, "mbp.eventd.ambient", "getLevel"))
+      else if (dbus_message_is_method_call(msg, "org.pommed.ambient", "getLevel"))
 	process_ambient_level_call(msg);
-      else if (dbus_message_is_method_call(msg, "mbp.eventd.audio", "getVolume"))
+      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getVolume"))
 	process_audio_volume_call(msg);
-      else if (dbus_message_is_method_call(msg, "mbp.eventd.audio", "getMute"))
+      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getMute"))
 	process_audio_mute_call(msg);
       else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
 	{
@@ -642,7 +642,7 @@ mbpdbus_init(void)
 
   dbus_connection_set_exit_on_disconnect(conn, FALSE);
 
-  ret = dbus_bus_request_name(conn, "mbp.eventd", 0, &err);
+  ret = dbus_bus_request_name(conn, "org.pommed", 0, &err);
 
   if (dbus_error_is_set(&err))
     {
