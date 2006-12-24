@@ -39,6 +39,12 @@ audio.o: audio.c audio.h gpomme.h
 	@echo Building $@...
 	@msgfmt --statistics -o $@ $<
 
+updatepo:
+	xgettext -L C -k_ -o po/gpomme.pot $(SOURCES)
+	for po in $(POFILES); do \
+		msgmerge -U $$po po/gpomme.pot; \
+	done
+
 clean:
 	rm -f gpomme $(OBJS) $(MOFILES)
 	rm -f *~ po/*~
