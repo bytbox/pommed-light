@@ -1,5 +1,6 @@
 version 1.0:
 	- Added fnmode setting
+	- Added DBus support: signals and get methods
 
 version 0.9:
 	- Added preliminary audio support: increase and decrease PCM, mute and
