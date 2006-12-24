@@ -16,15 +16,16 @@ enum
     IMG_NIMG /* Keep this one last */
   };
 
-struct mbpgtk_theme
+struct gpomme_theme
 {
-  int width, height;
+  int width;
+  int height;
   GdkPixbuf *background;
 
   GtkWidget *images[IMG_NIMG];
 };
 
-extern struct mbpgtk_theme theme;
+extern struct gpomme_theme theme;
 
 
 int theme_load(const char *name);

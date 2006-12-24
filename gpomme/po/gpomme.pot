@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-21 15:58+0100\n"
+"POT-Creation-Date: 2006-12-24 12:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,30 +16,30 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: mbpgtk.c:273
+#: gpomme.c:287
 msgid "LCD backlight level"
 msgstr ""
 
-#: mbpgtk.c:285
+#: gpomme.c:299
 msgid "Keyboard backlight level"
 msgstr ""
 
-#: mbpgtk.c:298
+#: gpomme.c:313
 msgid "Sound volume"
 msgstr ""
 
-#: mbpgtk.c:300
+#: gpomme.c:317
 msgid "Sound volume (muted)"
 msgstr ""
 
-#: mbpgtk.c:309
+#: gpomme.c:326
 msgid "Sound muted"
 msgstr ""
 
-#: mbpgtk.c:311
+#: gpomme.c:328
 msgid "Sound unmuted"
 msgstr ""
 
-#: mbpgtk.c:315
+#: gpomme.c:332
 msgid "Eject"
 msgstr ""

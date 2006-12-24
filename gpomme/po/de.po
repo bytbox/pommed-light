@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mbpgtk 0.3\n"
-"Report-Msgid-Bugs-To: Soeren SONNENBURG <debian@nn7.de>\n"
-"POT-Creation-Date: 2006-12-21 17:58+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-12-24 12:29+0100\n"
 "PO-Revision-Date: 2006-12-21 18:23+0100\n"
 "Last-Translator: Soeren SONNENBURG <debian@nn7.de>\n"
 "Language-Team: german <de@li.org>\n"
@@ -15,30 +15,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: mbpgtk.c:273
+#: gpomme.c:287
 msgid "LCD backlight level"
 msgstr "Helligkeit"
 
-#: mbpgtk.c:285
+#: gpomme.c:299
 msgid "Keyboard backlight level"
 msgstr "Tastatur Beleuchtung"
 
-#: mbpgtk.c:298
+#: gpomme.c:313
 msgid "Sound volume"
 msgstr "Lautstärke"
 
-#: mbpgtk.c:300
+#: gpomme.c:317
 msgid "Sound volume (muted)"
 msgstr "Lautstärke (Ton aus)"
 
-#: mbpgtk.c:309
+#: gpomme.c:326
 msgid "Sound muted"
 msgstr "Ton aus"
 
-#: mbpgtk.c:311
+#: gpomme.c:328
 msgid "Sound unmuted"
 msgstr "Ton an"
 
-#: mbpgtk.c:315
+#: gpomme.c:332
 msgid "Eject"
 msgstr "CD Auswerfen"

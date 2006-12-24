@@ -1,5 +1,5 @@
 /*
- * mbpgtk - GTK application for use with mbpeventd
+ * gpomme - GTK application for use with pommed
  *
  * $Id$
  *
@@ -35,7 +35,7 @@
 
 #include <dbus/dbus.h>
 
-#include "mbpgtk.h"
+#include "gpomme.h"
 #include "theme.h"
 #include "audio.h"
 
@@ -366,8 +366,8 @@ int main(int argc, char **argv)
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
 
-  bindtextdomain("mbpgtk", "/usr/share/locale");
-  textdomain("mbpgtk");
+  bindtextdomain("gpomme", "/usr/share/locale");
+  textdomain("gpomme");
 
   ret = audio_init_thread();
   if (ret < 0)

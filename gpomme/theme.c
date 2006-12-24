@@ -1,5 +1,5 @@
 /*
- * mbpgtk - GTK application for use with mbpeventd
+ * gpomme - GTK application for use with pommed
  *
  * $Id$
  *
@@ -29,11 +29,11 @@
 
 #include <gtk/gtk.h>
 
-#include "mbpgtk.h"
+#include "gpomme.h"
 #include "theme.h"
 
 
-struct mbpgtk_theme theme;
+struct gpomme_theme theme;
 
 
 static GtkWidget *

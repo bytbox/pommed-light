@@ -3,23 +3,32 @@ CC = gcc
 GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
 GTK_LIBS = $(shell pkg-config --libs gtk+-2.0)
 
-CFLAGS = -g -O2 -Wall -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include $(GTK_CFLAGS)
-LDFLAGS = -lasound -ldbus-1 -laudiofile -lpthread $(GTK_LIBS)
+DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags)
+DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 
-SOURCES = mbpgtk.c theme.c audio.c ../dbus-client/dbus-client.c
+ALSA_CFLAGS = $(shell pkg-config alsa --cflags)
+ALSA_LIBS = $(shell pkg-config alsa --libs)
+
+AUDIOFILE_CFLAGS = $(shell pkg-config audiofile --cflags)
+AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
+
+CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CFLAGS)
+LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS)
+
+SOURCES = gpomme.c theme.c audio.c ../dbus-client/dbus-client.c
 
 OBJS = $(SOURCES:%.c=%.o)
 
-mbpgtk: $(OBJS) $(LIBS)
+gpomme: $(OBJS) $(LIBS)
 
-mbpgtk.o: mbpgtk.c mbpgtk.h theme.h audio.h ../dbus-client/dbus-client.h
+gpomme.o: gpomme.c gpomme.h theme.h audio.h ../dbus-client/dbus-client.h
 
-theme.o: theme.c theme.h mbpgtk.h
+theme.o: theme.c theme.h gpomme.h
 
-audio.o: audio.c audio.h mbpgtk.h
+audio.o: audio.c audio.h gpomme.h
 
 ../dbus-client/dbus-client.o: ../dbus-client/dbus-client.c ../dbus-client/dbus-client.h
 
 clean:
-	rm -f mbpgtk $(OBJS)
+	rm -f gpomme $(OBJS)
 	rm -f *~

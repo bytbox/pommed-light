@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: mbpgtk 0.3\n"
-"Report-Msgid-Bugs-To: jb@jblache.org\n"
-"POT-Creation-Date: 2006-12-21 15:58+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-12-24 12:29+0100\n"
 "PO-Revision-Date: 2006-12-21 16:20+0100\n"
 "Last-Translator: Julien BLACHE <jb@jblache.org>\n"
 "Language-Team: french <fr@li.org>\n"
@@ -15,30 +15,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: mbpgtk.c:273
+#: gpomme.c:287
 msgid "LCD backlight level"
 msgstr "Luminosité écran"
 
-#: mbpgtk.c:285
+#: gpomme.c:299
 msgid "Keyboard backlight level"
 msgstr "Éclairage clavier"
 
-#: mbpgtk.c:298
+#: gpomme.c:313
 msgid "Sound volume"
 msgstr "Volume sonore"
 
-#: mbpgtk.c:300
+#: gpomme.c:317
 msgid "Sound volume (muted)"
 msgstr "Volume sonore (muet)"
 
-#: mbpgtk.c:309
+#: gpomme.c:326
 msgid "Sound muted"
 msgstr "Son désactivé"
 
-#: mbpgtk.c:311
+#: gpomme.c:328
 msgid "Sound unmuted"
 msgstr "Son activé"
 
-#: mbpgtk.c:315
+#: gpomme.c:332
 msgid "Eject"
 msgstr "Éjection"

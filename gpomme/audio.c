@@ -1,5 +1,5 @@
 /*
- * mbpgtk - GTK application for use with mbpeventd
+ * gpomme - GTK application for use with pommed
  *
  * $Id$
  *
@@ -33,7 +33,7 @@
 
 #include <audiofile.h>
 
-#include "mbpgtk.h"
+#include "gpomme.h"
 #include "audio.h"
 
 
