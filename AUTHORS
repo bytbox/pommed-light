@@ -1,0 +1,28 @@
+
+pommed
+------
+
+Written by Julien BLACHE <jb@jblache.org>, with code taken from
+  - Nicolas BOICHAT <nicolas@boichat.ch>
+       for the Radeon X1600 backlight support
+  - Ryan LORTIE <desrt@desrt.ca>
+       for the Intel GMA950 backlight support
+
+The following people contributed to pommed:
+  - Romain BEAUXIS <toots@rastageeks.org>
+       base of the ALSA code
+
+
+gpomme
+------
+
+Soeren SONNENBURG <debian@nn7.de> provided the base for gpomme, based
+on code taken from gtkpbbuttons.
+
+Glue added by Julien BLACHE <jb@jblache.org>.
+
+
+wmpomme
+-------
+
+Written by Julien BLACHE <jb@jblache.org>, based on wmwave.
