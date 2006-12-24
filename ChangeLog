@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.0:
+	- Renamed to pommed in anticipation of the PowerBook support
 	- Added fnmode setting
 	- Added DBus support: signals and get methods
 
