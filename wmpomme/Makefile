@@ -1,19 +1,23 @@
 CC = gcc
-CFLAGS = -g -O2 -Wall -I../dbus-client -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include
-LDFLAGS = -lXpm -lXext -lX11 -ldbus-1
 
-SOURCES = wmgeneral.c wmmbp.c ../dbus-client/dbus-client.c
+DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags)
+DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
+
+CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS)
+LDFLAGS = -lXpm -lXext -lX11 $(DBUS_LIBS)
+
+SOURCES = wmgeneral.c wmpomme.c ../dbus-client/dbus-client.c
 
 OBJS = $(SOURCES:%.c=%.o)
 
-wmmbp: $(OBJS)
+wmpomme: $(OBJS)
 
-wmmbp.o: wmmbp.c wmgeneral.h ../dbus-client/dbus-client.h
+wmpomme.o: wmpomme.c wmgeneral.h wmpomme-master.xpm ../dbus-client/dbus-client.h
 
 wmgeneral.o: wmgeneral.c wmgeneral.h
 
 ../dbus-client/dbus-client.o: ../dbus-client/dbus-client.c ../dbus-client/dbus-client.h
 
 clean:
-	rm -f wmmbp $(OBJS)
+	rm -f wmpomme $(OBJS)
 	rm -f *~

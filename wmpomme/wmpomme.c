@@ -1,5 +1,5 @@
 /*
- * wmmbp.c -- WindowMaker dockapp for use with mbpeventd
+ * wmpomme -- WindowMaker dockapp for use with pommed
  *
  * $Id$
  *
@@ -40,9 +40,9 @@
 #include <dbus/dbus.h>
 
 #include "wmgeneral.h"
-#include "wmmbp-master.xpm"
+#include "wmpomme-master.xpm"
 
-#include "dbus-client.h"
+#include "../dbus-client/dbus-client.h"
 
 
 struct {
@@ -71,7 +71,7 @@ char wmmbp_mask_bits[64*64];
 int wmmbp_mask_width = 64;
 int wmmbp_mask_height = 64;
 
-#define WMMBP_VERSION "0.1"
+#define WMPOMME_VERSION "0.1"
 
 int update_rate = 100;
 
@@ -713,7 +713,7 @@ BlitNum(int num, int x, int y)
 void
 usage(void)
 {
-  fprintf(stderr, "wmmbp v" WMMBP_VERSION "\n");
+  fprintf(stderr, "wmpomme v" WMPOMME_VERSION "\n");
   fprintf(stderr, "Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
   fprintf(stderr, "Based on wmwave by Carsten Schuermann <carsten@schuermann.org>\n\n");
   fprintf(stderr, "Usage:\n");
@@ -724,6 +724,6 @@ usage(void)
 void
 printversion(void)
 {
-  fprintf(stderr, "wmmbp v%s\n", WMMBP_VERSION);
+  fprintf(stderr, "wmpomme v%s\n", WMPOMME_VERSION);
   fprintf(stderr, "Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
 }
