@@ -31,6 +31,9 @@
 #include "ambient.h"
 
 
+struct _ambient_info ambient_info;
+
+
 void
 ambient_get(int *r, int *l)
 {
@@ -45,15 +48,23 @@ ambient_get(int *r, int *l)
       *r = -1;
       *l = -1;
 
+      ambient_info.right = 0;
+      ambient_info.left = 0;
+
       return;
     }
 
   ret = read(fd, buf, 16);
 
+  close(fd);
+
   if ((ret <= 0) || (ret > 15))
     {
       *r = -1;
       *l = -1;
+
+      ambient_info.right = 0;
+      ambient_info.left = 0;
 
       return;
     }
@@ -68,6 +79,18 @@ ambient_get(int *r, int *l)
   *l = atoi(p);
 
   logdebug("Ambient light: right %d, left %d\n", *r, *l);
-  
-  close(fd);
+
+  ambient_info.right = *r;
+  ambient_info.left = *l;
+}
+
+
+void
+ambient_init(int *r, int *l)
+{
+  ambient_get(r, l);
+
+  ambient_info.max = KBD_AMBIENT_MAX;
+  ambient_info.left = *l;
+  ambient_info.right = *r;
 }

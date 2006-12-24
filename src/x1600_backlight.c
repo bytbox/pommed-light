@@ -42,6 +42,10 @@
 #include "mbpeventd.h"
 #include "conffile.h"
 #include "lcd_backlight.h"
+#include "dbus.h"
+
+
+struct _lcd_bck_info lcd_bck_info;
 
 
 static int fd = -1;
@@ -162,6 +166,10 @@ x1600_backlight_step(int dir)
   x1600_backlight_set((unsigned char)newval);
 
   x1600_backlight_unmap();
+
+  mbpdbus_send_lcd_backlight(newval, val);
+
+  lcd_bck_info.level = newval;
 }
 
 
@@ -208,20 +216,28 @@ x1600_backlight_probe(void)
       return -1;
     }
 
+  lcd_bck_info.max = X1600_BACKLIGHT_MAX;
+
+  ret = x1600_backlight_map();
+  if (ret < 0)
+    {
+      lcd_bck_info.level = 0;
+
+      return 0;
+    }
+
   /*
    * Set the initial backlight level
    * The value has been sanity checked already
    */
   if (lcd_x1600_cfg.init > -1)
     {
-      ret = x1600_backlight_map();
-      if (ret < 0)
-	return 0;
-
       x1600_backlight_set((unsigned char)lcd_x1600_cfg.init);
-
-      x1600_backlight_unmap();
     }
+
+  lcd_bck_info.level = x1600_backlight_get();
+
+  x1600_backlight_unmap();
 
   return 0;
 }

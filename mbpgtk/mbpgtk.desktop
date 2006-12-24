@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=mbpeventd GTK client
+Comment=A graphical client for mbpeventd
+Exec=mbpgtk
+StartupNotify=true
+Type=Application
+Categories=Application;Utility

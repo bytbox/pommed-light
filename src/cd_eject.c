@@ -30,6 +30,7 @@
 #include "mbpeventd.h"
 #include "conffile.h"
 #include "cd_eject.h"
+#include "dbus.h"
 
 
 void
@@ -51,7 +52,11 @@ cd_eject(void)
       /* 127 means "shell not available" */
       if (WEXITSTATUS(ret) != 127)
 	logmsg(LOG_WARNING, "CD ejection failed, eject returned %d", WEXITSTATUS(ret));
+
+      return;
     }
+
+  mbpdbus_send_cd_eject();
 }
 
 

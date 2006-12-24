@@ -1,0 +1,44 @@
+# Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
+# Copyright (C) 2006, Julien BLACHE <jb@jblache.org>
+# This file is distributed under the same license as the PACKAGE package.
+# Julien BLACHE <jb@jblache.org>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: mbpgtk 0.3\n"
+"Report-Msgid-Bugs-To: Soeren SONNENBURG <debian@nn7.de>\n"
+"POT-Creation-Date: 2006-12-21 17:58+0100\n"
+"PO-Revision-Date: 2006-12-21 18:23+0100\n"
+"Last-Translator: Soeren SONNENBURG <debian@nn7.de>\n"
+"Language-Team: german <de@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: mbpgtk.c:273
+msgid "LCD backlight level"
+msgstr "Helligkeit"
+
+#: mbpgtk.c:285
+msgid "Keyboard backlight level"
+msgstr "Tastatur Beleuchtung"
+
+#: mbpgtk.c:298
+msgid "Sound volume"
+msgstr "Lautstärke"
+
+#: mbpgtk.c:300
+msgid "Sound volume (muted)"
+msgstr "Lautstärke (Ton aus)"
+
+#: mbpgtk.c:309
+msgid "Sound muted"
+msgstr "Ton aus"
+
+#: mbpgtk.c:311
+msgid "Sound unmuted"
+msgstr "Ton an"
+
+#: mbpgtk.c:315
+msgid "Eject"
+msgstr "CD Auswerfen"

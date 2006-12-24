@@ -66,6 +66,7 @@
 #include "mbpeventd.h"
 #include "conffile.h"
 #include "lcd_backlight.h"
+#include "dbus.h"
 
 
 static unsigned int GMA950_BACKLIGHT_MAX;
@@ -197,6 +198,10 @@ gma950_backlight_step(int dir)
   gma950_backlight_set(newval);
 
   gma950_backlight_unmap();
+
+  mbpdbus_send_lcd_backlight(newval, val);
+
+  lcd_bck_info.level = newval;
 }
 
 
@@ -284,6 +289,9 @@ gma950_backlight_probe(void)
   /* Set the initial backlight level */
   if (lcd_gma950_cfg.init > -1)
     gma950_backlight_set(lcd_gma950_cfg.init);
+
+  lcd_bck_info.max = GMA950_BACKLIGHT_MAX;
+  lcd_bck_info.level = gma950_backlight_get();
 
   gma950_backlight_unmap();
 

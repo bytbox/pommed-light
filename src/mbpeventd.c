@@ -47,6 +47,7 @@
 #include "evdev.h"
 #include "conffile.h"
 #include "audio.h"
+#include "dbus.h"
 
 
 /* Machine-specific operations */
@@ -353,6 +354,12 @@ main (int argc, char **argv)
       logmsg(LOG_WARNING, "Audio initialization failed, audio support disabled");
     }
 
+  ret = mbpdbus_init();
+  if (ret < 0)
+    {
+      logmsg(LOG_WARNING, "Could not connect to DBus system bus");
+    }
+
   if (!debug)
     {
       /*
@@ -470,10 +477,14 @@ main (int argc, char **argv)
 	  kbd_backlight_ambient_check();
 	  gettimeofday(&tv_als, NULL);
 	}
+
+      /* Process DBus requests */
+      mbpdbus_process_requests();
     }
 
   evdev_close(&fds, nfds);
-  unlink(PIDFILE);
+
+  mbpdbus_cleanup();
 
   config_cleanup();
 
@@ -481,6 +492,8 @@ main (int argc, char **argv)
 
   if (!debug)
     closelog();
+
+  unlink(PIDFILE);
 
   return 0;
 }

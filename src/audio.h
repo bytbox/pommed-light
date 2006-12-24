@@ -6,6 +6,16 @@
 #define __AUDIO_H__
 
 
+struct _audio_info
+{
+  int level;
+  int max;
+  int muted;
+};
+
+extern struct _audio_info audio_info;
+
+
 void
 audio_step(int dir);
 

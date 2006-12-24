@@ -6,6 +6,15 @@
 #define __LCD_BACKLIGHT_H__
 
 
+struct _lcd_bck_info
+{
+  int level;
+  int max;
+};
+
+extern struct _lcd_bck_info lcd_bck_info;
+
+
 /* x1600_backlight.c */
 #define X1600_BACKLIGHT_OFF       0
 #define X1600_BACKLIGHT_MAX       255

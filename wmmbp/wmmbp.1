@@ -1,0 +1,32 @@
+.TH WMMBP 1 "2006-12-16"
+.SH NAME
+wmmbp \- WindowMaker dockapp for use with mbpeventd
+
+.SH SYNOPSIS
+.B wmmbp
+.BI [\-r \ time ]
+.B [\-v]
+.SH DESCRIPTION
+.B wmmbp
+displays, as a WindowMaker dockapp, the state of the devices controlled by
+.B mbpeventd
+
+.SH OPTIONS
+.TP
+.BI \-v
+Display the version
+.TP
+.BI \-r \ time
+Sets the update interval (in milliseconds), default: 100
+.TP
+.BI \-display \ display
+This option specifies the X server to contact; see X(1).
+
+.SH AUTHOR
+.B wmmbp
+was written by Julien BLACHE <jb@jblache.org>, based on
+.B wmwave
+by Carsten Schuermann <carsten@schuermann.org>
+
+.SH SEE ALSO
+mbpeventd(1)

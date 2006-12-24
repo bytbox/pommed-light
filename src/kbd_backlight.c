@@ -35,7 +35,10 @@
 #include "conffile.h"
 #include "kbd_backlight.h"
 #include "ambient.h"
+#include "dbus.h"
 
+
+struct _kbd_bck_info kbd_bck_info;
 
 static struct
 {
@@ -135,6 +138,10 @@ kbd_backlight_set(int val)
   fclose(fp);
 
   logdebug("KBD backlight value set to %d\n", val);
+
+  mbpdbus_send_kbd_backlight(val, curval);
+
+  kbd_bck_info.level = val;
 }
 
 void
@@ -190,6 +197,13 @@ kbd_backlight_init(void)
       kbd_bck_status.r_sens = 0;
       kbd_bck_status.l_sens = 0;
 
+      kbd_bck_info.level = 0;
+      kbd_bck_info.level = 0;
+
+      ambient_info.left = 0;
+      ambient_info.right = 0;
+      ambient_info.max = 0;
+
       return;
     }
 
@@ -197,7 +211,10 @@ kbd_backlight_init(void)
   if (kbd_bck_status.value < 0)
     kbd_bck_status.value = 0;
 
-  ambient_get(&kbd_bck_status.r_sens, &kbd_bck_status.l_sens);
+  kbd_bck_info.level = kbd_bck_status.value;
+  kbd_bck_info.max = KBD_BACKLIGHT_MAX;
+
+  ambient_init(&kbd_bck_status.r_sens, &kbd_bck_status.l_sens);
 }
 
 void
@@ -240,6 +257,8 @@ kbd_backlight_ambient_check(void)
 	  kbd_backlight_set(KBD_BACKLIGHT_OFF);
 	}
     }
+
+  mbpdbus_send_ambient_light(amb_l, kbd_bck_status.l_sens, amb_r, kbd_bck_status.r_sens);
 
   kbd_bck_status.r_sens = amb_r;
   kbd_bck_status.l_sens = amb_l;

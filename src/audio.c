@@ -28,7 +28,10 @@
 #include "mbpeventd.h"
 #include "conffile.h"
 #include "audio.h"
+#include "dbus.h"
 
+
+struct _audio_info audio_info;
 
 static snd_mixer_t *mixer_hdl;
 static snd_mixer_elem_t *vol_elem;
@@ -87,6 +90,10 @@ audio_step(int dir)
 
   if (snd_mixer_selem_is_playback_mono(vol_elem) == 0)
     snd_mixer_selem_set_playback_volume(vol_elem, 1, newvol);
+
+  mbpdbus_send_audio_volume(newvol, vol);
+
+  audio_info.level = newvol;
 }
 
 
@@ -118,6 +125,10 @@ audio_toggle_mute(void)
 
   if (head_elem != NULL)
     audio_set_mute_elem(head_elem);
+
+  mbpdbus_send_audio_mute(!play);
+
+  audio_info.muted = !play;
 }
 
 
@@ -128,6 +139,7 @@ audio_init(void)
   snd_mixer_selem_id_t *sid;
 
   double dvol;
+  long vol;
 
   int ret;
 
@@ -223,15 +235,23 @@ audio_init(void)
   if (audio_cfg.init > -1)
     {
       dvol *= (double)audio_cfg.init;
+      vol = (long)dvol;
 
-      if ((long)dvol > vol_max)
-	dvol = (double)vol_max;
+      if (vol > vol_max)
+	vol = vol_max;
 
-      snd_mixer_selem_set_playback_volume(vol_elem, 0, (long)dvol);
+      snd_mixer_selem_set_playback_volume(vol_elem, 0, vol);
 
       if (snd_mixer_selem_is_playback_mono(vol_elem) == 0)
-	snd_mixer_selem_set_playback_volume(vol_elem, 1, (long)dvol);      
+	snd_mixer_selem_set_playback_volume(vol_elem, 1, vol);      
     }
+
+  snd_mixer_handle_events(mixer_hdl);
+  snd_mixer_selem_get_playback_volume(vol_elem, 0, &vol);
+
+  audio_info.level = vol;
+  audio_info.max = vol_max;
+  audio_info.muted = !play;
 
   return 0;
 }

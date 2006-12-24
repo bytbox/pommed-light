@@ -12,6 +12,15 @@
 #define KBD_BACKLIGHT_MAX       255
 
 
+struct _kbd_bck_info
+{
+  int level;
+  int max;
+};
+
+extern struct _kbd_bck_info kbd_bck_info;
+
+
 int
 has_kbd_backlight(void);
 
