@@ -70,6 +70,7 @@ DBusError dbus_err;
 DBusConnection *conn;
 
 
+/* Timer callback */
 gboolean
 hide_window(gpointer userdata)
 {
@@ -240,12 +241,69 @@ create_window(void)
 }
 
 
+void
+audio_getmute_cb(DBusPendingCall *pending, void *status)
+{
+  DBusMessage *msg;
+
+  msg = dbus_pending_call_steal_reply(pending);
+
+  if (msg == NULL)
+    {
+      printf("Could not steal reply\n");
+
+      dbus_pending_call_unref(pending);
+
+      return;
+    }
+
+  dbus_pending_call_unref(pending);
+
+  if (!mbp_dbus_check_error(msg))
+    {
+      dbus_message_get_args(msg, &dbus_err,
+			    DBUS_TYPE_BOOLEAN, &mbp.muted,
+			    DBUS_TYPE_INVALID);
+    }
+  else
+    *(int *)status = -1;
+
+  dbus_message_unref(msg);
+}
+
+
+int
+mbp_dbus_connect(void)
+{
+  unsigned int signals;
+  int ret;
+  int cbret;
+
+  signals = MBP_DBUS_SIG_LCD | MBP_DBUS_SIG_KBD
+    | MBP_DBUS_SIG_VOL | MBP_DBUS_SIG_MUTE
+    | MBP_DBUS_SIG_EJECT;
+
+  conn = mbp_dbus_init(&dbus_err, signals);
+
+  if (conn == NULL)
+    return -1;
+
+  ret = mbp_call_audio_getmute(audio_getmute_cb, &cbret);
+  if ((ret < 0) || (cbret < 0))
+    {
+      printf("audio getMute call failed !\n");
+    }
+
+  return 0;
+}
+
+
 gboolean
 mbp_dbus_listen(gpointer userdata)
 {
-  unsigned int signals;
-
   DBusMessage *msg;
+
+  int ret;
 
   int scratch;
   int cur;
@@ -255,13 +313,9 @@ mbp_dbus_listen(gpointer userdata)
   /* Disconnected, try to reconnect */
   if (conn == NULL)
     {
-      signals = MBP_DBUS_SIG_LCD | MBP_DBUS_SIG_KBD
-                | MBP_DBUS_SIG_VOL | MBP_DBUS_SIG_MUTE
-                | MBP_DBUS_SIG_EJECT;
+      ret = mbp_dbus_connect();
 
-      conn = mbp_dbus_init(&dbus_err, signals);
-
-      if (conn == NULL)
+      if (ret < 0)
 	return TRUE;
     }
 
@@ -358,10 +412,7 @@ int main(int argc, char **argv)
 {
   int ret;
 
-  /* The DBus connection will be initiated when
-   * mbp_dbus_listen() is called for the first time
-   */
-  conn = NULL;
+  mbp_dbus_connect();
 
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
