@@ -40,7 +40,7 @@ mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h co
 
 mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
 
-mactel/ambient.o: mactel/ambient.c ambient.h pommed.h
+mactel/ambient.o: mactel/ambient.c ambient.h pommed.h dbus.h
 
 clean:
 	rm -f pommed $(OBJS)
