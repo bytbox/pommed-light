@@ -31,11 +31,11 @@
 
 #include <errno.h>
 
-#include "pommed.h"
-#include "conffile.h"
-#include "kbd_backlight.h"
-#include "ambient.h"
-#include "dbus.h"
+#include "../pommed.h"
+#include "../conffile.h"
+#include "../kbd_backlight.h"
+#include "../ambient.h"
+#include "../dbus.h"
 
 
 struct _kbd_bck_info kbd_bck_info;

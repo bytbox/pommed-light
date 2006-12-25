@@ -27,8 +27,8 @@
 #include <fcntl.h>
 #include <string.h>
 
-#include "pommed.h"
-#include "ambient.h"
+#include "../pommed.h"
+#include "../ambient.h"
 
 
 struct _ambient_info ambient_info;

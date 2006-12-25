@@ -41,10 +41,10 @@
 
 #include <pci/pci.h>
 
-#include "pommed.h"
-#include "conffile.h"
-#include "lcd_backlight.h"
-#include "dbus.h"
+#include "../pommed.h"
+#include "../conffile.h"
+#include "../lcd_backlight.h"
+#include "../dbus.h"
 
 
 struct _lcd_bck_info lcd_bck_info;

@@ -14,9 +14,9 @@ LDFLAGS = -lz -lsmbios $(CONFUSE_LIBS) $(DBUS_LIBS) $(ALSA_LIBS)
 
 LIBS = /usr/lib/libpci.a
 
-SOURCES = pommed.c kbd_backlight.c ambient.c cd_eject.c evdev.c \
-		x1600_backlight.c gma950_backlight.c conffile.c audio.c \
-		dbus.c
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
+		mactel/x1600_backlight.c mactel/gma950_backlight.c \
+		mactel/kbd_backlight.c mactel/ambient.c
 
 OBJS = $(SOURCES:%.c=%.o)
 
@@ -24,17 +24,9 @@ pommed: $(OBJS) $(LIBS)
 
 pommed.o: pommed.c pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h dbus.h
 
-kbd_backlight.o: kbd_backlight.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
-
-ambient.o: ambient.c ambient.h pommed.h
-
 cd_eject.o: cd_eject.c cd_eject.h pommed.h conffile.h dbus.h
 
 evdev.o: evdev.c evdev.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h
-
-x1600_backlight.o: x1600_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
-
-gma950_backlight.o: gma950_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 conffile.o: conffile.c conffile.h pommed.h lcd_backlight.h kbd_backlight.h cd_eject.h audio.h
 
@@ -42,6 +34,14 @@ audio.o: audio.c audio.h pommed.h conffile.h dbus.h
 
 dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 
+mactel/x1600_backlight.o: mactel/x1600_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+
+mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+
+mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
+
+mactel/ambient.o: mactel/ambient.c ambient.h pommed.h
+
 clean:
 	rm -f pommed $(OBJS)
-	rm -f *~
+	rm -f *~ mactel/*~
