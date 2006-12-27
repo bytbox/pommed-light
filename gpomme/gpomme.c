@@ -123,6 +123,9 @@ draw_window_bg(void)
 		   theme.width, theme.height, GDK_RGB_DITHER_NONE, 0, 0);
 
   gdk_window_set_back_pixmap(GTK_WIDGET(window)->window, pixmap, FALSE);
+
+  g_object_unref(pixbuf);
+  g_object_unref(pixmap);
 }
 
 void
