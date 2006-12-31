@@ -406,6 +406,19 @@ mbp_dbus_listen(gpointer userdata)
 }
 
 
+static void
+usage(void)
+{
+  printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
+  printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org> and others\n");
+
+  printf("Usage:\n");
+  printf("\tgpomme\t\t-- start gpomme with the default theme\n");
+  printf("\tgpomme -v\t-- print version and exit\n");
+  printf("\tgpomme -t Tango\t-- start gpomme with the Tango theme\n");
+}
+
+
 void sig_int_term_handler(int signo)
 {
   gtk_main_quit();
@@ -413,8 +426,34 @@ void sig_int_term_handler(int signo)
 
 int main(int argc, char **argv)
 {
+  int c;
   int ret;
   char *theme_name;
+
+  theme_name = DEFAULT_THEME;
+
+  while ((c = getopt(argc, argv, "t:v")) != -1)
+    {
+      switch (c)
+	{
+	  case 't':
+	    theme_name = optarg;
+	    break;
+
+	  case 'v':
+	    printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
+	    printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org> and others\n");
+
+	    exit(0);
+	    break;
+
+	  default:
+	    usage();
+
+	    exit(-1);
+	    break;
+	}
+    }
 
   mbp_dbus_connect();
 
@@ -429,12 +468,6 @@ int main(int argc, char **argv)
     printf("Failed to create audio thread\n");
 
   gtk_init(&argc, &argv);
-
-
-  if (argc > 1)
-    theme_name = argv[1];
-  else
-    theme_name = DEFAULT_THEME;
 
   ret = theme_load(theme_name);
 

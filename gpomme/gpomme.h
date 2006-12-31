@@ -7,4 +7,6 @@
 
 #define THEME_BASE    "/usr/share/gpomme/themes"
 
+#define M_VERSION     "0.3"
+
 #endif /* !__GPOMME_H__ */
