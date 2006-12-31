@@ -1,6 +1,6 @@
 CC = gcc
 
-DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags)
+DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
 DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS)

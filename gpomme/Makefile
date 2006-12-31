@@ -3,7 +3,7 @@ CC = gcc
 GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
 GTK_LIBS = $(shell pkg-config --libs gtk+-2.0)
 
-DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags)
+DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
 DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 
 ALSA_CFLAGS = $(shell pkg-config alsa --cflags)
