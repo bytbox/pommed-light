@@ -1,6 +1,11 @@
 ChangeLog for pommed
 --------------------
 
+version 1.1:
+	- gpomme: added theme selection; pass the theme name as the first
+	arg.
+	- gpomme: added the Tango theme provided by Daniel G. Siegel.
+
 version 1.0:
 	- Renamed to pommed in anticipation of the PowerBook support
 	- Added fnmode setting

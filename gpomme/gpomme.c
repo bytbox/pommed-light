@@ -414,6 +414,7 @@ void sig_int_term_handler(int signo)
 int main(int argc, char **argv)
 {
   int ret;
+  char *theme_name;
 
   mbp_dbus_connect();
 
@@ -429,9 +430,20 @@ int main(int argc, char **argv)
 
   gtk_init(&argc, &argv);
 
-  ret = theme_load("CrystalLarge");
+
+  if (argc > 1)
+    theme_name = argv[1];
+  else
+    theme_name = DEFAULT_THEME;
+
+  ret = theme_load(theme_name);
+
   if (ret < 0)
-    exit(1);
+    {
+      fprintf(stderr, "Failed to load theme '%s'\n", theme_name);
+
+      exit(1);
+    }
 
   create_window();
 

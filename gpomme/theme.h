@@ -4,6 +4,8 @@
 #ifndef __THEME_H__
 #define __THEME_H__
 
+#define DEFAULT_THEME     "CrystalLarge"
+
 enum
   {
     IMG_LCD_BCK = 0,
