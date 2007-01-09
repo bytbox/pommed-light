@@ -87,30 +87,34 @@ draw_window_bg(void)
 {
   GtkWidget *window = mbp_w.window;
 
+  GdkWindow *root_win;
   GdkScreen *screen;
+  GdkRectangle mon_size;
   GdkPixbuf *pixbuf = NULL;
   GdkPixmap *pixmap = NULL;
 
   int x, y;
+  int monitor;
+
+  screen = gtk_window_get_screen(GTK_WINDOW(window));
+
+  /* Find which monitor the mouse cursor is on */
+  root_win = gdk_screen_get_root_window(screen);
+  gdk_window_get_pointer(root_win, &x, &y, NULL);
+
+  monitor = gdk_screen_get_monitor_at_point(screen, x, y);
+  gdk_screen_get_monitor_geometry(screen, monitor, &mon_size);
+
+  /* Move the window to the bottom center of the screen */
+  x = mon_size.x + (mon_size.width - theme.width) / 2;
+  y = mon_size.y + (mon_size.height - 100 - theme.height);
+
+  gtk_window_move(GTK_WINDOW(window), x, y);
+
 
   /* Redraw the window background, compositing the background pixmap with
    * the portion of the root window that's beneath the window
    */
-#if 0
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-  gtk_window_get_position(GTK_WINDOW(window), &x, &y);
-#endif
-
-  /* Move the window to the bottom center of the screen */
-  screen = gtk_window_get_screen(GTK_WINDOW(window));
-  x = gdk_screen_get_width(screen);
-  y = gdk_screen_get_height(screen);
-
-  x = (x - theme.width) / 2;
-  y = y - 100 - theme.height;
-
-  gtk_window_move(GTK_WINDOW(window), x, y);
-
   pixbuf = gdk_pixbuf_get_from_drawable(NULL,
 					gdk_get_default_root_window(), gdk_colormap_get_system(),
 					x, y, 0, 0, theme.width, theme.height);
