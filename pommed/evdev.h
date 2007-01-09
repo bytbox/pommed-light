@@ -1,8 +1,27 @@
+/*
+ * $Id$
+ */
+
 #ifndef __EVDEV_H__
 #define __EVDEV_H__
 
 
+/****** ADB Devices ******/
+
+/* Keyboard as found on the PowerBook3,2 */
+#define ADB_PRODUCT_ID_KEYBOARD       0x22c4
+/* Special PowerBook buttons as found on the PowerBook3,2 */
+#define ADB_PRODUCT_ID_PBBUTTONS      0x771f
+
+
+/****** USB Devices ******/
+
 #define USB_VENDOR_ID_APPLE           0x05ac
+
+/* Apple Fountain keyboard + trackpad */
+#define USB_PRODUCT_ID_FOUNTAIN_ANSI  0x020e
+#define USB_PRODUCT_ID_FOUNTAIN_ISO   0x020f
+#define USB_PRODUCT_ID_FOUNTAIN_JIS   0x0210
 
 /* Apple Geyser III keyboard + trackpad */
 #define USB_PRODUCT_ID_GEYSER3_ANSI   0x0217
@@ -45,11 +64,23 @@
 void
 evdev_process_events(int fd);
 
+
+#ifdef __powerpc__
 int
-evdev_is_geyser3(unsigned short vendor, unsigned short product);
+evdev_is_adb(unsigned short *id);
 
 int
-evdev_is_geyser4(unsigned short vendor, unsigned short product);
+evdev_is_fountain(unsigned short *id);
+
+#else
+
+int
+evdev_is_geyser3(unsigned short *id);
+
+int
+evdev_is_geyser4(unsigned short *id);
+#endif /* __powerpc__ */
+
 
 int
 evdev_open(struct pollfd **fds);

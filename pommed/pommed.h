@@ -29,10 +29,17 @@ typedef enum
     MACHINE_ERROR = -1,
     MACHINE_UNKNOWN,
     MACHINE_MAC_UNKNOWN,
+#ifndef __powerpc__
     MACHINE_MACBOOKPRO_1,
     MACHINE_MACBOOKPRO_2,
     MACHINE_MACBOOK_1,
     MACHINE_MACBOOK_2,
+#else
+    MACHINE_POWERBOOK_32,
+    MACHINE_POWERBOOK_55,
+    MACHINE_POWERBOOK_56,
+    MACHINE_POWERBOOK_57,
+#endif /* !__powerpc__ */
   } machine_type;
 
 struct machine_ops
@@ -40,7 +47,7 @@ struct machine_ops
   machine_type type;
   int (*lcd_backlight_probe) (void);
   void (*lcd_backlight_step) (int dir);
-  int (*evdev_identify) (unsigned short vendor, unsigned short product);
+  int (*evdev_identify) (unsigned short *id);
 };
 
 extern struct machine_ops *mops;

@@ -5,8 +5,19 @@
 #ifndef __KBD_BACKLIGHT_H__
 #define __KBD_BACKLIGHT_H__
 
+#ifdef __powerpc__
+int
+kbd_get_lmuaddr(void);
 
+char*
+kbd_get_i2cdev(int addr);
+
+int 
+kbd_probe_lmu(int addr, char* i2cdev);
+
+#else
 #define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
+#endif /* __powerpc__ */
 
 #define KBD_BACKLIGHT_OFF       0
 #define KBD_BACKLIGHT_MAX       255

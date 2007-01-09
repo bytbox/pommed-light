@@ -36,22 +36,42 @@
 
 
 struct _general_cfg general_cfg;
+#ifdef __powerpc__
+struct _lcd_r9600_cfg lcd_r9600_cfg;
+struct _lcd_r128_cfg lcd_r128_cfg;
+#else
 struct _lcd_x1600_cfg lcd_x1600_cfg;
 struct _lcd_gma950_cfg lcd_gma950_cfg;
+#endif
 struct _audio_cfg audio_cfg;
 struct _kbd_cfg kbd_cfg;
 struct _eject_cfg eject_cfg;
+#ifndef __powerpc__
 struct _appleir_cfg appleir_cfg;
+#endif
 
 
 /* Config file structure */
-
 static cfg_opt_t general_opts[] =
   {
     CFG_INT("fnmode", 1, CFGF_NONE),
     CFG_END()
   };
 
+#ifdef __powerpc__
+static cfg_opt_t lcd_r9600_opts[] =
+  {
+    CFG_INT("init", -1, CFGF_NONE),
+    CFG_INT("step", 10, CFGF_NONE),
+    CFG_END()
+  };
+
+static cfg_opt_t lcd_r128_opts[] =
+  {
+    CFG_INT("init", -1, CFGF_NONE),
+    CFG_END()
+  };
+#else
 static cfg_opt_t lcd_x1600_opts[] =
   {
     CFG_INT("init", -1, CFGF_NONE),
@@ -65,6 +85,7 @@ static cfg_opt_t lcd_gma950_opts[] =
     CFG_INT("step", 0x0f, CFGF_NONE),
     CFG_END()
   };
+#endif /* __powerpc__ */
 
 static cfg_opt_t audio_opts[] =
   {
@@ -94,22 +115,30 @@ static cfg_opt_t eject_opts[] =
     CFG_END()
   };
 
+#ifndef __powerpc__
 static cfg_opt_t appleir_opts[] =
   {
     CFG_BOOL("enabled", 0, CFGF_NONE),
     CFG_END()
   };
-
+#endif /* !__powerpc__ */
 
 static cfg_opt_t opts[] =
   {
     CFG_SEC("general", general_opts, CFGF_NONE),
+#ifdef __powerpc__ 
+    CFG_SEC("lcd_r9600", lcd_r9600_opts, CFGF_NONE),
+    CFG_SEC("lcd_r128", lcd_r128_opts, CFGF_NONE),
+#else
     CFG_SEC("lcd_x1600", lcd_x1600_opts, CFGF_NONE),
     CFG_SEC("lcd_gma950", lcd_gma950_opts, CFGF_NONE),
+#endif
     CFG_SEC("audio", audio_opts, CFGF_NONE),
     CFG_SEC("kbd", kbd_opts, CFGF_NONE),
     CFG_SEC("eject", eject_opts, CFGF_NONE),
+#ifndef __powerpc__
     CFG_SEC("appleir", appleir_opts, CFGF_NONE),
+#endif
     CFG_END()
   };
 
@@ -149,12 +178,20 @@ config_print(void)
   printf("pommed configuration:\n");
   printf(" + General settings:\n");
   printf("    fnmode: %d\n", general_cfg.fnmode);
+#ifdef __powerpc__
+  printf(" + ATI Radeon 9600 backlight control:\n");
+  printf("    initial level: %d\n", lcd_r9600_cfg.init);
+  printf("    step: %d\n", lcd_r9600_cfg.step);
+  printf(" + ATI Rage128 backlight control:\n");
+  printf("    initial level: %d\n", lcd_r128_cfg.init);
+#else
   printf(" + ATI X1600 backlight control:\n");
   printf("    initial level: %d\n", lcd_x1600_cfg.init);
   printf("    step: %d\n", lcd_x1600_cfg.step);
   printf(" + Intel GMA950 backlight control:\n");
   printf("    initial level: 0x%x\n", lcd_gma950_cfg.init);
   printf("    step: 0x%x\n", lcd_gma950_cfg.step);
+#endif /* __powerpc__ */
   printf(" + Audio volume control:\n");
   printf("    card: %s\n", audio_cfg.card);
   printf("    initial volume: %d%s\n", audio_cfg.init, (audio_cfg.init > -1) ? "%" : "");
@@ -171,8 +208,10 @@ config_print(void)
   printf(" + CD eject:\n");
   printf("    enabled: %s\n", (eject_cfg.enabled) ? "yes" : "no");
   printf("    device: %s\n", eject_cfg.device);
+#ifndef __powerpc__
   printf(" + Apple Remote IR Receiver:\n");
   printf("    enabled: %s\n", (appleir_cfg.enabled) ? "yes" : "no");
+#endif /* !__powerpc__ */
 }
 
 
@@ -196,10 +235,15 @@ config_load(void)
   /* Set up config values validation */
   /* general */
   cfg_set_validate_func(cfg, "general|fnmode", config_validate_positive_integer);
+#ifdef __powerpc__
+  /* lcd_r9600 */
+  cfg_set_validate_func(cfg, "lcd_r9600|step", config_validate_positive_integer);
+#else
   /* lcd_x1600 */
   cfg_set_validate_func(cfg, "lcd_x1600|step", config_validate_positive_integer);
   /* lcd_gma950 */
   cfg_set_validate_func(cfg, "lcd_gma950|step", config_validate_positive_integer);
+#endif /* __powerpc__ */
   /* audio */
   cfg_set_validate_func(cfg, "audio|card", config_validate_string);
   cfg_set_validate_func(cfg, "audio|step", config_validate_positive_integer);
@@ -240,6 +284,16 @@ config_load(void)
   sec = cfg_getsec(cfg, "general");
   general_cfg.fnmode = cfg_getint(sec, "fnmode");
 
+#ifdef __powerpc__
+  sec = cfg_getsec(cfg, "lcd_r9600");
+  lcd_r9600_cfg.init = cfg_getint(sec, "init");
+  lcd_r9600_cfg.step = cfg_getint(sec, "step");
+  r9600_backlight_fix_config();
+
+  sec = cfg_getsec(cfg, "lcd_r128");
+  lcd_r128_cfg.init = cfg_getint(sec, "init");
+  r128_backlight_fix_config();
+#else
   sec = cfg_getsec(cfg, "lcd_x1600");
   lcd_x1600_cfg.init = cfg_getint(sec, "init");
   lcd_x1600_cfg.step = cfg_getint(sec, "step");
@@ -250,6 +304,7 @@ config_load(void)
   lcd_gma950_cfg.step = cfg_getint(sec, "step");
   /* No _fix_config() call here, as we're hardware-dependent
    * for the max backlight value */
+#endif /* __powerpc__ */
 
   sec = cfg_getsec(cfg, "audio");
   audio_cfg.card = strdup(cfg_getstr(sec, "card"));
@@ -273,8 +328,10 @@ config_load(void)
   eject_cfg.device = strdup(cfg_getstr(sec, "device"));
   cd_eject_fix_config();
 
+#ifndef __powerpc__
   sec = cfg_getsec(cfg, "appleir");
   appleir_cfg.enabled = cfg_getbool(sec, "enabled");
+#endif
 
   cfg_free(cfg);
 

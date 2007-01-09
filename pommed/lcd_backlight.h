@@ -14,7 +14,7 @@ struct _lcd_bck_info
 
 extern struct _lcd_bck_info lcd_bck_info;
 
-
+#ifndef __powerpc__
 /* x1600_backlight.c */
 #define X1600_BACKLIGHT_OFF       0
 #define X1600_BACKLIGHT_MAX       255
@@ -39,5 +39,34 @@ gma950_backlight_step(int dir);
 int
 gma950_backlight_probe(void);
 
+
+#else
+
+
+/* r9600_backlight.c */
+#define R9600_BACKLIGHT_OFF	0
+#define R9600_BACKLIGHT_MAX	127
+void
+r9600_backlight_step(int dir);
+
+int
+r9600_backlight_probe(void);
+
+void
+r9600_backlight_fix_config(void);
+
+
+/* r128_backlight.c */
+#define R128_BACKLIGHT_OFF	0
+#define R128_BACKLIGHT_MAX	127
+void
+r128_backlight_step(int dir);
+
+int
+r128_backlight_probe(void);
+
+void
+r128_backlight_fix_config(void);
+#endif /* !__powerpc__ */
 
 #endif /* !__LCD_BACKLIGHT_H__ */

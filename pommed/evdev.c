@@ -163,11 +163,51 @@ evdev_process_events(int fd)
     }
 }
 
+
+/* PowerBook G4 Titanium */
+int
+evdev_is_adb(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_ADB)
+    return 0;
+
+  if (id[ID_VENDOR] != 1)
+    return 0;
+
+  return ((product == ADB_PRODUCT_ID_KEYBOARD)
+	  || (product == ADB_PRODUCT_ID_PBBUTTONS));
+}
+
+/* PowerBook G4 */
+int
+evdev_is_fountain(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  return ((product == USB_PRODUCT_ID_FOUNTAIN_ANSI)
+	  || (product == USB_PRODUCT_ID_FOUNTAIN_ISO)
+	  || (product == USB_PRODUCT_ID_FOUNTAIN_JIS));
+}
+
+#ifndef __powerpc__
 /* Core Duo MacBook & MacBook Pro */
 int
-evdev_is_geyser3(unsigned short vendor, unsigned short product)
+evdev_is_geyser3(unsigned short *id)
 {
-  if (vendor != USB_VENDOR_ID_APPLE)
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
   return ((product == USB_PRODUCT_ID_GEYSER3_ANSI)
@@ -177,9 +217,14 @@ evdev_is_geyser3(unsigned short vendor, unsigned short product)
 
 /* Core2 Duo MacBook & MacBook Pro */
 int
-evdev_is_geyser4(unsigned short vendor, unsigned short product)
+evdev_is_geyser4(unsigned short *id)
 {
-  if (vendor != USB_VENDOR_ID_APPLE)
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
   return ((product == USB_PRODUCT_ID_GEYSER4_ANSI)
@@ -189,13 +234,19 @@ evdev_is_geyser4(unsigned short vendor, unsigned short product)
 
 /* Apple Remote IR Receiver */
 static int
-evdev_is_appleir(unsigned short vendor, unsigned short product)
+evdev_is_appleir(unsigned short *id)
 {
-  if (vendor != USB_VENDOR_ID_APPLE)
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
   return (product == USB_PRODUCT_ID_APPLEIR);
 }
+#endif /* !__powerpc__ */
 
 
 int
@@ -209,6 +260,7 @@ evdev_open(struct pollfd **fds)
 
   unsigned short id[4];
   unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
+  char devname[256];
   char evdev[32];
 
   for (i = 0; i < EVDEV_MAX; i++)
@@ -227,10 +279,19 @@ evdev_open(struct pollfd **fds)
 	  continue;
 	}
 
+      devname[0] = '\0';
+      ioctl(fd[i], EVIOCGNAME(sizeof(devname)), devname);
+      logdebug("Investigating evdev %d [%s]\n", i, devname);
+
+
       ioctl(fd[i], EVIOCGID, id);
 
-      if ((!mops->evdev_identify(id[ID_VENDOR], id[ID_PRODUCT]))
-	  && !(appleir_cfg.enabled && evdev_is_appleir(id[ID_VENDOR], id[ID_PRODUCT])))
+#ifdef __powerpc__
+      if (!mops->evdev_identify(id))
+#else
+      if ((!mops->evdev_identify(id))
+	  && !(appleir_cfg.enabled && evdev_is_appleir(id)))
+#endif /* __powerpc__ */
 	{
 	  logdebug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
 

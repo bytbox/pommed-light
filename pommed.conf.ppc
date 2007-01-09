@@ -1,0 +1,68 @@
+#
+# Configuration file for pommed
+#
+
+# General configuration
+general {
+	# fnmode: functions keys first (no need to use fn) or last
+	# Value is either 1 or 2, effect is hardware-dependent
+	fnmode = 1
+}
+
+# ATI r9600 backlight control (PowerBook Aluminium)
+lcd_r9600 {
+	# initial backlight level [200] (0 - 255, -1 to disable)
+	init = -1
+	# step value (1 - 127)
+	step = 10
+}
+
+# ATI r128 backlight control (PowerBook Titanium)
+lcd_r128 {
+	# initial backlight level [0x6f] (0x1f - 0x94 usually, -1 to disable)
+	init = -1
+
+	# The backlight is handled by the kernel on these machines, so here
+	# there is no step configuration, as pommed doesn't get to set the
+	# backlight level when you press on the keys.
+}
+
+# Audio support
+audio {
+	# Use amixer or alsamixer/alsamixergui to determine the sound card
+	# and the mixer elements to use here.
+
+	# sound card to use
+	card = "default"
+	# initial volume [80] (0 - 100%, -1 to disable)
+	init = -1
+	# step value (1 - 50%)
+	step = 10
+	# mixer element for volume adjustment
+	volume = "PCM"
+	# mixer element for muting the speakers
+	speakers = "Front"
+	# mixer element for muting the headphones
+	headphones = "Headphone"
+}
+
+# Keyboard backlight control
+kbd {
+	# default value for automatic backlight (0 - 255)
+	default = 100
+	# step value (1 - 127)
+	step = 10
+	# ambient light thresholds for automatic backlight (0 - 255)
+	on_threshold = 20
+	off_threshold = 40
+	# enable/disable automatic backlight
+	auto = yes
+}
+
+# CD/DVD drive ejection
+eject {
+	# enable/disable eject key
+	enabled = yes
+	# CD/DVD device
+	device = "/dev/dvd"
+}

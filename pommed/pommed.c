@@ -36,7 +36,12 @@
 
 #include <errno.h>
 
-#include <smbios/SystemInfo.h>
+#ifndef __powerpc__
+# include <smbios/SystemInfo.h>
+# define check_machine() check_machine_smbios()
+#else
+# define check_machine() check_machine_pmu()
+#endif /* __powerpc__ */
 
 #include <getopt.h>
 
@@ -52,6 +57,43 @@
 
 /* Machine-specific operations */
 struct machine_ops *mops;
+
+#ifdef __powerpc__
+/* PowerBook machines */
+
+/* PowerBook3,2 */
+struct machine_ops pb32_ops = {
+  .type = MACHINE_POWERBOOK_32,
+  .lcd_backlight_probe = r128_backlight_probe,
+  .lcd_backlight_step = r128_backlight_step,
+  .evdev_identify = evdev_is_adb,
+};
+
+/* PowerBook5,5 */
+struct machine_ops pb55_ops = {
+  .type = MACHINE_POWERBOOK_55,
+  .lcd_backlight_probe = r9600_backlight_probe,
+  .lcd_backlight_step = r9600_backlight_step,
+  .evdev_identify = evdev_is_fountain,
+};
+
+/* PowerBook5,6 / PowerBook G4 15" (Feb 2005) */
+struct machine_ops pb56_ops = {
+  .type = MACHINE_POWERBOOK_56,
+  .lcd_backlight_probe = r9600_backlight_probe,
+  .lcd_backlight_step = r9600_backlight_step,
+  .evdev_identify = evdev_is_fountain,
+};
+
+/* PowerBook5,7 */
+struct machine_ops pb57_ops = {
+  .type = MACHINE_POWERBOOK_57,
+  .lcd_backlight_probe = r9600_backlight_probe,
+  .lcd_backlight_step = r9600_backlight_step,
+  .evdev_identify = evdev_is_fountain,
+};
+
+#else
 
 /* MacBook Pro machines */
 
@@ -89,6 +131,7 @@ struct machine_ops mb2_ops = {
   .lcd_backlight_step = gma950_backlight_step,
   .evdev_identify = evdev_is_geyser4,
 };
+#endif /* __powerpc__ */
 
 
 /* debug mode */
@@ -171,6 +214,88 @@ kbd_set_fnmode(void)
   fclose(fp);
 }
 
+#ifdef __powerpc__
+static machine_type
+check_machine_pmu(void)
+{
+  int fd;
+  int n;
+  int ret = MACHINE_UNKNOWN;
+
+  char buffer[128];
+
+  /* Check copyright node, look for "Apple Computer, Inc." */
+  fd = open("/proc/device-tree/copyright", O_RDONLY);
+  if (fd < 0)
+    {
+      logmsg(LOG_ERR, "Could not open /proc/device-tree/copyright");
+
+      return ret;
+    }
+
+  n = read(fd, buffer, sizeof(buffer) - 1);
+  if (n < 1)
+    {
+      logmsg(LOG_ERR, "Error reading /proc/device-tree/copyright");
+
+      close(fd);
+      return ret;
+    }
+  close(fd);
+  buffer[n] = '\0';
+
+  logdebug("device-tree copyright node: [%s]\n", buffer);
+
+  if (strstr(buffer, "Apple Computer, Inc.") == NULL)
+    return ret;
+
+
+  ret = MACHINE_MAC_UNKNOWN;
+
+  /* Grab machine identifier string */
+  fd = open("/proc/device-tree/model", O_RDONLY);
+  if (fd < 0)
+    {
+      logmsg(LOG_ERR, "Could not open /proc/device-tree/model");
+
+      return ret;
+    }
+
+  n = read(fd, buffer, sizeof(buffer) - 1);
+  if (n < 1)
+    {
+      logmsg(LOG_ERR, "Error reading /proc/device-tree/model");
+
+      close(fd);
+      return ret;
+    }
+  close(fd);
+  buffer[n] = '\0';
+
+  logdebug("device-tree model node: [%s]\n", buffer);
+
+  /* PowerBook G4 Titanium 15" (December 2000) */
+  if (strncmp(buffer, "PowerBook3,2", 12) == 0)
+    ret = MACHINE_POWERBOOK_32;
+  /* PowerBook G4 Aluminium 17" (April 2004) */
+  else if (strncmp(buffer, "PowerBook5,5", 12) == 0)
+    ret = MACHINE_POWERBOOK_55;
+  /* PowerBook G4 Aluminium 15" (February 2005) */
+  else if (strncmp(buffer, "PowerBook5,6", 12) == 0)
+    ret = MACHINE_POWERBOOK_56;
+  /* PowerBook G4 Aluminium 17" (February 2005) */
+  else if (strncmp(buffer, "PowerBook5,7", 12) == 0)
+    ret = MACHINE_POWERBOOK_57;
+  else
+    logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
+  
+  if (ret != MACHINE_MAC_UNKNOWN)
+    logmsg(LOG_INFO, "PMU machine check: running on a %s", buffer);
+
+  return ret;
+}
+
+#else
 
 static machine_type
 check_machine_smbios(void)
@@ -224,6 +349,7 @@ check_machine_smbios(void)
 
   return ret;
 }
+#endif /* __powerpc__ */
 
 
 static void
@@ -309,9 +435,10 @@ main (int argc, char **argv)
     }
 
   /* Identify the machine we're running on */
-  machine = check_machine_smbios();
+  machine = check_machine();
   switch (machine)
     {
+#ifndef __powerpc__
       case MACHINE_MACBOOKPRO_1:
 	mops = &mbp1_ops;
 	break;
@@ -327,6 +454,23 @@ main (int argc, char **argv)
       case MACHINE_MACBOOK_2:
 	mops = &mb2_ops;
 	break;
+#else
+      case MACHINE_POWERBOOK_32:
+	mops = &pb32_ops;
+	break;
+
+      case MACHINE_POWERBOOK_55:
+	mops = &pb55_ops;
+	break;
+
+      case MACHINE_POWERBOOK_56:
+	mops = &pb56_ops;
+	break;
+
+      case MACHINE_POWERBOOK_57:
+	mops = &pb57_ops;
+	break;
+#endif /* !__powerpc__ */
 
       case MACHINE_MAC_UNKNOWN:
 	logmsg(LOG_ERR, "Unknown Apple machine");
@@ -340,7 +484,7 @@ main (int argc, char **argv)
 	exit(1);
 	break;
 
-      default:
+      case MACHINE_ERROR:
 	exit(1);
 	break;
     }

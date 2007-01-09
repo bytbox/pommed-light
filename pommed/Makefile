@@ -1,3 +1,5 @@
+ARCH ?= $(shell uname -m)
+
 CC = gcc
 
 DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
@@ -10,15 +12,34 @@ CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
 CFLAGS = -g -O2 -Wall $(CONFUSE_CFLAGS) $(DBUS_CFLAGS) $(ALSA_CFLAGS)
-LDFLAGS = -lz -lsmbios $(CONFUSE_LIBS) $(DBUS_LIBS) $(ALSA_LIBS)
 
-LIBS = /usr/lib/libpci.a
+ifeq ($(ARCH), ppc)
+LDFLAGS = -lz $(CONFUSE_LIBS) $(DBUS_LIBS) $(ALSA_LIBS)
+
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
+		pmac/r9600_backlight.c pmac/r128_backlight.c \
+		pmac/kbd_backlight.c pmac/ambient.c
+
+OF_SOURCES = pmac/oflib/of_externals.c pmac/oflib/of_internals.c \
+		pmac/oflib/of_standard.c
+
+OF_OBJS = $(OF_SOURCES:%.c=%.o)
+
+LIBS = /usr/lib/libpci.a pmac/oflib/oflib.a
+
+else
+
+LDFLAGS = -lz -lsmbios $(CONFUSE_LIBS) $(DBUS_LIBS) $(ALSA_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/kbd_backlight.c mactel/ambient.c
 
+LIBS = /usr/lib/libpci.a
+endif
+
 OBJS = $(SOURCES:%.c=%.o)
+
 
 pommed: $(OBJS) $(LIBS)
 
@@ -34,6 +55,28 @@ audio.o: audio.c audio.h pommed.h conffile.h dbus.h
 
 dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 
+
+# PowerMac-specific files
+pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
+
+pmac/r9600_backlight.o: pmac/r9600_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+
+pmac/r128_backlight.o: pmac/r128_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+
+pmac/ambient.o: pmac/ambient.c ambient.h pommed.h dbus.h
+
+# OFlib
+pmac/oflib/oflib.a: $(OF_OBJS)
+	ar cru $@ $^
+
+pmac/oflib/of_externals.o: pmac/oflib/of_externals.c pmac/oflib/of_api.h
+
+pmac/oflib/of_internals.o: pmac/oflib/of_internals.c pmac/oflib/of_api.h
+
+pmac/oflib/of_standard.o: pmac/oflib/of_standard.c pmac/oflib/of_api.h
+
+
+# Mactel-specific files
 mactel/x1600_backlight.o: mactel/x1600_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
@@ -42,6 +85,7 @@ mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_backlight.h pommed.h ambient.
 
 mactel/ambient.o: mactel/ambient.c ambient.h pommed.h dbus.h
 
+
 clean:
-	rm -f pommed $(OBJS)
-	rm -f *~ mactel/*~
+	rm -f pommed $(OBJS) $(OF_OBJS) pmac/oflib/oflib.a
+	rm -f *~ mactel/*~ pmac/*~ pmac/oflib/*~
