@@ -1,14 +1,5 @@
 .\"                                      Hey, EMACS: -*- nroff -*-
-.TH POMMED 1 "2006-12-24"
-.\" Some roff macros, for reference:
-.\" .nh        disable hyphenation
-.\" .hy        enable hyphenation
-.\" .ad l      left justify
-.\" .ad b      justify to both left and right margins
-.\" .nf        disable filling
-.\" .fi        enable filling
-.\" .br        insert line break
-.\" .sp <n>    insert n+1 empty lines
+.TH POMMED 1 "2007-01-09"
 
 .SH NAME
 pommed \- Apple laptops hotkeys event handler
@@ -22,20 +13,22 @@ This manual page documents briefly the
 daemon.
 .PP
 .B pommed
-is a daemon handling the hotkeys found on the Apple MacBook Pro and
-MacBook laptops. These hotkeys control, through
+is a daemon handling the hotkeys found on the Apple laptops, like the
+MacBook Pro, MacBook and PowerBook laptops. These hotkeys control,
+through
 .B pommed
 , the LCD backlight level, the audio volume, the keyboard backlight
-level (only on the MacBook Pro) and the CD/DVD drive
-ejection. Additionally,
+level (only on the MacBook Pro and the latest PowerBook) and the
+CD/DVD drive ejection. Additionally,
 .B pommed
-monitors the ambient light sensors found on the MacBook Pro to
-automatically light up the keyboard backlight when the ambient light
-level gets too low.
+monitors the ambient light sensors found on the MacBook Pro and the
+latest PowerBook to automatically light up the keyboard backlight when
+the ambient light level gets too low.
 .PP
 .B pommed
 can optionally support the Apple Remote Control, too (this option is
-disabled by default).
+disabled by default and only available for the MacBook Pro and
+MacBook).
 
 .SH OPTIONS
 .B pommed

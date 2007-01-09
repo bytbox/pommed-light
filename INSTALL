@@ -10,7 +10,8 @@ Building
 --------
 
 pommed requires:
- - libsmbios (and zlib)
+ - libsmbios (on Intel machines only)
+ - zlib
  - libconfuse
  - libdbus
  - libasound

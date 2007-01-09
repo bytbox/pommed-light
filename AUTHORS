@@ -11,6 +11,11 @@ Written by Julien BLACHE <jb@jblache.org>, with code taken from
 The following people contributed to pommed:
   - Romain BEAUXIS <toots@rastageeks.org>
        base of the ALSA code
+  - Yves-Alexis PEREZ <corsac@corsac.net>
+       pommed PowerBook support
+
+On PowerBook machines, pommed uses the OFlib written by
+Alastair Poole <netstar@gatheringofgray.com>
 
 
 gpomme
