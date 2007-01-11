@@ -74,7 +74,7 @@ struct machine_ops pb55_ops = {
   .type = MACHINE_POWERBOOK_55,
   .lcd_backlight_probe = r9600_backlight_probe,
   .lcd_backlight_step = r9600_backlight_step,
-  .evdev_identify = evdev_is_fountain,
+  .evdev_identify = evdev_is_adb,
 };
 
 /* PowerBook5,6 / PowerBook G4 15" (Feb 2005) */
