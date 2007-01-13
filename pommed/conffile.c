@@ -62,7 +62,7 @@ static cfg_opt_t general_opts[] =
 static cfg_opt_t lcd_r9600_opts[] =
   {
     CFG_INT("init", -1, CFGF_NONE),
-    CFG_INT("step", 10, CFGF_NONE),
+    CFG_INT("step", 8, CFGF_NONE),
     CFG_END()
   };
 
@@ -71,6 +71,18 @@ static cfg_opt_t lcd_r128_opts[] =
     CFG_INT("init", -1, CFGF_NONE),
     CFG_END()
   };
+
+static cfg_opt_t audio_opts[] =
+  {
+    CFG_STR("card", "default", CFGF_NONE),
+    CFG_INT("init", -1, CFGF_NONE),
+    CFG_INT("step", 10, CFGF_NONE),
+    CFG_STR("volume", "Master", CFGF_NONE),
+    CFG_STR("speakers", "Master", CFGF_NONE),
+    CFG_STR("headphones", "Headphone", CFGF_NONE),
+    CFG_END()
+  };
+ };
 #else
 static cfg_opt_t lcd_x1600_opts[] =
   {
@@ -84,8 +96,6 @@ static cfg_opt_t lcd_gma950_opts[] =
     CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 0x0f, CFGF_NONE),
     CFG_END()
-  };
-#endif /* __powerpc__ */
 
 static cfg_opt_t audio_opts[] =
   {
@@ -97,6 +107,9 @@ static cfg_opt_t audio_opts[] =
     CFG_STR("headphones", "Headphone", CFGF_NONE),
     CFG_END()
   };
+ };
+#endif /* __powerpc__ */
+
 
 static cfg_opt_t kbd_opts[] =
   {

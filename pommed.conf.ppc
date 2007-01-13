@@ -14,7 +14,7 @@ lcd_r9600 {
 	# initial backlight level [200] (0 - 255, -1 to disable)
 	init = -1
 	# step value (1 - 127)
-	step = 10
+	step = 8
 }
 
 # ATI r128 backlight control (PowerBook Titanium)
@@ -39,9 +39,9 @@ audio {
 	# step value (1 - 50%)
 	step = 10
 	# mixer element for volume adjustment
-	volume = "PCM"
+	volume = "Master"
 	# mixer element for muting the speakers
-	speakers = "Front"
+	speakers = "Master"
 	# mixer element for muting the headphones
 	headphones = "Headphone"
 }
@@ -51,7 +51,7 @@ kbd {
 	# default value for automatic backlight (0 - 255)
 	default = 100
 	# step value (1 - 127)
-	step = 10
+	step = 16
 	# ambient light thresholds for automatic backlight (0 - 255)
 	on_threshold = 20
 	off_threshold = 40
