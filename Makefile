@@ -15,5 +15,6 @@ clean:
 	$(MAKE) -C pommed clean
 	$(MAKE) -C gpomme clean
 	$(MAKE) -C wmpomme clean
+	rm -f *~
 
 .PHONY: pommed gpomme wmpomme
