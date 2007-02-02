@@ -82,7 +82,6 @@ static cfg_opt_t audio_opts[] =
     CFG_STR("headphones", "Headphone", CFGF_NONE),
     CFG_END()
   };
- };
 #else
 static cfg_opt_t lcd_x1600_opts[] =
   {
@@ -96,6 +95,7 @@ static cfg_opt_t lcd_gma950_opts[] =
     CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 0x0f, CFGF_NONE),
     CFG_END()
+  };
 
 static cfg_opt_t audio_opts[] =
   {
@@ -107,7 +107,6 @@ static cfg_opt_t audio_opts[] =
     CFG_STR("headphones", "Headphone", CFGF_NONE),
     CFG_END()
   };
- };
 #endif /* __powerpc__ */
 
 
