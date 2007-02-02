@@ -136,6 +136,7 @@ r9600_backlight_step(int dir)
 
 #define PCI_ID_VENDOR_ATI        0x1002
 #define PCI_ID_PRODUCT_R9600     0x4e50
+#define PCI_ID_PRODUCT_R9200     0x5c63
 
 /* Look for an ATI Radeon Mobility r9600 */
 int
@@ -160,7 +161,8 @@ r9600_backlight_probe(void)
       pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES);
       /* ATI R9600 */
       if ((dev->vendor_id == PCI_ID_VENDOR_ATI)
-	  && (dev->device_id == PCI_ID_PRODUCT_R9600))
+	  && ((dev->device_id == PCI_ID_PRODUCT_R9600)
+	      || (dev->device_id == PCI_ID_PRODUCT_R9200)))
 	{
 	  probed = 1;
 	}

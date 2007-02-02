@@ -93,6 +93,14 @@ struct machine_ops pb57_ops = {
   .evdev_identify = evdev_is_fountain,
 };
 
+/* PowerBook6,3 */
+struct machine_ops pb63_ops = {
+  .type = MACHINE_POWERBOOK_63,
+  .lcd_backlight_probe = r9600_backlight_probe,
+  .lcd_backlight_step = r9600_backlight_step,
+  .evdev_identify = evdev_is_adb,
+};
+
 #else
 
 /* MacBook Pro machines */
@@ -286,6 +294,9 @@ check_machine_pmu(void)
   /* PowerBook G4 Aluminium 17" (February 2005) */
   else if (strncmp(buffer, "PowerBook5,7", 12) == 0)
     ret = MACHINE_POWERBOOK_57;
+  /* iBook G4 (October 2003) */
+  else if (strncmp(buffer, "PowerBook6,3", 12) == 0)
+    ret = MACHINE_POWERBOOK_63;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
   
@@ -470,6 +481,11 @@ main (int argc, char **argv)
       case MACHINE_POWERBOOK_57:
 	mops = &pb57_ops;
 	break;
+      
+      case MACHINE_POWERBOOK_63:
+	mops = &pb63_ops;
+	break;
+
 #endif /* !__powerpc__ */
 
       case MACHINE_MAC_UNKNOWN:
