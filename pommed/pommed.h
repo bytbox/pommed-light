@@ -58,6 +58,7 @@ extern struct machine_ops *mops;
 #define CONFFILE               "/etc/pommed.conf"
 
 #define KBD_FNMODE_FILE        "/sys/module/usbhid/parameters/pb_fnmode"
+#define KBD_FNMODE_FILE2620    "/sys/module/hid/parameters/pb_fnmode"
 
 #define STEP_UP                 1
 #define STEP_DOWN               -1
