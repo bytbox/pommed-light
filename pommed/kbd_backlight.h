@@ -27,6 +27,11 @@ struct _kbd_bck_info
 {
   int level;
   int max;
+
+  int auto_on;  /* automatic */
+  int off;      /* turned off ? */
+  int r_sens;   /* right sensor */
+  int l_sens;   /* left sensor */
 };
 
 extern struct _kbd_bck_info kbd_bck_info;

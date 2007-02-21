@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,15 +39,6 @@
 
 
 struct _kbd_bck_info kbd_bck_info;
-
-static struct
-{
-  int auto_on;  /* automatic */
-  int off;      /* turned off ? */
-  int value;    /* previous value */
-  int r_sens;   /* right sensor */
-  int l_sens;   /* left sensor */
-} kbd_bck_status;
 
 
 int
@@ -101,24 +92,24 @@ kbd_backlight_set(int val)
   curval = kbd_backlight_get();
 
   /* automatic backlight toggle by user */
-  if ((val == KBD_BACKLIGHT_OFF) && (kbd_bck_status.auto_on))
+  if ((val == KBD_BACKLIGHT_OFF) && (kbd_bck_info.auto_on))
     {
-      if (!kbd_bck_status.off)
+      if (!kbd_bck_info.off)
 	{
-	  kbd_bck_status.off = 1;
-	  kbd_bck_status.value = curval;
+	  kbd_bck_info.off = 1;
+	  kbd_bck_info.level = curval;
 	}
       else
 	{
-	  kbd_bck_status.off = 0;
-	  val = kbd_bck_status.value;
+	  kbd_bck_info.off = 0;
+	  val = kbd_bck_info.level;
 	}
     }
 
   /* backlight turned on again by user */
   if ((val > KBD_BACKLIGHT_OFF)
-      && (kbd_bck_status.auto_on) && (kbd_bck_status.off))
-    kbd_bck_status.off = 0;
+      && (kbd_bck_info.auto_on) && (kbd_bck_info.off))
+    kbd_bck_info.off = 0;
 
   if (val == curval)
     return;
@@ -188,16 +179,14 @@ kbd_backlight_step(int dir)
 void
 kbd_backlight_init(void)
 {
-  kbd_bck_status.auto_on = 0;
-  kbd_bck_status.off = 0;
+  kbd_bck_info.auto_on = 0;
+  kbd_bck_info.off = 0;
 
   if (!has_kbd_backlight())
     {
-      kbd_bck_status.value = 0;
-      kbd_bck_status.r_sens = 0;
-      kbd_bck_status.l_sens = 0;
+      kbd_bck_info.r_sens = 0;
+      kbd_bck_info.l_sens = 0;
 
-      kbd_bck_info.level = 0;
       kbd_bck_info.level = 0;
 
       ambient_info.left = 0;
@@ -207,14 +196,13 @@ kbd_backlight_init(void)
       return;
     }
 
-  kbd_bck_status.value = kbd_backlight_get();
-  if (kbd_bck_status.value < 0)
-    kbd_bck_status.value = 0;
+  kbd_bck_info.level = kbd_backlight_get();
+  if (kbd_bck_info.level < 0)
+    kbd_bck_info.level = 0;
 
-  kbd_bck_info.level = kbd_bck_status.value;
   kbd_bck_info.max = KBD_BACKLIGHT_MAX;
 
-  ambient_init(&kbd_bck_status.r_sens, &kbd_bck_status.l_sens);
+  ambient_init(&kbd_bck_info.r_sens, &kbd_bck_info.l_sens);
 }
 
 void
@@ -232,7 +220,7 @@ kbd_backlight_ambient_check(void)
       logdebug("Ambient light lower threshold reached\n");
 
       /* backlight turned on automatically, then disabled by user */
-      if (kbd_bck_status.auto_on && kbd_bck_status.off)
+      if (kbd_bck_info.auto_on && kbd_bck_info.off)
 	return;
 
       /* backlight already on */
@@ -240,28 +228,28 @@ kbd_backlight_ambient_check(void)
 	return;
 
       /* turn on backlight */
-      kbd_bck_status.auto_on = 1;
-      kbd_bck_status.off = 0;
+      kbd_bck_info.auto_on = 1;
+      kbd_bck_info.off = 0;
 
       kbd_backlight_set(kbd_cfg.auto_lvl);
     }
-  else if (kbd_bck_status.auto_on)
+  else if (kbd_bck_info.auto_on)
     {
       if ((amb_r > kbd_cfg.off_thresh) || (amb_l > kbd_cfg.off_thresh))
 	{
 	  logdebug("Ambient light upper threshold reached\n");
 
-	  kbd_bck_status.auto_on = 0;
-	  kbd_bck_status.off = 0;
+	  kbd_bck_info.auto_on = 0;
+	  kbd_bck_info.off = 0;
 
 	  kbd_backlight_set(KBD_BACKLIGHT_OFF);
 	}
     }
 
-  mbpdbus_send_ambient_light(amb_l, kbd_bck_status.l_sens, amb_r, kbd_bck_status.r_sens);
+  mbpdbus_send_ambient_light(amb_l, kbd_bck_info.l_sens, amb_r, kbd_bck_info.r_sens);
 
-  kbd_bck_status.r_sens = amb_r;
-  kbd_bck_status.l_sens = amb_l;
+  kbd_bck_info.r_sens = amb_r;
+  kbd_bck_info.l_sens = amb_l;
 }
 
 
