@@ -155,13 +155,13 @@ sysfs_backlight_step(int dir)
 int
 r9600_sysfs_backlight_probe(void)
 {
-  if (!access(brightness[SYSFS_DRIVER_RADEON], W_OK))
+  if (access(brightness[SYSFS_DRIVER_RADEON], W_OK) != 0)
     {
       logdebug("Failed to access brightness node: %s\n", strerror(errno));
       return -1;
     }
 
-  if (!access(actual_brightness[SYSFS_DRIVER_RADEON], R_OK))
+  if (access(actual_brightness[SYSFS_DRIVER_RADEON], R_OK) != 0)
     {
       logdebug("Failed to access actual_brightness node: %s\n", strerror(errno));
       return -1;
