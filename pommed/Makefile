@@ -17,7 +17,7 @@ ifeq ($(ARCH), ppc)
 LDFLAGS = -lz $(CONFUSE_LIBS) $(DBUS_LIBS) $(ALSA_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
-		pmac/r9600_backlight.c pmac/r128_backlight.c \
+		pmac/sysfs_backlight.c pmac/r128_backlight.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
 OF_SOURCES = pmac/oflib/of_externals.c pmac/oflib/of_internals.c \
@@ -59,7 +59,7 @@ dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 # PowerMac-specific files
 pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
 
-pmac/r9600_backlight.o: pmac/r9600_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+pmac/sysfs_backlight.o: pmac/sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 pmac/r128_backlight.o: pmac/r128_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 

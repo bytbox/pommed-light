@@ -72,32 +72,32 @@ struct machine_ops pb32_ops = {
 /* PowerBook5,5 */
 struct machine_ops pb55_ops = {
   .type = MACHINE_POWERBOOK_55,
-  .lcd_backlight_probe = r9600_backlight_probe,
-  .lcd_backlight_step = r9600_backlight_step,
+  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_adb,
 };
 
 /* PowerBook5,6 / PowerBook G4 15" (Feb 2005) */
 struct machine_ops pb56_ops = {
   .type = MACHINE_POWERBOOK_56,
-  .lcd_backlight_probe = r9600_backlight_probe,
-  .lcd_backlight_step = r9600_backlight_step,
+  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_fountain,
 };
 
 /* PowerBook5,7 */
 struct machine_ops pb57_ops = {
   .type = MACHINE_POWERBOOK_57,
-  .lcd_backlight_probe = r9600_backlight_probe,
-  .lcd_backlight_step = r9600_backlight_step,
+  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_fountain,
 };
 
 /* PowerBook6,3 */
 struct machine_ops pb63_ops = {
   .type = MACHINE_POWERBOOK_63,
-  .lcd_backlight_probe = r9600_backlight_probe,
-  .lcd_backlight_step = r9600_backlight_step,
+  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_adb,
 };
 

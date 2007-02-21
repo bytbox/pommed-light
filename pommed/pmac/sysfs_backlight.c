@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2006 Yves-Alexis Perez <corsac@corsac.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -37,25 +37,42 @@
 #include "../dbus.h"
 
 
+#define SYSFS_DRIVER_NONE      0
+#define SYSFS_DRIVER_RADEON    1
+
+
+/* sysfs backlight driver in use */
+static int bck_driver = SYSFS_DRIVER_NONE;
+
+/* sysfs actual_brightness node path */
+static char *actual_brightness[] =
+  {
+    "/dev/null",
+    "/sys/class/backlight/radeonbl0/actual_brightness"
+  };
+
+/* sysfs brightness node path */
+static char *brightness[] =
+  {
+    "/dev/null",
+    "/sys/class/backlight/radeonbl0/brightness"
+  };
+
+
 struct _lcd_bck_info lcd_bck_info;
 
 
-#define SYSFS_BACKLIGHT "/sys/class/backlight/radeonbl0"
-
-static int probed = 0;
-
-
 static int
-r9600_backlight_get(void)
+sysfs_backlight_get(void)
 {
   int fd;
   int n;
   char buffer[4];
 
-  if (!probed)
+  if (bck_driver == SYSFS_DRIVER_NONE)
     return 0;
 
-  fd = open(SYSFS_BACKLIGHT "/actual_brightness", O_RDONLY);
+  fd = open(actual_brightness[bck_driver], O_RDONLY);
   if (fd < 0)
     {
       logmsg(LOG_WARNING, "Could not open sysfs actual_brightness node: %s", strerror(errno));
@@ -77,11 +94,11 @@ r9600_backlight_get(void)
 }
 
 static void
-r9600_backlight_set(int value)
+sysfs_backlight_set(int value)
 {
   FILE *fp;
 
-  fp = fopen(SYSFS_BACKLIGHT "/brightness", "a");
+  fp = fopen(brightness[bck_driver], "a");
   if (fp == NULL)
     {
       logmsg(LOG_WARNING, "Could not open sysfs brightness node: %s", strerror(errno));
@@ -95,15 +112,15 @@ r9600_backlight_set(int value)
 }
 
 void
-r9600_backlight_step(int dir)
+sysfs_backlight_step(int dir)
 {
   int val;
   int newval;
 
-  if (!probed)
+  if (bck_driver == SYSFS_DRIVER_NONE)
     return;
 
-  val = r9600_backlight_get();
+  val = sysfs_backlight_get();
 
   if (dir == STEP_UP)
     {
@@ -126,7 +143,7 @@ r9600_backlight_step(int dir)
   else
     return;
 
-  r9600_backlight_set(newval);
+  sysfs_backlight_set(newval);
 
   mbpdbus_send_lcd_backlight(newval, val);
 
@@ -134,47 +151,23 @@ r9600_backlight_step(int dir)
 }
 
 
-#define PCI_ID_VENDOR_ATI        0x1002
-#define PCI_ID_PRODUCT_R9600     0x4e50
-#define PCI_ID_PRODUCT_R9200     0x5c63
-
-/* Look for an ATI Radeon Mobility r9600 */
+/* Look for the radeon backlight driver */
 int
-r9600_backlight_probe(void)
+r9600_sysfs_backlight_probe(void)
 {
-  struct pci_access *pacc;
-  struct pci_dev *dev;
-
-  pacc = pci_alloc();
-  if (pacc == NULL)
+  if (!access(brightness[SYSFS_DRIVER_RADEON], W_OK))
     {
-      logmsg(LOG_ERR, "Could not allocate PCI structs");
+      logdebug("Failed to access brightness node: %s\n", strerror(errno));
       return -1;
     }
 
-  pci_init(pacc);
-  pci_scan_bus(pacc);
-
-  /* Iterate over all devices */
-  for(dev = pacc->devices; dev; dev = dev->next)
+  if (!access(actual_brightness[SYSFS_DRIVER_RADEON], R_OK))
     {
-      pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES);
-      /* ATI R9600 */
-      if ((dev->vendor_id == PCI_ID_VENDOR_ATI)
-	  && ((dev->device_id == PCI_ID_PRODUCT_R9600)
-	      || (dev->device_id == PCI_ID_PRODUCT_R9200)))
-	{
-	  probed = 1;
-	}
-    }
-
-  pci_cleanup(pacc);
-
-  if (!probed)
-    {
-      logdebug("Failed to detect ATI R9600, aborting...\n");
+      logdebug("Failed to access actual_brightness node: %s\n", strerror(errno));
       return -1;
     }
+
+  bck_driver = SYSFS_DRIVER_RADEON;
 
   lcd_bck_info.max = R9600_BACKLIGHT_MAX;
 
@@ -184,10 +177,10 @@ r9600_backlight_probe(void)
    */
   if (lcd_r9600_cfg.init > -1)
     {
-      r9600_backlight_set(lcd_r9600_cfg.init);
+      sysfs_backlight_set(lcd_r9600_cfg.init);
     }
 
-  lcd_bck_info.level = r9600_backlight_get();
+  lcd_bck_info.level = sysfs_backlight_get();
 
     return 0;
 }
