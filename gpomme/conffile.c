@@ -22,6 +22,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 #include <confuse.h>
 
 #include "gpomme.h"
@@ -29,11 +33,10 @@
 
 /*
  * TODO
- *  - print config with cfg_print() (need to create the path if it doesn't exist)
- *  - build config file path
+ *  - print config with cfg_print()
  */
 
-#define CONFFILE "/dev/null"
+#define CONFFILE        "/.gpommerc"
 
 static cfg_opt_t cfg_opts[] =
   {
@@ -41,6 +44,9 @@ static cfg_opt_t cfg_opts[] =
     CFG_INT("timeout", 900, CFGF_NONE),
     CFG_END()
   };
+
+
+static char *conffile;
 
 
 static int
@@ -75,9 +81,29 @@ config_validate_string(cfg_t *cfg, cfg_opt_t *opt)
 int
 config_load(void)
 {
+  struct passwd *pw;
   cfg_t *cfg;
 
   int ret;
+
+  pw = getpwuid(getuid());
+  if (pw == NULL)
+    {
+      fprintf(stderr, "Could not get user information\n");
+
+      return -1;
+    }
+
+  conffile = (char *) malloc(strlen(pw->pw_dir) + strlen(CONFFILE) + 1);
+  if (conffile == NULL)
+    {
+      fprintf(stderr, "Could not allocate memory\n");
+
+      return -1;
+    }
+
+  strncpy(conffile, pw->pw_dir, strlen(pw->pw_dir) + 1);
+  strncat(conffile, CONFFILE, strlen(CONFFILE));
 
   cfg = cfg_init(cfg_opts, CFGF_NONE);
 
@@ -97,7 +123,7 @@ config_load(void)
    * If the file does not exist or cannot be opened,
    * we'll be using the default values defined in the cfg_opt_t array.
    */
-  ret = cfg_parse(cfg, CONFFILE);
+  ret = cfg_parse(cfg, conffile);
   if ((ret != CFG_SUCCESS) && (ret != CFG_FILE_ERROR))
     {
       cfg_free(cfg);
