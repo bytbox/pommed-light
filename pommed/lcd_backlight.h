@@ -52,8 +52,8 @@ sysfs_backlight_step(int dir);
 int
 r9600_sysfs_backlight_probe(void);
 
-void
-r9600_backlight_fix_config(void);
+int
+nvidia_sysfs_backlight_probe(void);
 
 
 /* r128_backlight.c */

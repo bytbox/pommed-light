@@ -39,6 +39,7 @@
 
 #define SYSFS_DRIVER_NONE      0
 #define SYSFS_DRIVER_RADEON    1
+#define SYSFS_DRIVER_NVIDIA    2
 
 
 /* sysfs backlight driver in use */
@@ -48,21 +49,24 @@ static int bck_driver = SYSFS_DRIVER_NONE;
 static char *actual_brightness[] =
   {
     "/dev/null",
-    "/sys/class/backlight/radeonbl0/actual_brightness"
+    "/sys/class/backlight/radeonbl0/actual_brightness",
+    "/sys/class/backlight/nvidiabl0/actual_brightness"
   };
 
 /* sysfs brightness node path */
 static char *brightness[] =
   {
     "/dev/null",
-    "/sys/class/backlight/radeonbl0/brightness"
+    "/sys/class/backlight/radeonbl0/brightness",
+    "/sys/class/backlight/nvidiabl0/brightness"
   };
 
 /* sysfs max_brightness node path */
 static char *max_brightness[] =
   {
     "/dev/null",
-    "/sys/class/backlight/radeonbl0/max_brightness"
+    "/sys/class/backlight/radeonbl0/max_brightness",
+    "/sys/class/backlight/nvidiabl0/max_brightness"
   };
 
 
@@ -210,23 +214,29 @@ sysfs_backlight_fix_config(void)
 }
 
 
-/* Look for the radeon backlight driver */
-int
-r9600_sysfs_backlight_probe(void)
+/* Look for the backlight driver */
+static int
+sysfs_backlight_probe(int driver)
 {
-  if (access(brightness[SYSFS_DRIVER_RADEON], W_OK) != 0)
+  if (access(brightness[driver], W_OK) != 0)
     {
       logdebug("Failed to access brightness node: %s\n", strerror(errno));
       return -1;
     }
 
-  if (access(actual_brightness[SYSFS_DRIVER_RADEON], R_OK) != 0)
+  if (access(actual_brightness[driver], R_OK) != 0)
     {
       logdebug("Failed to access actual_brightness node: %s\n", strerror(errno));
       return -1;
     }
 
-  bck_driver = SYSFS_DRIVER_RADEON;
+  if (access(max_brightness[driver], R_OK) != 0)
+    {
+      logdebug("Failed to access max_brightness node: %s\n", strerror(errno));
+      return -1;
+    }
+
+  bck_driver = driver;
 
   lcd_bck_info.max = sysfs_backlight_get_max();
 
@@ -244,5 +254,17 @@ r9600_sysfs_backlight_probe(void)
 
   lcd_bck_info.level = sysfs_backlight_get();
 
-    return 0;
+  return 0;
+}
+
+int
+r9600_sysfs_backlight_probe(void)
+{
+  return sysfs_backlight_probe(SYSFS_DRIVER_RADEON);
+}
+
+int
+nvidia_sysfs_backlight_probe(void)
+{
+  return sysfs_backlight_probe(SYSFS_DRIVER_NVIDIA);
 }
