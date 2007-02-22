@@ -12,10 +12,13 @@ ALSA_LIBS = $(shell pkg-config alsa --libs)
 AUDIOFILE_CFLAGS = $(shell pkg-config audiofile --cflags)
 AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
 
-CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CFLAGS)
-LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS)
+CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
+CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
-SOURCES = gpomme.c theme.c audio.c ../dbus-client/dbus-client.c
+CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS)
+LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS)
+
+SOURCES = gpomme.c theme.c audio.c conffile.c ../dbus-client/dbus-client.c
 POFILES = po/fr.po po/de.po po/es.po
 
 OBJS = $(SOURCES:%.c=%.o)
@@ -32,6 +35,8 @@ gpomme.o: gpomme.c gpomme.h theme.h audio.h ../dbus-client/dbus-client.h
 theme.o: theme.c theme.h gpomme.h
 
 audio.o: audio.c audio.h gpomme.h
+
+conffile.o: conffile.c conffile.h gpomme.h theme.h
 
 ../dbus-client/dbus-client.o: ../dbus-client/dbus-client.c ../dbus-client/dbus-client.h
 

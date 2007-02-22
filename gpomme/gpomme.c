@@ -38,6 +38,7 @@
 #include "gpomme.h"
 #include "theme.h"
 #include "audio.h"
+#include "conffile.h"
 
 #include "../dbus-client/dbus-client.h"
 
@@ -45,21 +46,8 @@
 #define _(str) gettext(str)
 
 
-struct
-{
-  GtkWidget *window;     /* The window itself */
+struct _mbp_w mbp_w;
 
-  GtkWidget *img_align;  /* Image container */
-  GtkWidget *image;      /* Current image, if any */
-
-  GtkWidget *label;      /* Text label */
-
-  GtkWidget *pbar_align; /* Progress bar container */
-  GtkWidget *pbar;       /* Progress bar */
-  int pbar_state;
-
-  guint timer;
-} mbp_w;
 
 struct
 {
@@ -196,7 +184,7 @@ show_window(int img, char *label, double fraction)
 
   gtk_widget_show_all(window);
 
-  mbp_w.timer = g_timeout_add(900, hide_window, NULL);
+  mbp_w.timer = g_timeout_add(mbp_w.timeout, hide_window, NULL);
 }
 
 
@@ -419,12 +407,11 @@ static void
 usage(void)
 {
   printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
-  printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org> and others\n");
+  printf("Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org> and others\n");
 
   printf("Usage:\n");
-  printf("\tgpomme\t\t-- start gpomme with the default theme\n");
+  printf("\tgpomme\t\t-- start gpomme\n");
   printf("\tgpomme -v\t-- print version and exit\n");
-  printf("\tgpomme -t Tango\t-- start gpomme with the Tango theme\n");
 }
 
 
@@ -437,21 +424,24 @@ int main(int argc, char **argv)
 {
   int c;
   int ret;
-  char *theme_name;
 
-  theme_name = DEFAULT_THEME;
+  gtk_init(&argc, &argv);
 
-  while ((c = getopt(argc, argv, "t:v")) != -1)
+  ret = config_load();
+  if (ret < 0)
+    {
+      fprintf(stderr, "Failed to load configuration\n");
+
+      exit(1);
+    }
+
+  while ((c = getopt(argc, argv, "v")) != -1)
     {
       switch (c)
 	{
-	  case 't':
-	    theme_name = optarg;
-	    break;
-
 	  case 'v':
 	    printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
-	    printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org> and others\n");
+	    printf("Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org> and others\n");
 
 	    exit(0);
 	    break;
@@ -475,17 +465,6 @@ int main(int argc, char **argv)
   ret = audio_init_thread();
   if (ret < 0)
     printf("Failed to create audio thread\n");
-
-  gtk_init(&argc, &argv);
-
-  ret = theme_load(theme_name);
-
-  if (ret < 0)
-    {
-      fprintf(stderr, "Failed to load theme '%s'\n", theme_name);
-
-      exit(1);
-    }
 
   create_window();
 
