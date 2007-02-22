@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 
 struct _general_cfg general_cfg;
 #ifdef __powerpc__
-struct _lcd_r9600_cfg lcd_r9600_cfg;
+struct _lcd_sysfs_cfg lcd_sysfs_cfg;
 struct _lcd_r128_cfg lcd_r128_cfg;
 #else
 struct _lcd_x1600_cfg lcd_x1600_cfg;
@@ -59,7 +59,7 @@ static cfg_opt_t general_opts[] =
   };
 
 #ifdef __powerpc__
-static cfg_opt_t lcd_r9600_opts[] =
+static cfg_opt_t lcd_sysfs_opts[] =
   {
     CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 8, CFGF_NONE),
@@ -139,7 +139,7 @@ static cfg_opt_t opts[] =
   {
     CFG_SEC("general", general_opts, CFGF_NONE),
 #ifdef __powerpc__ 
-    CFG_SEC("lcd_r9600", lcd_r9600_opts, CFGF_NONE),
+    CFG_SEC("lcd_sysfs", lcd_sysfs_opts, CFGF_NONE),
     CFG_SEC("lcd_r128", lcd_r128_opts, CFGF_NONE),
 #else
     CFG_SEC("lcd_x1600", lcd_x1600_opts, CFGF_NONE),
@@ -191,9 +191,9 @@ config_print(void)
   printf(" + General settings:\n");
   printf("    fnmode: %d\n", general_cfg.fnmode);
 #ifdef __powerpc__
-  printf(" + ATI Radeon 9600 backlight control:\n");
-  printf("    initial level: %d\n", lcd_r9600_cfg.init);
-  printf("    step: %d\n", lcd_r9600_cfg.step);
+  printf(" + sysfs backlight control:\n");
+  printf("    initial level: %d\n", lcd_sysfs_cfg.init);
+  printf("    step: %d\n", lcd_sysfs_cfg.step);
   printf(" + ATI Rage128 backlight control:\n");
   printf("    initial level: %d\n", lcd_r128_cfg.init);
 #else
@@ -249,7 +249,7 @@ config_load(void)
   cfg_set_validate_func(cfg, "general|fnmode", config_validate_positive_integer);
 #ifdef __powerpc__
   /* lcd_r9600 */
-  cfg_set_validate_func(cfg, "lcd_r9600|step", config_validate_positive_integer);
+  cfg_set_validate_func(cfg, "lcd_sysfs|step", config_validate_positive_integer);
 #else
   /* lcd_x1600 */
   cfg_set_validate_func(cfg, "lcd_x1600|step", config_validate_positive_integer);
@@ -297,9 +297,9 @@ config_load(void)
   general_cfg.fnmode = cfg_getint(sec, "fnmode");
 
 #ifdef __powerpc__
-  sec = cfg_getsec(cfg, "lcd_r9600");
-  lcd_r9600_cfg.init = cfg_getint(sec, "init");
-  lcd_r9600_cfg.step = cfg_getint(sec, "step");
+  sec = cfg_getsec(cfg, "lcd_sysfs");
+  lcd_sysfs_cfg.init = cfg_getint(sec, "init");
+  lcd_sysfs_cfg.step = cfg_getint(sec, "step");
   /* No _fix_config() call here, it's done at probe time */
 
   sec = cfg_getsec(cfg, "lcd_r128");

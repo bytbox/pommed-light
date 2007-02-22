@@ -10,7 +10,7 @@ struct _general_cfg {
 };
 
 #ifdef __powerpc__
-struct _lcd_r9600_cfg {
+struct _lcd_sysfs_cfg {
   int init;
   int step;
 };
@@ -63,7 +63,7 @@ struct _appleir_cfg {
 
 extern struct _general_cfg general_cfg;
 #ifdef __powerpc__
-extern struct _lcd_r9600_cfg lcd_r9600_cfg;
+extern struct _lcd_sysfs_cfg lcd_sysfs_cfg;
 extern struct _lcd_r128_cfg lcd_r128_cfg;
 #else
 extern struct _lcd_x1600_cfg lcd_x1600_cfg;

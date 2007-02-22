@@ -163,21 +163,21 @@ sysfs_backlight_step(int dir)
 
   if (dir == STEP_UP)
     {
-      newval = val + lcd_r9600_cfg.step;
+      newval = val + lcd_sysfs_cfg.step;
 
       if (newval > lcd_bck_info.max)
 	newval = lcd_bck_info.max;
 
-      logdebug("LCD stepping +%d -> %d\n", lcd_r9600_cfg.step, newval);
+      logdebug("LCD stepping +%d -> %d\n", lcd_sysfs_cfg.step, newval);
     }
   else if (dir == STEP_DOWN)
     {
-      newval = val - lcd_r9600_cfg.step;
+      newval = val - lcd_sysfs_cfg.step;
 
       if (newval < SYSFS_BACKLIGHT_OFF)
 	newval = SYSFS_BACKLIGHT_OFF;
 
-      logdebug("LCD stepping -%d -> %d\n", lcd_r9600_cfg.step, newval);
+      logdebug("LCD stepping -%d -> %d\n", lcd_sysfs_cfg.step, newval);
     }
   else
     return;
@@ -196,17 +196,17 @@ sysfs_backlight_step(int dir)
 static void
 sysfs_backlight_fix_config(void)
 {
-  if (lcd_r9600_cfg.init < 0)
-    lcd_r9600_cfg.init = -1;
+  if (lcd_sysfs_cfg.init < 0)
+    lcd_sysfs_cfg.init = -1;
 
-  if (lcd_r9600_cfg.init > lcd_bck_info.max)
-    lcd_r9600_cfg.init = lcd_bck_info.max;
+  if (lcd_sysfs_cfg.init > lcd_bck_info.max)
+    lcd_sysfs_cfg.init = lcd_bck_info.max;
 
-  if (lcd_r9600_cfg.step < 1)
-    lcd_r9600_cfg.step = 1;
+  if (lcd_sysfs_cfg.step < 1)
+    lcd_sysfs_cfg.step = 1;
 
-  if (lcd_r9600_cfg.step > (lcd_bck_info.max / 2))
-    lcd_r9600_cfg.step = lcd_bck_info.max / 2;
+  if (lcd_sysfs_cfg.step > (lcd_bck_info.max / 2))
+    lcd_sysfs_cfg.step = lcd_bck_info.max / 2;
 }
 
 
@@ -237,9 +237,9 @@ r9600_sysfs_backlight_probe(void)
    * Set the initial backlight level
    * The value has been sanity checked already
    */
-  if (lcd_r9600_cfg.init > -1)
+  if (lcd_sysfs_cfg.init > -1)
     {
-      sysfs_backlight_set(lcd_r9600_cfg.init);
+      sysfs_backlight_set(lcd_sysfs_cfg.init);
     }
 
   lcd_bck_info.level = sysfs_backlight_get();
