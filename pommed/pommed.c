@@ -329,6 +329,13 @@ check_machine_smbios(void)
 
   /* Check vendor name */
   prop = SMBIOSGetVendorName();
+
+  if (prop == NULL)
+    {
+      logmsg(LOG_ERR, "Could not get vendor name from SMBIOS; running EFI ?");
+      return MACHINE_ERROR;
+    }
+
   logdebug("SMBIOS vendor name: [%s]\n", prop);
 
   if (strcmp(prop, "Apple Computer, Inc.") == 0)
@@ -341,6 +348,13 @@ check_machine_smbios(void)
 
   /* Check system name */
   prop = SMBIOSGetSystemName();
+
+  if (prop == NULL)
+    {
+      logmsg(LOG_ERR, "Could not get system name from SMBIOS");
+      return MACHINE_MAC_UNKNOWN;
+    }
+
   logdebug("SMBIOS system name: [%s]\n", prop);
 
   /* Core Duo MacBook Pro 15" (January 2006) & 17" (April 2006) */
