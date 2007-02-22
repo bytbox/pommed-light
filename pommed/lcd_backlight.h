@@ -50,7 +50,7 @@ void
 sysfs_backlight_step(int dir);
 
 int
-r9600_sysfs_backlight_probe(void);
+r9x00_sysfs_backlight_probe(void);
 
 int
 nvidia_sysfs_backlight_probe(void);

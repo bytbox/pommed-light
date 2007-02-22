@@ -11,6 +11,8 @@ version 1.2:
 	- gpomme: adapt to the new DBus notification.
 	- wmpomme: adapt to the new DBus notification.
 	- pommed: added support for PowerBook6,4 and nVidia GPUs.
+	- pommed: added support for
+		  + PowerBook6,5: iBook G4 October 2004
 
 version 1.1:
 	- gpomme: added theme selection; use -t theme_name to select the

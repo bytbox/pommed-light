@@ -41,6 +41,7 @@ typedef enum
     MACHINE_POWERBOOK_57,
     MACHINE_POWERBOOK_63,
     MACHINE_POWERBOOK_64,
+    MACHINE_POWERBOOK_65,
 #endif /* !__powerpc__ */
   } machine_type;
 

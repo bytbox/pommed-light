@@ -72,7 +72,7 @@ struct machine_ops pb32_ops = {
 /* PowerBook5,5 */
 struct machine_ops pb55_ops = {
   .type = MACHINE_POWERBOOK_55,
-  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
   .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_adb,
 };
@@ -80,7 +80,7 @@ struct machine_ops pb55_ops = {
 /* PowerBook5,6 / PowerBook G4 15" (Feb 2005) */
 struct machine_ops pb56_ops = {
   .type = MACHINE_POWERBOOK_56,
-  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
   .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_fountain,
 };
@@ -88,7 +88,7 @@ struct machine_ops pb56_ops = {
 /* PowerBook5,7 */
 struct machine_ops pb57_ops = {
   .type = MACHINE_POWERBOOK_57,
-  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
   .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_fountain,
 };
@@ -96,7 +96,7 @@ struct machine_ops pb57_ops = {
 /* PowerBook6,3 */
 struct machine_ops pb63_ops = {
   .type = MACHINE_POWERBOOK_63,
-  .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
   .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_adb,
 };
@@ -105,6 +105,14 @@ struct machine_ops pb63_ops = {
 struct machine_ops pb64_ops = {
   .type = MACHINE_POWERBOOK_64,
   .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
+  .lcd_backlight_step = sysfs_backlight_step,
+  .evdev_identify = evdev_is_adb,
+};
+
+/* PowerBook6,5 */
+struct machine_ops pb65_ops = {
+  .type = MACHINE_POWERBOOK_65,
+  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
   .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_adb,
 };
@@ -313,6 +321,9 @@ check_machine_pmu(void)
   /* PowerBook G4 12" (April 2004) */
   else if (strncmp(buffer, "PowerBook6,4", 12) == 0)
     ret = MACHINE_POWERBOOK_64;
+  /* iBook G4 (October 2004) */
+  else if (strncmp(buffer, "PowerBook6,5", 12) == 0)
+    ret = MACHINE_POWERBOOK_65;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
   
@@ -518,6 +529,10 @@ main (int argc, char **argv)
 
       case MACHINE_POWERBOOK_64:
 	mops = &pb64_ops;
+	break;
+
+      case MACHINE_POWERBOOK_65:
+	mops = &pb65_ops;
 	break;
 
 #endif /* !__powerpc__ */

@@ -258,7 +258,7 @@ sysfs_backlight_probe(int driver)
 }
 
 int
-r9600_sysfs_backlight_probe(void)
+r9x00_sysfs_backlight_probe(void)
 {
   return sysfs_backlight_probe(SYSFS_DRIVER_RADEON);
 }
