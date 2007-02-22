@@ -103,6 +103,13 @@ struct machine_ops pb_mops[] = {
     .evdev_identify = evdev_is_adb,
   },
 
+  {  /* PowerBook6,2 */
+    .type = MACHINE_POWERBOOK_62,
+    .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
   {  /* PowerBook6,3 */
     .type = MACHINE_POWERBOOK_63,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
@@ -120,6 +127,20 @@ struct machine_ops pb_mops[] = {
   {  /* PowerBook6,5 */
     .type = MACHINE_POWERBOOK_65,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook6,7 */
+    .type = MACHINE_POWERBOOK_67,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook6,8 */
+    .type = MACHINE_POWERBOOK_68,
+    .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .evdev_identify = evdev_is_adb,
   }
@@ -326,6 +347,9 @@ check_machine_pmu(void)
   /* PowerBook G4 12" (January 2003) */
   else if (strncmp(buffer, "PowerBook6,1", 12) == 0)
     ret = MACHINE_POWERBOOK_61;
+  /* PowerBook G4 12" (September 2003) */
+  else if (strncmp(buffer, "PowerBook6,2", 12) == 0)
+    ret = MACHINE_POWERBOOK_61;
   /* iBook G4 (October 2003) */
   else if (strncmp(buffer, "PowerBook6,3", 12) == 0)
     ret = MACHINE_POWERBOOK_63;
@@ -335,6 +359,12 @@ check_machine_pmu(void)
   /* iBook G4 (October 2004) */
   else if (strncmp(buffer, "PowerBook6,5", 12) == 0)
     ret = MACHINE_POWERBOOK_65;
+  /* iBook G4 */
+  else if (strncmp(buffer, "PowerBook6,7", 12) == 0)
+    ret = MACHINE_POWERBOOK_67;
+  /* PowerBook G4 12" */
+  else if (strncmp(buffer, "PowerBook6,8", 12) == 0)
+    ret = MACHINE_POWERBOOK_68;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
   

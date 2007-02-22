@@ -13,7 +13,10 @@ version 1.2:
 	- pommed: added support for PowerBook6,4 and nVidia GPUs.
 	- pommed: added support for
 		  + PowerBook6,1: PowerBook G4 12" January 2003
+		  + PowerBook6,2: PowerBook G4 12" September 2003
 		  + PowerBook6,5: iBook G4 October 2004
+		  + PowerBook6,7: iBook G4
+		  + PowerBook6,8: PowerBook G4 12"
 
 version 1.1:
 	- gpomme: added theme selection; use -t theme_name to select the
