@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,6 +97,14 @@ struct machine_ops pb57_ops = {
 struct machine_ops pb63_ops = {
   .type = MACHINE_POWERBOOK_63,
   .lcd_backlight_probe = r9600_sysfs_backlight_probe,
+  .lcd_backlight_step = sysfs_backlight_step,
+  .evdev_identify = evdev_is_adb,
+};
+
+/* PowerBook6,4 */
+struct machine_ops pb64_ops = {
+  .type = MACHINE_POWERBOOK_64,
+  .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
   .lcd_backlight_step = sysfs_backlight_step,
   .evdev_identify = evdev_is_adb,
 };
@@ -302,6 +310,9 @@ check_machine_pmu(void)
   /* iBook G4 (October 2003) */
   else if (strncmp(buffer, "PowerBook6,3", 12) == 0)
     ret = MACHINE_POWERBOOK_63;
+  /* PowerBook G4 12" (April 2004) */
+  else if (strncmp(buffer, "PowerBook6,4", 12) == 0)
+    ret = MACHINE_POWERBOOK_64;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
   
@@ -503,6 +514,10 @@ main (int argc, char **argv)
       
       case MACHINE_POWERBOOK_63:
 	mops = &pb63_ops;
+	break;
+
+      case MACHINE_POWERBOOK_64:
+	mops = &pb64_ops;
 	break;
 
 #endif /* !__powerpc__ */
