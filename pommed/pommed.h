@@ -6,7 +6,7 @@
 #define __POMMED_H__
 
 
-#define M_VERSION "1.1"
+#define M_VERSION "1.2"
 
 
 extern int debug;
@@ -26,9 +26,9 @@ kbd_set_fnmode(void);
 
 typedef enum
   {
-    MACHINE_ERROR = -1,
-    MACHINE_UNKNOWN,
-    MACHINE_MAC_UNKNOWN,
+    MACHINE_ERROR = -3,
+    MACHINE_UNKNOWN = -2,
+    MACHINE_MAC_UNKNOWN = -1,
 #ifndef __powerpc__
     MACHINE_MACBOOKPRO_1,
     MACHINE_MACBOOKPRO_2,
@@ -43,6 +43,7 @@ typedef enum
     MACHINE_POWERBOOK_64,
     MACHINE_POWERBOOK_65,
 #endif /* !__powerpc__ */
+    MACHINE_LAST
   } machine_type;
 
 struct machine_ops

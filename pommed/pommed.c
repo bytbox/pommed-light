@@ -58,102 +58,101 @@
 /* Machine-specific operations */
 struct machine_ops *mops;
 
+
+/* --- WARNING ---
+ *
+ * Be extra-careful here, the list below must come in the same
+ * order as the machine_type enum in pommed.h !
+ */
 #ifdef __powerpc__
 /* PowerBook machines */
 
-/* PowerBook3,2 */
-struct machine_ops pb32_ops = {
-  .type = MACHINE_POWERBOOK_32,
-  .lcd_backlight_probe = r128_backlight_probe,
-  .lcd_backlight_step = r128_backlight_step,
-  .evdev_identify = evdev_is_adb,
-};
+struct machine_ops pb_mops[] = {
+  {  /* PowerBook3,2 */
+    .type = MACHINE_POWERBOOK_32,
+    .lcd_backlight_probe = r128_backlight_probe,
+    .lcd_backlight_step = r128_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
 
-/* PowerBook5,5 */
-struct machine_ops pb55_ops = {
-  .type = MACHINE_POWERBOOK_55,
-  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
-  .lcd_backlight_step = sysfs_backlight_step,
-  .evdev_identify = evdev_is_adb,
-};
+  {  /* PowerBook5,5 */
+    .type = MACHINE_POWERBOOK_55,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
 
-/* PowerBook5,6 / PowerBook G4 15" (Feb 2005) */
-struct machine_ops pb56_ops = {
-  .type = MACHINE_POWERBOOK_56,
-  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
-  .lcd_backlight_step = sysfs_backlight_step,
-  .evdev_identify = evdev_is_fountain,
-};
+  {  /* PowerBook5,6 */
+    .type = MACHINE_POWERBOOK_56,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_fountain,
+  },
 
-/* PowerBook5,7 */
-struct machine_ops pb57_ops = {
-  .type = MACHINE_POWERBOOK_57,
-  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
-  .lcd_backlight_step = sysfs_backlight_step,
-  .evdev_identify = evdev_is_fountain,
-};
+  {  /* PowerBook5,7 */
+    .type = MACHINE_POWERBOOK_57,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_fountain,
+  },
 
-/* PowerBook6,3 */
-struct machine_ops pb63_ops = {
-  .type = MACHINE_POWERBOOK_63,
-  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
-  .lcd_backlight_step = sysfs_backlight_step,
-  .evdev_identify = evdev_is_adb,
-};
+  {  /* PowerBook6,3 */
+    .type = MACHINE_POWERBOOK_63,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
 
-/* PowerBook6,4 */
-struct machine_ops pb64_ops = {
-  .type = MACHINE_POWERBOOK_64,
-  .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
-  .lcd_backlight_step = sysfs_backlight_step,
-  .evdev_identify = evdev_is_adb,
-};
+  {  /* PowerBook6,4 */
+    .type = MACHINE_POWERBOOK_64,
+    .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
 
-/* PowerBook6,5 */
-struct machine_ops pb65_ops = {
-  .type = MACHINE_POWERBOOK_65,
-  .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
-  .lcd_backlight_step = sysfs_backlight_step,
-  .evdev_identify = evdev_is_adb,
+  {  /* PowerBook6,5 */
+    .type = MACHINE_POWERBOOK_65,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  }
 };
 
 #else
 
-/* MacBook Pro machines */
+struct machine_ops mb_mops[] = {
+  /* MacBook Pro machines */
 
-/* MacBookPro1,1 / MacBookPro1,2 (Core Duo) */
-struct machine_ops mbp1_ops = {
-  .type = MACHINE_MACBOOKPRO_1,
-  .lcd_backlight_probe = x1600_backlight_probe,
-  .lcd_backlight_step = x1600_backlight_step,
-  .evdev_identify = evdev_is_geyser3,
-};
+  {  /* MacBookPro1,1 / MacBookPro1,2 (Core Duo) */
+    .type = MACHINE_MACBOOKPRO_1,
+    .lcd_backlight_probe = x1600_backlight_probe,
+    .lcd_backlight_step = x1600_backlight_step,
+    .evdev_identify = evdev_is_geyser3,
+  },
 
-/* MacBookPro2,1 / MacBookPro2,2 (Core2 Duo) */
-struct machine_ops mbp2_ops = {
-  .type = MACHINE_MACBOOKPRO_2,
-  .lcd_backlight_probe = x1600_backlight_probe,
-  .lcd_backlight_step = x1600_backlight_step,
-  .evdev_identify = evdev_is_geyser4,
-};
+  {  /* MacBookPro2,1 / MacBookPro2,2 (Core2 Duo) */
+    .type = MACHINE_MACBOOKPRO_2,
+    .lcd_backlight_probe = x1600_backlight_probe,
+    .lcd_backlight_step = x1600_backlight_step,
+    .evdev_identify = evdev_is_geyser4,
+  },
 
 
-/* MacBook machines */
+  /* MacBook machines */
 
-/* MacBook1,1 (Core Duo) */
-struct machine_ops mb1_ops = {
-  .type = MACHINE_MACBOOK_1,
-  .lcd_backlight_probe = gma950_backlight_probe,
-  .lcd_backlight_step = gma950_backlight_step,
-  .evdev_identify = evdev_is_geyser3,
-};
+  {  /* MacBook1,1 (Core Duo) */
+    .type = MACHINE_MACBOOK_1,
+    .lcd_backlight_probe = gma950_backlight_probe,
+    .lcd_backlight_step = gma950_backlight_step,
+    .evdev_identify = evdev_is_geyser3,
+  },
 
-/* MacBook2,1 (Core2 Duo) */
-struct machine_ops mb2_ops = {
-  .type = MACHINE_MACBOOK_2,
-  .lcd_backlight_probe = gma950_backlight_probe,
-  .lcd_backlight_step = gma950_backlight_step,
-  .evdev_identify = evdev_is_geyser4,
+  {  /* MacBook2,1 (Core2 Duo) */
+    .type = MACHINE_MACBOOK_2,
+    .lcd_backlight_probe = gma950_backlight_probe,
+    .lcd_backlight_step = gma950_backlight_step,
+    .evdev_identify = evdev_is_geyser4,
+  }
 };
 #endif /* __powerpc__ */
 
@@ -490,53 +489,6 @@ main (int argc, char **argv)
   machine = check_machine();
   switch (machine)
     {
-#ifndef __powerpc__
-      case MACHINE_MACBOOKPRO_1:
-	mops = &mbp1_ops;
-	break;
-
-      case MACHINE_MACBOOKPRO_2:
-	mops = &mbp2_ops;
-	break;
-
-      case MACHINE_MACBOOK_1:
-	mops = &mb1_ops;
-	break;
-
-      case MACHINE_MACBOOK_2:
-	mops = &mb2_ops;
-	break;
-#else
-      case MACHINE_POWERBOOK_32:
-	mops = &pb32_ops;
-	break;
-
-      case MACHINE_POWERBOOK_55:
-	mops = &pb55_ops;
-	break;
-
-      case MACHINE_POWERBOOK_56:
-	mops = &pb56_ops;
-	break;
-
-      case MACHINE_POWERBOOK_57:
-	mops = &pb57_ops;
-	break;
-      
-      case MACHINE_POWERBOOK_63:
-	mops = &pb63_ops;
-	break;
-
-      case MACHINE_POWERBOOK_64:
-	mops = &pb64_ops;
-	break;
-
-      case MACHINE_POWERBOOK_65:
-	mops = &pb65_ops;
-	break;
-
-#endif /* !__powerpc__ */
-
       case MACHINE_MAC_UNKNOWN:
 	logmsg(LOG_ERR, "Unknown Apple machine");
 
@@ -552,6 +504,25 @@ main (int argc, char **argv)
       case MACHINE_ERROR:
 	exit(1);
 	break;
+
+      default:
+	if (machine < MACHINE_LAST)
+	  {
+#ifdef __powerpc__
+	    mops = &pb_mops[machine];
+#else
+	    mops = &mb_mops[machine];
+#endif /* __powerpc__ */
+	  }
+	break;
+    }
+
+  /* Runtime sanity check: catch errors in the mb_mops and pb_mops arrays */
+  if (mops->type != machine)
+    {
+      logmsg(LOG_ERR, "machine_ops mismatch: expected %d, found %d", machine, mops->type);
+
+      exit(1);
     }
 
   ret = mops->lcd_backlight_probe();
