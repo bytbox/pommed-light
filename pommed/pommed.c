@@ -96,6 +96,13 @@ struct machine_ops pb_mops[] = {
     .evdev_identify = evdev_is_fountain,
   },
 
+  {  /* PowerBook6,1 */
+    .type = MACHINE_POWERBOOK_61,
+    .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
   {  /* PowerBook6,3 */
     .type = MACHINE_POWERBOOK_63,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
@@ -305,6 +312,7 @@ check_machine_pmu(void)
   /* PowerBook G4 Titanium 15" (December 2000) */
   if (strncmp(buffer, "PowerBook3,2", 12) == 0)
     ret = MACHINE_POWERBOOK_32;
+
   /* PowerBook G4 Aluminium 17" (April 2004) */
   else if (strncmp(buffer, "PowerBook5,5", 12) == 0)
     ret = MACHINE_POWERBOOK_55;
@@ -314,6 +322,10 @@ check_machine_pmu(void)
   /* PowerBook G4 Aluminium 17" (February 2005) */
   else if (strncmp(buffer, "PowerBook5,7", 12) == 0)
     ret = MACHINE_POWERBOOK_57;
+
+  /* PowerBook G4 12" (January 2003) */
+  else if (strncmp(buffer, "PowerBook6,1", 12) == 0)
+    ret = MACHINE_POWERBOOK_61;
   /* iBook G4 (October 2003) */
   else if (strncmp(buffer, "PowerBook6,3", 12) == 0)
     ret = MACHINE_POWERBOOK_63;
