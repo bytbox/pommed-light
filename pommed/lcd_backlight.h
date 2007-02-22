@@ -44,8 +44,8 @@ gma950_backlight_probe(void);
 
 
 /* sysfs_backlight.c */
-#define R9600_BACKLIGHT_OFF	0
-#define R9600_BACKLIGHT_MAX	127
+#define SYSFS_BACKLIGHT_OFF	0
+
 void
 sysfs_backlight_step(int dir);
 

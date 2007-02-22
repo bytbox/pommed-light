@@ -58,6 +58,13 @@ static char *brightness[] =
     "/sys/class/backlight/radeonbl0/brightness"
   };
 
+/* sysfs max_brightness node path */
+static char *max_brightness[] =
+  {
+    "/dev/null",
+    "/sys/class/backlight/radeonbl0/max_brightness"
+  };
+
 
 struct _lcd_bck_info lcd_bck_info;
 
@@ -93,6 +100,38 @@ sysfs_backlight_get(void)
   return atoi(buffer);
 }
 
+static int
+sysfs_backlight_get_max(void)
+{
+  int fd;
+  int n;
+  char buffer[4];
+
+  if (bck_driver == SYSFS_DRIVER_NONE)
+    return 0;
+
+  fd = open(max_brightness[bck_driver], O_RDONLY);
+  if (fd < 0)
+    {
+      logmsg(LOG_WARNING, "Could not open sysfs max_brightness node: %s", strerror(errno));
+
+      return 0;
+    }
+
+  n = read(fd, buffer, sizeof(buffer) -1);
+  if (n < 1)
+    {
+      logmsg(LOG_WARNING, "Could not read sysfs max_brightness node");
+
+      close(fd);
+      return 0;
+    }
+  close(fd);
+
+  return atoi(buffer);
+}
+
+
 static void
 sysfs_backlight_set(int value)
 {
@@ -126,8 +165,8 @@ sysfs_backlight_step(int dir)
     {
       newval = val + lcd_r9600_cfg.step;
 
-      if (newval > R9600_BACKLIGHT_MAX)
-	newval = R9600_BACKLIGHT_MAX;
+      if (newval > lcd_bck_info.max)
+	newval = lcd_bck_info.max;
 
       logdebug("LCD stepping +%d -> %d\n", lcd_r9600_cfg.step, newval);
     }
@@ -135,8 +174,8 @@ sysfs_backlight_step(int dir)
     {
       newval = val - lcd_r9600_cfg.step;
 
-      if (newval < R9600_BACKLIGHT_OFF)
-	newval = R9600_BACKLIGHT_OFF;
+      if (newval < SYSFS_BACKLIGHT_OFF)
+	newval = SYSFS_BACKLIGHT_OFF;
 
       logdebug("LCD stepping -%d -> %d\n", lcd_r9600_cfg.step, newval);
     }
@@ -148,6 +187,26 @@ sysfs_backlight_step(int dir)
   mbpdbus_send_lcd_backlight(newval, val);
 
   lcd_bck_info.level = newval;
+}
+
+
+/* We can't fix the config until we know the max backlight value,
+ * so, here, fix_config() is static and called at probe time
+ */
+static void
+sysfs_backlight_fix_config(void)
+{
+  if (lcd_r9600_cfg.init < 0)
+    lcd_r9600_cfg.init = -1;
+
+  if (lcd_r9600_cfg.init > lcd_bck_info.max)
+    lcd_r9600_cfg.init = lcd_bck_info.max;
+
+  if (lcd_r9600_cfg.step < 1)
+    lcd_r9600_cfg.step = 1;
+
+  if (lcd_r9600_cfg.step > (lcd_bck_info.max / 2))
+    lcd_r9600_cfg.step = lcd_bck_info.max / 2;
 }
 
 
@@ -169,7 +228,10 @@ r9600_sysfs_backlight_probe(void)
 
   bck_driver = SYSFS_DRIVER_RADEON;
 
-  lcd_bck_info.max = R9600_BACKLIGHT_MAX;
+  lcd_bck_info.max = sysfs_backlight_get_max();
+
+  /* Now we can fix the config */
+  sysfs_backlight_fix_config();
 
   /*
    * Set the initial backlight level
@@ -184,20 +246,3 @@ r9600_sysfs_backlight_probe(void)
 
     return 0;
 }
-
-void
-r9600_backlight_fix_config(void)
-{
-  if (lcd_r9600_cfg.init < 0)
-    lcd_r9600_cfg.init = -1;
-
-  if (lcd_r9600_cfg.init > R9600_BACKLIGHT_MAX)
-    lcd_r9600_cfg.init = R9600_BACKLIGHT_MAX;
-
-  if (lcd_r9600_cfg.step < 1)
-    lcd_r9600_cfg.step = 1;
-
-  if (lcd_r9600_cfg.step > (R9600_BACKLIGHT_MAX / 2))
-    lcd_r9600_cfg.step = R9600_BACKLIGHT_MAX / 2;
-}
-

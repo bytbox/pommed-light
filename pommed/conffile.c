@@ -300,7 +300,7 @@ config_load(void)
   sec = cfg_getsec(cfg, "lcd_r9600");
   lcd_r9600_cfg.init = cfg_getint(sec, "init");
   lcd_r9600_cfg.step = cfg_getint(sec, "step");
-  r9600_backlight_fix_config();
+  /* No _fix_config() call here, it's done at probe time */
 
   sec = cfg_getsec(cfg, "lcd_r128");
   lcd_r128_cfg.init = cfg_getint(sec, "init");
