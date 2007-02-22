@@ -161,9 +161,20 @@ evdev_process_events(int fd)
 	    break;
 	}
     }
+  else if (ev.type == EV_SW)
+    {
+      /* Lid switch */
+      if (ev.code == SW_LID)
+	{
+	  if (ev.value)
+	    logdebug("\nLID: closed\n");
+	  else
+	    logdebug("\nLID: open\n");
+	}
+    }
 }
 
-
+#ifdef __powerpc__
 /* PowerBook G4 Titanium */
 int
 evdev_is_adb(unsigned short *id)
@@ -173,7 +184,7 @@ evdev_is_adb(unsigned short *id)
   if (id[ID_BUS] != BUS_ADB)
     return 0;
 
-  if (id[ID_VENDOR] != 1)
+  if (id[ID_VENDOR] != 0x0001)
     return 0;
 
   return ((product == ADB_PRODUCT_ID_KEYBOARD)
@@ -197,7 +208,26 @@ evdev_is_fountain(unsigned short *id)
 	  || (product == USB_PRODUCT_ID_FOUNTAIN_JIS));
 }
 
-#ifndef __powerpc__
+/* PMU Lid switch */
+static int
+evdev_is_lidswitch(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_HOST)
+    return 0;
+
+  if (id[ID_VENDOR] != 0x0001)
+    return 0;
+
+  if (id[ID_VERSION] != 0x0100)
+    return 0;
+
+  return (product == 0x0001);
+}
+
+#else
+
 /* Core Duo MacBook & MacBook Pro */
 int
 evdev_is_geyser3(unsigned short *id)
@@ -246,6 +276,21 @@ evdev_is_appleir(unsigned short *id)
 
   return (product == USB_PRODUCT_ID_APPLEIR);
 }
+
+/* ACPI Lid switch */
+static int
+evdev_is_lidswitch(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_HOST)
+    return 0;
+
+  if (id[ID_VENDOR] != 0)
+    return 0;
+
+  return (product == 0x0005);
+}
 #endif /* !__powerpc__ */
 
 
@@ -286,12 +331,11 @@ evdev_open(struct pollfd **fds)
 
       ioctl(fd[i], EVIOCGID, id);
 
-#ifdef __powerpc__
-      if (!mops->evdev_identify(id))
-#else
       if ((!mops->evdev_identify(id))
-	  && !(appleir_cfg.enabled && evdev_is_appleir(id)))
-#endif /* __powerpc__ */
+#ifndef __powerpc__
+	  && !(appleir_cfg.enabled && evdev_is_appleir(id))
+#endif
+	  && !(has_kbd_backlight() && evdev_is_lidswitch(id)))
 	{
 	  logdebug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
 
@@ -305,18 +349,25 @@ evdev_open(struct pollfd **fds)
 
       ioctl(fd[i], EVIOCGBIT(0, EV_MAX), bit[0]);
 
-      if (!test_bit(1, bit[0]))
+      if (!test_bit(EV_KEY, bit[0]))
 	{
-	  logdebug("Discarding evdev %d with no key event type (not a keyboard)\n", i);
+	  logdebug("evdev %d: no EV_KEY event type (not a keyboard)\n", i);
 
-	  close(fd[i]);
-	  fd[i] = -1;
+	  if (!test_bit(EV_SW, bit[0]))
+	    {
+	      logdebug("evdev %d: no EV_SW event type (not a switch)\n", i);
 
-	  continue;
+	      close(fd[i]);
+	      fd[i] = -1;
+
+	      logdebug("Discarding evdev %d\n", i);
+
+	      continue;
+	    }
 	}
-      else if (test_bit(2, bit[0]))
+      else if (test_bit(EV_ABS, bit[0]))
 	{
-	  logdebug("Discarding evdev %d with event type >= 2 (not a keyboard)\n", i);
+	  logdebug("Discarding evdev %d with EV_ABS event type (mouse/trackpad)\n", i);
 
 	  close(fd[i]);
 	  fd[i] = -1;
