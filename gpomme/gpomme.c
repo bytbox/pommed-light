@@ -4,7 +4,7 @@
  * $Id$
  *
  * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *
  * Portions of the GTK code below were shamelessly
  * stolen from pbbuttonsd. Thanks ! ;-)
@@ -315,6 +315,7 @@ mbp_dbus_listen(gpointer userdata)
   int scratch;
   int cur;
   int max;
+  int who;
   double ratio;
 
   /* Disconnected, try to reconnect */
@@ -353,11 +354,15 @@ mbp_dbus_listen(gpointer userdata)
 				DBUS_TYPE_UINT32, &cur,
 				DBUS_TYPE_UINT32, &scratch, /* previous */
 				DBUS_TYPE_UINT32, &max,
+				DBUS_TYPE_UINT32, &who,
 				DBUS_TYPE_INVALID);
 
-	  ratio = (double)cur / (double)max;
+	  if (who == KBD_USER)
+	    {
+	      ratio = (double)cur / (double)max;
 
-	  show_window(IMG_KBD_BCK, _("Keyboard backlight level"), ratio);
+	      show_window(IMG_KBD_BCK, _("Keyboard backlight level"), ratio);
+	    }
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.audioVolume", "audioVolume"))
 	{

@@ -19,8 +19,13 @@ kbd_probe_lmu(int addr, char* i2cdev);
 #define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
 #endif /* __powerpc__ */
 
+
 #define KBD_BACKLIGHT_OFF       0
 #define KBD_BACKLIGHT_MAX       255
+
+
+#define KBD_USER     0
+#define KBD_AUTO     1
 
 
 struct _kbd_bck_info

@@ -83,7 +83,7 @@ kbd_backlight_get(void)
 }
 
 static void
-kbd_backlight_set(int val)
+kbd_backlight_set(int val, int who)
 {
   int curval;
 
@@ -130,7 +130,7 @@ kbd_backlight_set(int val)
 
   logdebug("KBD backlight value set to %d\n", val);
 
-  mbpdbus_send_kbd_backlight(val, curval);
+  mbpdbus_send_kbd_backlight(val, curval, who);
 
   kbd_bck_info.level = val;
 }
@@ -138,7 +138,7 @@ kbd_backlight_set(int val)
 void
 kbd_backlight_off(void)
 {
-  kbd_backlight_set(KBD_BACKLIGHT_OFF);
+  kbd_backlight_set(KBD_BACKLIGHT_OFF, KBD_USER);
 }
 
 void
@@ -173,7 +173,7 @@ kbd_backlight_step(int dir)
   else
     return;
 
-  kbd_backlight_set(newval);
+  kbd_backlight_set(newval, KBD_USER);
 }
 
 void
@@ -231,7 +231,7 @@ kbd_backlight_ambient_check(void)
       kbd_bck_info.auto_on = 1;
       kbd_bck_info.off = 0;
 
-      kbd_backlight_set(kbd_cfg.auto_lvl);
+      kbd_backlight_set(kbd_cfg.auto_lvl, KBD_AUTO);
     }
   else if (kbd_bck_info.auto_on)
     {
@@ -242,7 +242,7 @@ kbd_backlight_ambient_check(void)
 	  kbd_bck_info.auto_on = 0;
 	  kbd_bck_info.off = 0;
 
-	  kbd_backlight_set(KBD_BACKLIGHT_OFF);
+	  kbd_backlight_set(KBD_BACKLIGHT_OFF, KBD_AUTO);
 	}
     }
 

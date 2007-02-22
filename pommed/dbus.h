@@ -10,7 +10,7 @@ void
 mbpdbus_send_lcd_backlight(int cur, int prev);
 
 void
-mbpdbus_send_kbd_backlight(int cur, int prev);
+mbpdbus_send_kbd_backlight(int cur, int prev, int who);
 
 void
 mbpdbus_send_ambient_light(int l, int l_prev, int r, int r_prev);

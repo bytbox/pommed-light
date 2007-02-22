@@ -14,6 +14,10 @@
 #define MBP_DBUS_SIG_LIGHT  (1 << 5)
 
 
+#define KBD_USER      0
+#define KBD_AUTO      1
+
+
 /* Method calls */
 int
 mbp_call_lcd_getlevel(DBusPendingCallNotifyFunction cb, void *userdata);

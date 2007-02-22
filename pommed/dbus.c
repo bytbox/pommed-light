@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,7 +89,7 @@ mbpdbus_send_lcd_backlight(int cur, int prev)
 }
 
 void
-mbpdbus_send_kbd_backlight(int cur, int prev)
+mbpdbus_send_kbd_backlight(int cur, int prev, int who)
 {
   DBusMessage *msg;
 
@@ -114,6 +114,7 @@ mbpdbus_send_kbd_backlight(int cur, int prev)
 				 DBUS_TYPE_UINT32, &cur,
 				 DBUS_TYPE_UINT32, &prev,
 				 DBUS_TYPE_UINT32, &kbd_bck_info.max,
+				 DBUS_TYPE_UINT32, &who,
 				 DBUS_TYPE_INVALID);
   if (ret == FALSE)
     {
