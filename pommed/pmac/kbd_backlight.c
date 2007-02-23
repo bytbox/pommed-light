@@ -57,9 +57,15 @@ static char *i2cdev; /* i2c bus device */
 int
 has_kbd_backlight(void)
 {
-  return ((mops->type == MACHINE_POWERBOOK_55)
+  return ((mops->type == MACHINE_POWERBOOK_51)
+	  || (mops->type == MACHINE_POWERBOOK_52)
+	  || (mops->type == MACHINE_POWERBOOK_53)
+	  || (mops->type == MACHINE_POWERBOOK_54)
+	  || (mops->type == MACHINE_POWERBOOK_55)
 	  || (mops->type == MACHINE_POWERBOOK_56)
-	  || (mops->type == MACHINE_POWERBOOK_57));
+	  || (mops->type == MACHINE_POWERBOOK_57)
+	  || (mops->type == MACHINE_POWERBOOK_58)
+	  || (mops->type == MACHINE_POWERBOOK_59));
 }
 
 static int

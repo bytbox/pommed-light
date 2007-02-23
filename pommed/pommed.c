@@ -68,10 +68,63 @@ struct machine_ops *mops;
 /* PowerBook machines */
 
 struct machine_ops pb_mops[] = {
+  /* PowerBook3,1 is a G3-based PowerBook */
+
   {  /* PowerBook3,2 */
     .type = MACHINE_POWERBOOK_32,
     .lcd_backlight_probe = r128_backlight_probe,
     .lcd_backlight_step = r128_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook3,3 */
+    .type = MACHINE_POWERBOOK_33,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook3,4 */
+    .type = MACHINE_POWERBOOK_34,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook3,5 */
+    .type = MACHINE_POWERBOOK_35,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  /* PowerBook4,* -> G3 iBooks */
+
+  {  /* PowerBook5,1 */
+    .type = MACHINE_POWERBOOK_51,
+    .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook5,2 */
+    .type = MACHINE_POWERBOOK_52,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook5,3 */
+    .type = MACHINE_POWERBOOK_53,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_adb,
+  },
+
+  {  /* PowerBook5,4 */
+    .type = MACHINE_POWERBOOK_54,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -95,6 +148,22 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_step = sysfs_backlight_step,
     .evdev_identify = evdev_is_fountain,
   },
+
+  {  /* PowerBook5,8 */
+    .type = MACHINE_POWERBOOK_58,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_fountain,
+  },
+
+  {  /* PowerBook5,9 */
+    .type = MACHINE_POWERBOOK_59,
+    .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .evdev_identify = evdev_is_fountain,
+  },
+
+  /* G4 iBooks & 12" PowerBooks */
 
   {  /* PowerBook6,1 */
     .type = MACHINE_POWERBOOK_61,
@@ -130,6 +199,8 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_step = sysfs_backlight_step,
     .evdev_identify = evdev_is_adb,
   },
+
+  /* Looks like PowerBook6,6 never made it to the market ? */
 
   {  /* PowerBook6,7 */
     .type = MACHINE_POWERBOOK_67,
@@ -333,7 +404,28 @@ check_machine_pmu(void)
   /* PowerBook G4 Titanium 15" (December 2000) */
   if (strncmp(buffer, "PowerBook3,2", 12) == 0)
     ret = MACHINE_POWERBOOK_32;
+  /* PowerBook G4 Titanium 15" (October 2001) */
+  else if (strncmp(buffer, "PowerBook3,3", 12) == 0)
+    ret = MACHINE_POWERBOOK_33;
+  /* PowerBook G4 Titanium 15" (April 2002) */
+  else if (strncmp(buffer, "PowerBook3,4", 12) == 0)
+    ret = MACHINE_POWERBOOK_34;
+  /* PowerBook G4 Titanium 15" */
+  else if (strncmp(buffer, "PowerBook3,5", 12) == 0)
+    ret = MACHINE_POWERBOOK_35;
 
+  /* PowerBook G4 Aluminium 17" */
+  else if (strncmp(buffer, "PowerBook5,1", 12) == 0)
+    ret = MACHINE_POWERBOOK_51;
+  /* PowerBook G4 Aluminium 15" (September 2003) */
+  else if (strncmp(buffer, "PowerBook5,2", 12) == 0)
+    ret = MACHINE_POWERBOOK_52;
+  /* PowerBook G4 Aluminium 17" (September 2003) */
+  else if (strncmp(buffer, "PowerBook5,3", 12) == 0)
+    ret = MACHINE_POWERBOOK_53;
+  /* PowerBook G4 Aluminium 15" (April 2004) */
+  else if (strncmp(buffer, "PowerBook5,4", 12) == 0)
+    ret = MACHINE_POWERBOOK_54;
   /* PowerBook G4 Aluminium 17" (April 2004) */
   else if (strncmp(buffer, "PowerBook5,5", 12) == 0)
     ret = MACHINE_POWERBOOK_55;
@@ -343,6 +435,12 @@ check_machine_pmu(void)
   /* PowerBook G4 Aluminium 17" (February 2005) */
   else if (strncmp(buffer, "PowerBook5,7", 12) == 0)
     ret = MACHINE_POWERBOOK_57;
+  /* PowerBook G4 Aluminium 15" */
+  else if (strncmp(buffer, "PowerBook5,8", 12) == 0)
+    ret = MACHINE_POWERBOOK_58;
+  /* PowerBook G4 Aluminium 17" */
+  else if (strncmp(buffer, "PowerBook5,9", 12) == 0)
+    ret = MACHINE_POWERBOOK_59;
 
   /* PowerBook G4 12" (January 2003) */
   else if (strncmp(buffer, "PowerBook6,1", 12) == 0)

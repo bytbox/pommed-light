@@ -11,12 +11,29 @@ version 1.2:
 	- gpomme: adapt to the new DBus notification.
 	- wmpomme: adapt to the new DBus notification.
 	- pommed: added support for PowerBook6,4 and nVidia GPUs.
-	- pommed: added support for
+	- pommed: added UNTESTED support for
+		  + PowerBook3,3: PowerBook G4 Titanium 15" October 2001
+		  + PowerBook3,4: PowerBook G4 Titanium 15" April 2002
+		  + PowerBook3,5: PowerBook G4 Titanium 15"
+		  + PowerBook5,1: PowerBook G4 Aluminium 17"
+		  + PowerBook5,2: PowerBook G4 Aluminium 15" September 2003
+		  + PowerBook5,3: PowerBook G4 Aluminium 17" September 2003	
+		  + PowerBook5,4: PowerBook G4 Aluminium 15" April 2004
+		  + PowerBook5,8: PowerBook G4 Aluminium 15"
+		  + PowerBook5,9: PowerBook G4 Aluminium 17"
 		  + PowerBook6,1: PowerBook G4 12" January 2003
 		  + PowerBook6,2: PowerBook G4 12" September 2003
 		  + PowerBook6,5: iBook G4 October 2004
 		  + PowerBook6,7: iBook G4
 		  + PowerBook6,8: PowerBook G4 12"
+
+	If you own one of the machines listed above, please test pommed by
+	running pommed -d and tell us:
+	   - if it works at all
+	   - if, not running either pommed or pbbuttonsd, pressing the
+	     backlight up/down keys makes the backlight level change
+	Please send the debug output along with these information; we know
+	that pommed won't work out of the box on some of these machines.
 
 version 1.1:
 	- gpomme: added theme selection; use -t theme_name to select the
