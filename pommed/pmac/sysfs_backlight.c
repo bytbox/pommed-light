@@ -38,8 +38,9 @@
 
 
 #define SYSFS_DRIVER_NONE      0
-#define SYSFS_DRIVER_RADEON    1
-#define SYSFS_DRIVER_NVIDIA    2
+#define SYSFS_DRIVER_ATY128    1
+#define SYSFS_DRIVER_RADEON    2
+#define SYSFS_DRIVER_NVIDIA    3
 
 
 /* sysfs backlight driver in use */
@@ -49,6 +50,7 @@ static int bck_driver = SYSFS_DRIVER_NONE;
 static char *actual_brightness[] =
   {
     "/dev/null",
+    "/sys/class/backlight/aty128bl0/actual_brightness",
     "/sys/class/backlight/radeonbl0/actual_brightness",
     "/sys/class/backlight/nvidiabl0/actual_brightness"
   };
@@ -57,6 +59,7 @@ static char *actual_brightness[] =
 static char *brightness[] =
   {
     "/dev/null",
+    "/sys/class/backlight/aty128bl0/brightness",
     "/sys/class/backlight/radeonbl0/brightness",
     "/sys/class/backlight/nvidiabl0/brightness"
   };
@@ -65,6 +68,7 @@ static char *brightness[] =
 static char *max_brightness[] =
   {
     "/dev/null",
+    "/sys/class/backlight/aty128bl0/max_brightness",
     "/sys/class/backlight/radeonbl0/max_brightness",
     "/sys/class/backlight/nvidiabl0/max_brightness"
   };
@@ -194,6 +198,24 @@ sysfs_backlight_step(int dir)
 }
 
 
+/* When brightness keys are handled by the kernel itself,
+ * we're only updating our internal buffers
+ */
+void
+sysfs_backlight_step_kernel(int dir)
+{
+  int val;
+
+  val = sysfs_backlight_get();
+
+  logdebug("LCD stepping: %d -> %d\n", lcd_bck_info.level, val);
+
+  mbpdbus_send_lcd_backlight(val, lcd_bck_info.level);
+
+  lcd_bck_info.level = val;
+}
+
+
 /* We can't fix the config until we know the max backlight value,
  * so, here, fix_config() is static and called at probe time
  */
@@ -255,6 +277,12 @@ sysfs_backlight_probe(int driver)
   lcd_bck_info.level = sysfs_backlight_get();
 
   return 0;
+}
+
+int
+aty128_sysfs_backlight_probe(void)
+{
+  return sysfs_backlight_probe(SYSFS_DRIVER_ATY128);
 }
 
 int

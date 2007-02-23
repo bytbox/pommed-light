@@ -9,22 +9,21 @@ general {
 	fnmode = 1
 }
 
-# sysfs backlight control (ATI Radeon 9600 and nVidia cards)
+# sysfs backlight control
 lcd_sysfs {
+	# The sysfs backlight control is a generic interface provided
+	# by the Linux kernel for backlight control on most graphic cards.
+	# The brightness range can differ depending on the hardware.
+
 	# initial backlight level [100] (0 - 127, -1 to disable)
 	init = -1
 	# step value (1 - 63)
 	step = 8
-}
 
-# ATI r128 backlight control (PowerBook Titanium)
-lcd_r128 {
-	# initial backlight level [0x6f] (0x1f - 0x94 usually, -1 to disable)
-	init = -1
-
-	# The backlight is handled by the kernel on these machines, so here
-	# there is no step configuration, as pommed doesn't get to set the
-	# backlight level when you press on the keys.
+	# WARNING
+	# On some machines, the backlight is handled by the kernel, so
+	# the "step" configuration value is useless, as pommed doesn't
+	# get to set the backlight level when you press on the keys.
 }
 
 # Audio support

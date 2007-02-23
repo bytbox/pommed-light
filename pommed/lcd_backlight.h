@@ -49,24 +49,18 @@ gma950_backlight_probe(void);
 void
 sysfs_backlight_step(int dir);
 
+void
+sysfs_backlight_step_kernel(int dir);
+
+int
+aty128_sysfs_backlight_probe(void);
+
 int
 r9x00_sysfs_backlight_probe(void);
 
 int
 nvidia_sysfs_backlight_probe(void);
 
-
-/* r128_backlight.c */
-#define R128_BACKLIGHT_OFF	0
-#define R128_BACKLIGHT_MAX	127
-void
-r128_backlight_step(int dir);
-
-int
-r128_backlight_probe(void);
-
-void
-r128_backlight_fix_config(void);
 #endif /* !__powerpc__ */
 
 #endif /* !__LCD_BACKLIGHT_H__ */

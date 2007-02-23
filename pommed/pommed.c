@@ -72,8 +72,8 @@ struct machine_ops pb_mops[] = {
 
   {  /* PowerBook3,2 */
     .type = MACHINE_POWERBOOK_32,
-    .lcd_backlight_probe = r128_backlight_probe,
-    .lcd_backlight_step = r128_backlight_step,
+    .lcd_backlight_probe = aty128_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step_kernel,
     .evdev_identify = evdev_is_adb,
   },
 

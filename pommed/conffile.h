@@ -15,10 +15,6 @@ struct _lcd_sysfs_cfg {
   int step;
 };
 
-struct _lcd_r128_cfg {
-  int init;
-};
-
 #else
 
 struct _lcd_x1600_cfg {
