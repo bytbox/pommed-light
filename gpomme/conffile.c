@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <errno.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -30,11 +31,6 @@
 
 #include "gpomme.h"
 #include "theme.h"
-
-/*
- * TODO
- *  - print config with cfg_print()
- */
 
 #define CONFFILE        "/.gpommerc"
 
@@ -46,6 +42,7 @@ static cfg_opt_t cfg_opts[] =
   };
 
 
+cfg_t *cfg;
 static char *conffile;
 
 
@@ -82,7 +79,6 @@ int
 config_load(void)
 {
   struct passwd *pw;
-  cfg_t *cfg;
 
   int ret;
 
@@ -151,7 +147,29 @@ config_load(void)
 	}
     }
 
-  cfg_free(cfg);
+  return 0;
+}
+
+int
+config_write(void)
+{
+  FILE *fp;
+
+  fp = fopen(conffile, "w");
+  if (fp == NULL)
+    {
+      fprintf(stderr, "Could not write to config file: %s\n", strerror(errno));
+
+      return -1;
+    }
+
+  fprintf(fp, "# gpomme config file\n");
+  fprintf(fp, "#  - theme : name of the theme to use\n");
+  fprintf(fp, "#  - timeout : time before the window hides\n\n");
+
+  cfg_print(cfg, fp);
+
+  fclose(fp);
 
   return 0;
 }

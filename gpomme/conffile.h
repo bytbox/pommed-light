@@ -8,4 +8,7 @@
 int
 config_load(void);
 
+int
+config_write(void);
+
 #endif /* !__CONFFILE_H__ */
