@@ -1,6 +1,15 @@
 README for pommed
 -----------------
 
+Kernel version requirements:
+ - on the MacBook and MacBook Pro
+    + kernel >= 2.6.19 at least
+    + kernel >= 2.6.20 recommended
+
+ - on the PowerBook and iBook
+    + kernel >= 2.6.19 recommended
+
+
 Supported machines:
 
  - Intel machines
