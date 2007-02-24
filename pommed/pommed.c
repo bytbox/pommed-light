@@ -463,6 +463,7 @@ check_machine_pmu(void)
   /* PowerBook G4 12" */
   else if (strncmp(buffer, "PowerBook6,8", 12) == 0)
     ret = MACHINE_POWERBOOK_68;
+
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
   
