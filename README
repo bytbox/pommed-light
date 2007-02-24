@@ -8,6 +8,8 @@ Kernel version requirements:
 
  - on the PowerBook and iBook
     + kernel >= 2.6.19 recommended
+      Warning: kernels 2.6.20 and 2.6.20.1 are buggy; pommed will fail to
+               detect the USB keyboards when run with one of these kernels.
 
 
 Supported machines:
