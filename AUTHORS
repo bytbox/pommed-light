@@ -30,6 +30,10 @@ Daniel G. SIEGEL made the Tango theme for gpomme based on the Tango icons
 available at <http://tango.freedesktop.org/Tango_Desktop_Project> (icons
 licensed under the Creative Commons Attribution Share-Alike license).
 
+Natanael Arndt <arndtn@gmx.de> made the KStyle theme for gpomme, based on the
+Crystal Clear icon theme by Everaldo (LGPL), see
+ <http://www.kde-look.org/content/show.php?content=25668>
+
   i18n:
    - french translation by Julien BLACHE
    - german translation by Soeren SONNENBURG
