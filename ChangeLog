@@ -10,7 +10,7 @@ version 1.2:
 	the user itself.
 	- gpomme: adapt to the new DBus notification.
 	- wmpomme: adapt to the new DBus notification.
-	- pommed: added support for PowerBook6,4 and nVidia GPUs.
+	- pommed: added support for nVidia GPUs.
 	- pommed: added UNTESTED support for
 		  + PowerBook3,3: PowerBook G4 Titanium 15" October 2001
 		  + PowerBook3,4: PowerBook G4 Titanium 15" April 2002
@@ -23,6 +23,7 @@ version 1.2:
 		  + PowerBook5,9: PowerBook G4 Aluminium 17"
 		  + PowerBook6,1: PowerBook G4 12" January 2003
 		  + PowerBook6,2: PowerBook G4 12" September 2003
+		  + PowerBook6,4: PowerBook G4 12" April 2004
 		  + PowerBook6,5: iBook G4 October 2004
 		  + PowerBook6,7: iBook G4
 		  + PowerBook6,8: PowerBook G4 12"

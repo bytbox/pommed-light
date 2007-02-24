@@ -13,16 +13,34 @@ Kernel version requirements:
 Supported machines:
 
  - Intel machines
-   * MacBook Pro Core Duo 15" (January 2006) & 17" (April 2006)
-   * MacBook Pro Core2 Duo 15" (October 2006) & 17" (October 2006)
-   * Core Duo MacBook (May 2006)
-   * Core2 Duo MacBook (November 2006)
+   * MacBook Pro Core Duo 15" (January 2006)
+   * MacBook Pro Core Duo 17" (April 2006)
+   * MacBook Pro Core2 Duo 15" (October 2006)
+   * MacBook Pro Core2 Duo 17" (October 2006)
+   * MacBook Core Duo (May 2006)
+   * MacBook Core2 Duo (November 2006)
 
 
  - PowerMac machines
    * PowerBook G4 Titanium 15" (December 2000)
+   * PowerBook G4 Titanium 15" (October 2001)
+   * PowerBook G4 Titanium 15" (April 2002)
+   * PowerBook G4 Titanium 15"
+   * PowerBook G4 Aluminium 17"
+   * PowerBook G4 Aluminium 15" (September 2003)
+   * PowerBook G4 Aluminium 17" (September 2003)
+   * PowerBook G4 Aluminium 15" (April 2004)
+   * PowerBook G4 Aluminium 17" (April 2004)
    * PowerBook G4 Aluminium 15" (February 2005)
-   * PowerBook G4 Aluminium 17" (April 2004, February 2005)
+   * PowerBook G4 Aluminium 17" (February 2005)
+   * PowerBook G4 Aluminium 15"
+   * PowerBook G4 Aluminium 17"
+   * PowerBook G4 12" (January 2003)
+   * PowerBook G4 12" (September 2003)
+   * PowerBook G4 12" (April 2004)
+   * iBook G4 (October 2004)
+   * iBook G4
+   * PowerBook G4 12"
 
-   If your PowerBook is not listed here, please contact us and include
+   If your PowerBook/iBook is not listed here, please contact us and include
    the content of /proc/device-tree/model in your mail. Thanks.
