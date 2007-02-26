@@ -25,7 +25,7 @@ OF_SOURCES = pmac/oflib/of_externals.c pmac/oflib/of_internals.c \
 
 OF_OBJS = $(OF_SOURCES:%.c=%.o)
 
-LIBS = /usr/lib/libpci.a pmac/oflib/oflib.a
+LIBS = pmac/oflib/oflib.a
 
 else
 
