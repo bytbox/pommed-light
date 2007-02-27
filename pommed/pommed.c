@@ -327,10 +327,10 @@ kbd_set_fnmode(void)
   fp = fopen(KBD_FNMODE_FILE, "a");
   if (fp == NULL)
     {
-      logmsg(LOG_INFO, "Could not open %s: %s", KBD_FNMODE_FILE, strerror(errno));
       fp = fopen(KBD_FNMODE_FILE2620, "a");
       if (fp == NULL)
         {
+          logmsg(LOG_INFO, "Could not open %s", KBD_FNMODE_FILE);
           logmsg(LOG_INFO, "Could not open %s: %s", KBD_FNMODE_FILE2620, strerror(errno));
           return;
         }
