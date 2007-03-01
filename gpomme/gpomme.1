@@ -5,7 +5,6 @@ gpomme \- GTK+ graphical client for use with pommed
 .SH SYNOPSIS
 .B gpomme
 .B [\-v]
-.BI [\-t \ theme_name ]
 .SH DESCRIPTION
 .B gpomme
 will react to signals sent by
@@ -21,11 +20,21 @@ accepts the following command-line options.
 .B \-v
 Print version information.
 
+.SH FILES
+.TP
+.B ~/.gpommerc
+User-specific configuration file for
+.BR gpomme .
+The file is automatically created when
+.B gpomme
+is run for the first time. Currently the theme and the timeout can
+be configured using this configuration file.
+
 .SH AUTHOR
 .B gpomme
 was written by Julien BLACHE <jb@jblache.org> and Soeren SONNENBURG <debian@nn7.de>
 based on code taken from
-.B gtkpbbuttons
+.BR gtkpbbuttons .
 
 .SH SEE ALSO
 pommed(1)
