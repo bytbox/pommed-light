@@ -120,13 +120,20 @@ config_load(void)
    * we'll be using the default values defined in the cfg_opt_t array.
    */
   ret = cfg_parse(cfg, conffile);
-  if ((ret != CFG_SUCCESS) && (ret != CFG_FILE_ERROR))
+  if (ret != CFG_SUCCESS)
     {
-      cfg_free(cfg);
+      if (ret == CFG_FILE_ERROR)
+	{
+	  config_write();
+	}
+      else
+	{
+	  cfg_free(cfg);
 
-      fprintf(stderr, "Failed to parse configuration file\n");
+	  fprintf(stderr, "Failed to parse configuration file\n");
 
-      return -1;
+	  return -1;
+	}
     }
 
   /* Fill up the structs */
