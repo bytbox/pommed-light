@@ -50,6 +50,11 @@
 #define LONG(x) ((x)/BITS_PER_LONG)
 #define test_bit(bit, array)    ((array[LONG(bit)] >> OFF(bit)) & 1)
 
+/* Added to linux/input.h after Linux 2.6.18 */
+#ifndef BUS_VIRTUAL
+# define BUS_VIRTUAL 0x06
+#endif
+
 
 void
 evdev_process_events(int fd)
@@ -293,6 +298,21 @@ evdev_is_lidswitch(unsigned short *id)
 }
 #endif /* !__powerpc__ */
 
+/* Mouseemu virtual keyboard */
+static int
+evdev_is_mouseemu(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_VIRTUAL)
+    return 0;
+
+  if (id[ID_VENDOR] != 0x001f)
+    return 0;
+
+  return (product == 0x001f);
+}
+
 
 int
 evdev_open(struct pollfd **fds)
@@ -335,7 +355,8 @@ evdev_open(struct pollfd **fds)
 #ifndef __powerpc__
 	  && !(appleir_cfg.enabled && evdev_is_appleir(id))
 #endif
-	  && !(has_kbd_backlight() && evdev_is_lidswitch(id)))
+	  && !(has_kbd_backlight() && evdev_is_lidswitch(id))
+	  && !(evdev_is_mouseemu(id)))
 	{
 	  logdebug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
 

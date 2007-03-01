@@ -11,6 +11,7 @@ version 1.2:
 	- gpomme: adapt to the new DBus notification.
 	- wmpomme: adapt to the new DBus notification.
 	- pommed: added support for nVidia GPUs.
+	- pommed: added support for mouseemu users (mouseemu virtual keyboard)
 	- pommed: added UNTESTED support for
 		  + PowerBook3,3: PowerBook G4 Titanium 15" October 2001
 		  + PowerBook3,4: PowerBook G4 Titanium 15" April 2002
