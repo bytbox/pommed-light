@@ -24,6 +24,10 @@ kbd_probe_lmu(int addr, char* i2cdev);
 #define KBD_BACKLIGHT_MAX       255
 
 
+#define KBD_INHIBIT_USER        (1 << 0)
+#define KBD_INHIBIT_LID         (1 << 1)
+
+
 #define KBD_USER     0
 #define KBD_AUTO     1
 
@@ -33,8 +37,10 @@ struct _kbd_bck_info
   int level;
   int max;
 
+  int inhibit;
+  int inhibit_lvl;
+
   int auto_on;  /* automatic */
-  int off;      /* turned off ? */
   int r_sens;   /* right sensor */
   int l_sens;   /* left sensor */
 };
@@ -46,7 +52,13 @@ int
 has_kbd_backlight(void);
 
 void
-kbd_backlight_off(void);
+kbd_backlight_inhibit_set(int mask);
+
+void
+kbd_backlight_inhibit_clear(int mask);
+
+void
+kbd_backlight_inhibit_toggle(int mask);
 
 void
 kbd_backlight_step(int dir);

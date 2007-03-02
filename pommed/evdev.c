@@ -116,7 +116,7 @@ evdev_process_events(int fd)
 	    if (!has_kbd_backlight())
 	      break;
 
-	    kbd_backlight_off();
+	    kbd_backlight_inhibit_toggle(KBD_INHIBIT_USER);
 	    break;
 
 	  case K_KBD_BCK_DOWN:
@@ -172,9 +172,17 @@ evdev_process_events(int fd)
       if (ev.code == SW_LID)
 	{
 	  if (ev.value)
-	    logdebug("\nLID: closed\n");
+	    {
+	      logdebug("\nLID: closed\n");
+
+	      kbd_backlight_inhibit_set(KBD_INHIBIT_LID);
+	    }
 	  else
-	    logdebug("\nLID: open\n");
+	    {
+	      logdebug("\nLID: open\n");
+
+	      kbd_backlight_inhibit_clear(KBD_INHIBIT_LID);
+	    }
 	}
     }
 }

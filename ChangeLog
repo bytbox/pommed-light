@@ -11,7 +11,12 @@ version 1.2:
 	- gpomme: adapt to the new DBus notification.
 	- wmpomme: adapt to the new DBus notification.
 	- pommed: added support for nVidia GPUs.
-	- pommed: added support for mouseemu users (mouseemu virtual keyboard)
+	- pommed: added support for mouseemu users (mouseemu virtual
+	keyboard)
+	- pommed: rework keyboard backlight automatic mode, the backlight
+	off key now works as a toggle for the automatic mode, as it does
+	on Mac OS X
+	- pommed: turn off keyboard backlight when lid is closed
 	- pommed: added UNTESTED support for
 		  + PowerBook3,3: PowerBook G4 Titanium 15" October 2001
 		  + PowerBook3,4: PowerBook G4 Titanium 15" April 2002

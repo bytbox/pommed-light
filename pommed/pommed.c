@@ -782,7 +782,7 @@ main (int argc, char **argv)
 		evdev_process_events(fds[i].fd);
 	    }
 
-	  if (kbd_cfg.auto_on && has_kbd_backlight())
+	  if (has_kbd_backlight())
 	    {
 	      /* is it time to chek the ambient light sensors ? */
 	      gettimeofday(&tv_now, NULL);
@@ -808,7 +808,7 @@ main (int argc, char **argv)
 		}
 	    }
 	}
-      else if (kbd_cfg.auto_on && has_kbd_backlight())
+      else if (has_kbd_backlight())
 	{
 	  /* poll() timed out, check ambient light sensors */
 	  kbd_backlight_ambient_check();
