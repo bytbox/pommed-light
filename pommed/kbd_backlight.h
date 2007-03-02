@@ -52,6 +52,17 @@ int
 has_kbd_backlight(void);
 
 void
+kbd_backlight_step(int dir);
+
+void
+kbd_backlight_init(void);
+
+void
+kbd_backlight_fix_config(void);
+
+
+/* In kbd_auto.c */
+void
 kbd_backlight_inhibit_set(int mask);
 
 void
@@ -61,16 +72,7 @@ void
 kbd_backlight_inhibit_toggle(int mask);
 
 void
-kbd_backlight_step(int dir);
-
-void
-kbd_backlight_init(void);
-
-void
 kbd_backlight_ambient_check(void);
-
-void
-kbd_backlight_fix_config(void);
 
 
 #endif /* !__KBD_BACKLIGHT_H__ */

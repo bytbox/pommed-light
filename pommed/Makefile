@@ -57,7 +57,7 @@ dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 
 
 # PowerMac-specific files
-pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
+pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
 
 pmac/sysfs_backlight.o: pmac/sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
@@ -79,7 +79,7 @@ mactel/x1600_backlight.o: mactel/x1600_backlight.c pommed.h lcd_backlight.h conf
 
 mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
-mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
+mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
 
 mactel/ambient.o: mactel/ambient.c ambient.h pommed.h dbus.h
 

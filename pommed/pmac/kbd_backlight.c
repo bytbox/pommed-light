@@ -83,27 +83,10 @@ kbd_backlight_set(int val, int who)
   int fd, curval, ret;
   unsigned char buf[8];
 
+  if (kbd_bck_info.inhibit)
+    return;
+
   curval = kbd_backlight_get();
-
-  /* automatic backlight toggle by user */
-  if ((val == KBD_BACKLIGHT_OFF) && (kbd_bck_info.auto_on))
-    {
-      if (!kbd_bck_info.off)
-        {
-          kbd_bck_info.off = 1;
-          kbd_bck_info.level = curval;
-        }
-      else
-        {
-          kbd_bck_info.off = 0;
-          val = kbd_bck_info.level;
-        }
-    }
-
-  /* backlight turned on again by user */
-  if ((val > KBD_BACKLIGHT_OFF)
-      && (kbd_bck_info.auto_on) && (kbd_bck_info.off))
-    kbd_bck_info.off = 0;
 
   if (val == curval)
     return;
@@ -155,16 +138,13 @@ kbd_backlight_set(int val, int who)
 }
 
 void
-kbd_backlight_off(void)
-{
-  kbd_backlight_set(KBD_BACKLIGHT_OFF, KBD_USER);
-}
-
-void
 kbd_backlight_step(int dir)
 {
   int val;
   int newval;
+
+  if (kbd_bck_info.inhibit)
+    return;
 
   if (lmuaddr == 0)
     return;
@@ -198,13 +178,24 @@ kbd_backlight_step(int dir)
   kbd_backlight_set(newval, KBD_USER);
 }
 
+
+/* Include automatic backlight routines */
+#include "../kbd_auto.c"
+
+
 void
 kbd_backlight_init(void)
 {
   int ret;
 
+  if (kbd_cfg.auto_on)
+    kbd_bck_info.inhibit = 0;
+  else
+    kbd_bck_info.inhibit = KBD_INHIBIT_USER;
+
+  kbd_bck_info.inhibit_lvl = 0;
+
   kbd_bck_info.auto_on = 0;
-  kbd_bck_info.off = 0;
 
   lmuaddr = kbd_get_lmuaddr();
   i2cdev = "/dev/i2c-7";
@@ -236,53 +227,6 @@ kbd_backlight_init(void)
   kbd_bck_info.max = KBD_BACKLIGHT_MAX;
 
   ambient_init(&kbd_bck_info.r_sens, &kbd_bck_info.l_sens);
-}
-
-void
-kbd_backlight_ambient_check(void)
-{
-  int amb_r, amb_l;
-
-  ambient_get(&amb_r, &amb_l);
-
-  if ((amb_r < 0) || (amb_l < 0))
-    return;
-
-  if ((amb_r < kbd_cfg.on_thresh) && (amb_l < kbd_cfg.on_thresh))
-    {
-      logdebug("Ambient light lower threshold reached\n");
-
-      /* backlight turned on automatically, then disabled by user */
-      if (kbd_bck_info.auto_on && kbd_bck_info.off)
-	return;
-
-      /* backlight already on */
-      if (kbd_backlight_get() > KBD_BACKLIGHT_OFF)
-	return;
-
-      /* turn on backlight */
-      kbd_bck_info.auto_on = 1;
-      kbd_bck_info.off = 0;
-
-      kbd_backlight_set(kbd_cfg.auto_lvl, KBD_AUTO);
-    }
-  else if (kbd_bck_info.auto_on)
-    {
-      if ((amb_r > kbd_cfg.off_thresh) || (amb_l > kbd_cfg.off_thresh))
-	{
-	  logdebug("Ambient light upper threshold reached\n");
-
-	  kbd_bck_info.auto_on = 0;
-	  kbd_bck_info.off = 0;
-
-	  kbd_backlight_set(KBD_BACKLIGHT_OFF, KBD_AUTO);
-	}
-    }
-
-  mbpdbus_send_ambient_light(amb_l, kbd_bck_info.l_sens, amb_r, kbd_bck_info.r_sens);
-
-  kbd_bck_info.r_sens = amb_r;
-  kbd_bck_info.l_sens = amb_l;
 }
 
 
