@@ -39,7 +39,7 @@ Installing
 
 To install pommed:
  - copy pommed somewhere in your PATH (/usr/bin)
- - copy pommed.conf in /etc
+ - copy pommed.conf.(mactel|pmac) as /etc/pommed.conf
  - copy dbus-policy.conf as /etc/dbus-1/system.d/pommed.conf
  - restart dbus
 
