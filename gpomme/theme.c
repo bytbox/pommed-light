@@ -68,11 +68,15 @@ theme_load(const char *name)
   GError *error = NULL;
 
   char file[PATH_MAX];
+  int i;
   int ret;
 
   ret = snprintf(file, PATH_MAX, "%s/%s/background.png", THEME_BASE, name);
   if (ret >= PATH_MAX)
     return -1;
+
+  if (theme.background)
+    g_object_unref(G_OBJECT(theme.background));
 
   theme.background = gdk_pixbuf_new_from_file(file, &error);
 
@@ -92,23 +96,24 @@ theme_load(const char *name)
    * the images by itself when we start adding/removing them
    * to/from a GtkContainer.
    */
+
+  for (i = 0; i < IMG_NIMG; i++)
+    {
+      if (theme.images[i])
+	g_object_unref(G_OBJECT(theme.images[i]));
+    }
+
   theme.images[IMG_LCD_BCK] = load_image(name, "brightness.png");
-  g_object_ref(G_OBJECT(theme.images[IMG_LCD_BCK]));
-
   theme.images[IMG_KBD_BCK] = load_image(name, "kbdlight.png");
-  g_object_ref(G_OBJECT(theme.images[IMG_KBD_BCK]));
-
   theme.images[IMG_AUDIO_VOL_ON] = load_image(name, "volume.png");
-  g_object_ref(G_OBJECT(theme.images[IMG_AUDIO_VOL_ON]));
-
   theme.images[IMG_AUDIO_VOL_OFF] = load_image(name, "mute.png");
-  g_object_ref(G_OBJECT(theme.images[IMG_AUDIO_VOL_OFF]));
-
   theme.images[IMG_AUDIO_MUTE] = load_image(name, "noaudio.png");
-  g_object_ref(G_OBJECT(theme.images[IMG_AUDIO_MUTE]));
-
   theme.images[IMG_CD_EJECT] = load_image(name, "cdrom.png");
-  g_object_ref(G_OBJECT(theme.images[IMG_CD_EJECT]));
+
+  for (i = 0; i < IMG_NIMG; i++)
+    {
+      g_object_ref(G_OBJECT(theme.images[i]));
+    }
 
   return 0;
 }

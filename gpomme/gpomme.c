@@ -29,6 +29,9 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include <linux/inotify.h>
+#include "inotify-syscalls.h"
+
 #include <libintl.h>
 
 #include <gtk/gtk.h>
@@ -48,7 +51,6 @@
 
 struct _mbp_w mbp_w;
 
-
 struct
 {
   int muted;
@@ -56,6 +58,9 @@ struct
 
 DBusError dbus_err;
 DBusConnection *conn;
+
+/* inotify fd (config file monitoring) */
+int cfg_ifd = -1;
 
 
 /* Timer callback */
@@ -293,7 +298,7 @@ mbp_dbus_connect(void)
 }
 
 
-gboolean
+void
 mbp_dbus_listen(gpointer userdata)
 {
   DBusMessage *msg;
@@ -312,7 +317,7 @@ mbp_dbus_listen(gpointer userdata)
       ret = mbp_dbus_connect();
 
       if (ret < 0)
-	return TRUE;
+	return;
     }
 
   while (1)
@@ -322,7 +327,7 @@ mbp_dbus_listen(gpointer userdata)
       msg = dbus_connection_pop_message(conn);
 
       if (msg == NULL)
-	return TRUE;
+	return;
 
       if (dbus_message_is_signal(msg, "org.pommed.signal.lcdBacklight", "lcdBacklight"))
 	{
@@ -398,6 +403,40 @@ mbp_dbus_listen(gpointer userdata)
 
       dbus_message_unref(msg);
     }
+}
+
+void
+mbp_check_config(gpointer userdata)
+{
+  struct inotify_event ie;
+
+  int ret;
+
+  if (cfg_ifd < 0)
+    return;
+
+  ret = read(cfg_ifd, &ie, sizeof(struct inotify_event));
+  if (ret > 0)
+    {
+      ret = config_load();
+      if (ret < 0)
+	{
+	  fprintf(stderr, "Failed to reload config file, exiting\n");
+
+	  gtk_main_quit();
+	}
+
+      close(cfg_ifd);
+
+      cfg_ifd = config_monitor();
+    }
+}
+
+gboolean
+mbp_check_events(gpointer userdata)
+{
+  mbp_check_config(userdata);
+  mbp_dbus_listen(userdata);
 
   return TRUE;
 }
@@ -456,6 +495,8 @@ int main(int argc, char **argv)
 
   mbp_dbus_connect();
 
+  cfg_ifd = config_monitor();
+
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
 
@@ -468,9 +509,12 @@ int main(int argc, char **argv)
 
   create_window();
 
-  g_timeout_add(100, mbp_dbus_listen, NULL);
+  g_timeout_add(100, mbp_check_events, NULL);
 
   gtk_main();
+
+
+  close(cfg_ifd);
 
   audio_command(AUDIO_COMMAND_QUIT);
   audio_cleanup();

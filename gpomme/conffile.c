@@ -24,11 +24,17 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <fcntl.h>
+
 #include <sys/types.h>
 #include <pwd.h>
 
+#include <linux/inotify.h>
+#include "inotify-syscalls.h"
+
 #include <confuse.h>
 
+#include "conffile.h"
 #include "gpomme.h"
 #include "theme.h"
 
@@ -42,8 +48,8 @@ static cfg_opt_t cfg_opts[] =
   };
 
 
-cfg_t *cfg;
-static char *conffile;
+cfg_t *cfg = NULL;
+static char *conffile = NULL;
 
 
 static int
@@ -82,24 +88,30 @@ config_load(void)
 
   int ret;
 
-  pw = getpwuid(getuid());
-  if (pw == NULL)
-    {
-      fprintf(stderr, "Could not get user information\n");
-
-      return -1;
-    }
-
-  conffile = (char *) malloc(strlen(pw->pw_dir) + strlen(CONFFILE) + 1);
   if (conffile == NULL)
     {
-      fprintf(stderr, "Could not allocate memory\n");
+      pw = getpwuid(getuid());
+      if (pw == NULL)
+	{
+	  fprintf(stderr, "Could not get user information\n");
 
-      return -1;
+	  return -1;
+	}
+
+      conffile = (char *) malloc(strlen(pw->pw_dir) + strlen(CONFFILE) + 1);
+      if (conffile == NULL)
+	{
+	  fprintf(stderr, "Could not allocate memory\n");
+
+	  return -1;
+	}
+
+      strncpy(conffile, pw->pw_dir, strlen(pw->pw_dir) + 1);
+      strncat(conffile, CONFFILE, strlen(CONFFILE));
     }
 
-  strncpy(conffile, pw->pw_dir, strlen(pw->pw_dir) + 1);
-  strncat(conffile, CONFFILE, strlen(CONFFILE));
+  if (cfg != NULL)
+    cfg_free(cfg);
 
   cfg = cfg_init(cfg_opts, CFGF_NONE);
 
@@ -179,4 +191,52 @@ config_write(void)
   fclose(fp);
 
   return 0;
+}
+
+
+int
+config_monitor(void)
+{
+  int fd;
+  int ret;
+
+  fd = inotify_init();
+  if (fd < 0)
+    {
+      fprintf(stderr, "Error: could not initialize inotify instance: %s\n", strerror(errno));
+
+      return -1;
+    }
+
+  ret = fcntl(fd, F_GETFL);
+  if (ret < 0)
+    {
+      close(fd);
+
+      fprintf(stderr, "Error: failed to get inotify fd flags: %s\n", strerror(errno));
+
+      return -1;
+    }
+
+  ret = fcntl(fd, F_SETFL, ret | O_NONBLOCK);
+  if (ret < 0)
+    {
+      close(fd);
+
+      fprintf(stderr, "Error: failed to set inotify fd flags: %s\n", strerror(errno));
+
+      return -1;
+    }
+
+  ret = inotify_add_watch(fd, conffile, IN_CLOSE_WRITE);
+  if (ret < 0)
+    {
+      close(fd);
+
+      fprintf(stderr, "Error: could not add inotify watch: %s\n", strerror(errno));
+
+      return -1;
+    }
+
+  return fd;
 }
