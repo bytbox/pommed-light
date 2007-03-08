@@ -3,6 +3,9 @@ CC = gcc
 GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
 GTK_LIBS = $(shell pkg-config --libs gtk+-2.0)
 
+GLADE_CFLAGS = $(shell pkg-config --cflags libglade-2.0)
+GLADE_LIBS = $(shell pkg-config --libs libglade-2.0)
+
 DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
 DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 
@@ -15,8 +18,8 @@ AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
-CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS)
-LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS)
+CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS)
+LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
 
 SOURCES = gpomme.c theme.c audio.c conffile.c ../dbus-client/dbus-client.c
 POFILES = po/fr.po po/de.po po/es.po

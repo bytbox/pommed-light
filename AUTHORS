@@ -22,7 +22,8 @@ gpomme
 ------
 
 Soeren SONNENBURG <debian@nn7.de> provided the base for gpomme, based
-on code taken from gtkpbbuttons.
+on code taken from gtkpbbuttons. Daniel G. SIEGEL wrote the configuration
+GUI.
 
 Glue added by Julien BLACHE <jb@jblache.org>.
 
@@ -36,7 +37,7 @@ Crystal Clear icon theme by Everaldo (LGPL), see
 
   i18n:
    - french translation by Julien BLACHE
-   - german translation by Soeren SONNENBURG
+   - german translation by Soeren SONNENBURG and Daniel G. SIEGEL
    - spanish translation by Eduardo BELLIDO BELLIDO
 
 

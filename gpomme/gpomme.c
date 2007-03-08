@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
  * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2007 daniel g. siegel <dgsiegel@gmail.com>
  *
  * Portions of the GTK code below were shamelessly
  * stolen from pbbuttonsd. Thanks ! ;-)
@@ -450,6 +451,7 @@ usage(void)
 
   printf("Usage:\n");
   printf("\tgpomme\t\t-- start gpomme\n");
+  printf("\tgpomme -c\t-- open the configuration panel\n");
   printf("\tgpomme -v\t-- print version and exit\n");
 }
 
@@ -466,6 +468,9 @@ int main(int argc, char **argv)
 
   gtk_init(&argc, &argv);
 
+  bindtextdomain("gpomme", "/usr/share/locale");
+  textdomain("gpomme");
+
   ret = config_load();
   if (ret < 0)
     {
@@ -474,10 +479,16 @@ int main(int argc, char **argv)
       exit(1);
     }
 
-  while ((c = getopt(argc, argv, "v")) != -1)
+  while ((c = getopt(argc, argv, "cv")) != -1)
     {
       switch (c)
 	{
+	  case 'c':
+	    config_gui();
+
+	    exit(0);
+	    break;
+
 	  case 'v':
 	    printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
 	    printf("Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org> and others\n");
@@ -499,9 +510,6 @@ int main(int argc, char **argv)
 
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
-
-  bindtextdomain("gpomme", "/usr/share/locale");
-  textdomain("gpomme");
 
   ret = audio_init_thread();
   if (ret < 0)

@@ -4,6 +4,7 @@
  * $Id$
  *
  * Copyright (C) 2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2007 daniel g. siegel <dgsiegel@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include <errno.h>
 #include <unistd.h>
@@ -28,6 +30,8 @@
 
 #include <sys/types.h>
 #include <pwd.h>
+#include <dirent.h>
+#include <libintl.h>
 
 #include <linux/inotify.h>
 #include "inotify-syscalls.h"
@@ -38,7 +42,15 @@
 #include "gpomme.h"
 #include "theme.h"
 
-#define CONFFILE        "/.gpommerc"
+#include <gtk/gtk.h>
+#include <glade/glade.h>
+
+
+#define _(str) gettext(str)
+
+#define GLADE_FILE  "/usr/share/gpomme/gpomme.glade" // FIXME: check for path
+#define CONFFILE    "/.gpommerc"
+
 
 static cfg_opt_t cfg_opts[] =
   {
@@ -46,6 +58,15 @@ static cfg_opt_t cfg_opts[] =
     CFG_INT("timeout", 900, CFGF_NONE),
     CFG_END()
   };
+
+GladeXML *gxml;     
+GtkWidget *app_window; 
+
+void
+on_gpomme_window_close_cb (GtkWidget *widget, gpointer user_data);
+
+void
+update_gui_config (void);
 
 
 cfg_t *cfg = NULL;
@@ -239,4 +260,112 @@ config_monitor(void)
     }
 
   return fd;
+}
+
+
+
+void 
+config_gui(void)
+{
+  GtkWidget *cb_theme;
+  GtkWidget *hs_timeout;
+  struct dirent **namelist; 
+  int n; 
+
+  glade_init();
+
+  /* initialize glade and the window */
+  gxml = glade_xml_new(GLADE_FILE, NULL, NULL);
+  app_window = glade_xml_get_widget(gxml, "gpomme_window");
+
+  /* setting the strings (for translation) */
+  gtk_window_set_title(GTK_WINDOW(app_window), _("gpomme preferences"));
+
+  GtkWidget *s;
+  s = glade_xml_get_widget(gxml, "lb_theme");
+  gtk_label_set_text(GTK_LABEL(s), _("Theme:"));
+
+  s = glade_xml_get_widget(gxml, "lb_timeout");
+  gtk_label_set_text(GTK_LABEL(s), _("Timeout (seconds):"));
+
+  /* set the default settings */
+  hs_timeout = glade_xml_get_widget(gxml, "hs_timeout");
+  gtk_range_set_value(GTK_RANGE(hs_timeout), (gdouble)cfg_getint(cfg, "timeout") / 1000.0);
+
+  /* TODO: check for theme-previews */
+  cb_theme = glade_xml_get_widget(gxml, "cb_theme");
+  gtk_combo_box_remove_text(GTK_COMBO_BOX(cb_theme), 0); /* remove dummy-text */
+
+  gtk_combo_box_append_text(GTK_COMBO_BOX(cb_theme), cfg_getstr(cfg, "theme"));
+  gtk_combo_box_set_active(GTK_COMBO_BOX(cb_theme), 0);
+
+  n = scandir(THEME_BASE, &namelist, 0, alphasort); 
+
+  if (n < 0)
+    {
+      fprintf(stderr, "Could not open theme directory: %s\n", strerror(errno));
+
+      exit(1);
+    }
+
+  while(n--)
+    {
+      if (strcmp(namelist[n]->d_name, cfg_getstr(cfg, "theme"))
+	  && (namelist[n]->d_name[0] != '.'))
+	{
+	  /* printf("%s\n", namelist[n]->d_name); */
+	  gtk_combo_box_append_text(GTK_COMBO_BOX(cb_theme), namelist[n]->d_name); 
+	}
+    }
+
+  /* signals... */
+  glade_xml_signal_connect(gxml, "on_bt_close_clicked",         
+			   G_CALLBACK(on_gpomme_window_close_cb));
+
+  glade_xml_signal_connect(gxml, "on_gpomme_window_close",         
+			   G_CALLBACK(on_gpomme_window_close_cb));
+
+  glade_xml_signal_connect(gxml, "on_gpomme_window_destroy",         
+			   G_CALLBACK(on_gpomme_window_close_cb));
+
+  glade_xml_signal_connect(gxml, "on_hs_timeout_value_changed",         
+			   G_CALLBACK(update_gui_config));
+
+  glade_xml_signal_connect(gxml, "on_cb_theme_changed",         
+			   G_CALLBACK(update_gui_config));
+
+  gtk_widget_show(app_window);
+
+  gtk_main();
+}
+
+/* window is closed, so write the settings to the config-file */
+void
+on_gpomme_window_close_cb (GtkWidget *widget, gpointer user_data)
+{
+  update_gui_config();
+  
+  gtk_widget_hide(app_window);
+  gtk_main_quit();
+}
+
+void
+update_gui_config(void)
+{
+  GtkWidget *cb_themes;
+  GtkWidget *hs_timeout;
+
+  /* get the actual settings */
+  hs_timeout = glade_xml_get_widget(gxml, "hs_timeout");
+  cb_themes = glade_xml_get_widget(gxml, "cb_theme");
+
+  gdouble timeout = gtk_range_get_value(GTK_RANGE(hs_timeout)) * 1000.0;
+  //g_print("setting timeout to %gs\n", timeout);
+  cfg_setint(cfg, "timeout", timeout);
+
+  //g_print("setting theme to %s\n", gtk_combo_box_get_active_text(GTK_COMBO_BOX(cb_themes)));
+  cfg_setstr(cfg, "theme", gtk_combo_box_get_active_text(GTK_COMBO_BOX(cb_themes)));
+
+  /* actually write them */
+  config_write();
 }
