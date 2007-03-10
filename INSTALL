@@ -48,7 +48,7 @@ To install gpomme:
  - copy gpomme somewhere in your PATH (/usr/bin)
  - install gpomme/themes as /usr/share/gpomme/themes
  - install gpomme/po/$lang.mo as /usr/share/locale/$lang/LC_MESSAGES/gpomme.mo
- - copy gpomme/gpomme.desktop to /usr/share/applications
+ - copy gpomme/gpomme*.desktop to /usr/share/applications
  - copy gpomme/gpomme.glade to /usr/share/gpomme
 
 To install wmpomme:

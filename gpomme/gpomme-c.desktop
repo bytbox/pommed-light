@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=pommed GTK client configuration GUI
+Comment=A graphical client for pommed (configuration GUI)
+Exec=gpomme -c
+StartupNotify=true
+Type=Application
+Categories=Application;Utility

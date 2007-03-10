@@ -27,9 +27,10 @@ GUI.
 
 Glue added by Julien BLACHE <jb@jblache.org>.
 
-Daniel G. SIEGEL made the Tango theme for gpomme based on the Tango icons
-available at <http://tango.freedesktop.org/Tango_Desktop_Project> (icons
-licensed under the Creative Commons Attribution Share-Alike license).
+Daniel G. SIEGEL <dgsiegel@gmail.com> made the Tango theme for gpomme based
+on the Tango icons available at
+   <http://tango.freedesktop.org/Tango_Desktop_Project>
+(icons licensed under the Creative Commons Attribution Share-Alike license).
 
 Natanael Arndt <arndtn@gmx.de> made the KStyle theme for gpomme, based on the
 Crystal Clear icon theme by Everaldo (LGPL), see
