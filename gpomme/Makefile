@@ -22,7 +22,7 @@ CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CF
 LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
 
 SOURCES = gpomme.c theme.c audio.c conffile.c ../dbus-client/dbus-client.c
-POFILES = po/fr.po po/de.po po/es.po
+POFILES = po/fr.po po/de.po po/es.po po/it.po
 
 OBJS = $(SOURCES:%.c=%.o)
 MOFILES = $(POFILES:%.po=%.mo)
