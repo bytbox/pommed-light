@@ -11,10 +11,10 @@ ALSA_LIBS = $(shell pkg-config alsa --libs)
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
-CFLAGS = -g -O2 -Wall $(CONFUSE_CFLAGS) $(DBUS_CFLAGS) $(ALSA_CFLAGS)
+CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(CONFUSE_CFLAGS)
 
 ifeq ($(ARCH), ppc)
-LDFLAGS = -lz $(CONFUSE_LIBS) $(DBUS_LIBS) $(ALSA_LIBS)
+LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
 		pmac/sysfs_backlight.c \
@@ -29,7 +29,7 @@ LIBS = pmac/oflib/oflib.a
 
 else
 
-LDFLAGS = -lz -lsmbios $(CONFUSE_LIBS) $(DBUS_LIBS) $(ALSA_LIBS)
+LDFLAGS = -lz -lsmbios $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
