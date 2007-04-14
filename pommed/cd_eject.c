@@ -21,11 +21,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
-#include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <syslog.h>
+
+#include <sys/ioctl.h>
+#include <linux/cdrom.h>
 
 #include "pommed.h"
 #include "conffile.h"
@@ -36,27 +41,52 @@
 void
 cd_eject(void)
 {
-  char cmd[128];
+  int fd;
   int ret;
 
   if (!eject_cfg.enabled)
     return;
 
-  strcpy(cmd, CD_EJECT_CMD " ");
-  strncat(cmd, eject_cfg.device, sizeof(cmd) - 1);
-
-  ret = system(cmd);
-
-  if (WEXITSTATUS(ret) != 0)
+  fd = open(eject_cfg.device, O_RDONLY | O_NONBLOCK);
+  if (fd < 0)
     {
-      /* 127 means "shell not available" */
-      if (WEXITSTATUS(ret) != 127)
-	logmsg(LOG_WARNING, "CD ejection failed, eject returned %d", WEXITSTATUS(ret));
+      logmsg(LOG_ERR, "Could not open CD/DVD device");
 
       return;
     }
 
-  mbpdbus_send_cd_eject();
+  /* Check drive status */
+  ret = ioctl(fd, CDROM_DRIVE_STATUS);
+  switch (ret)
+    {
+      case CDS_NO_INFO: /* fall through */
+	logmsg(LOG_INFO, "Driver does not support CDROM_DRIVE_STATUS, trying to eject anyway");
+
+      case CDS_DISC_OK:
+	mbpdbus_send_cd_eject();
+
+	ret = ioctl(fd, CDROMEJECT);
+	if (ret != 0)
+	  logmsg(LOG_ERR, "Eject command failed");
+	break;
+
+      case CDS_NO_DISC:
+	logmsg(LOG_INFO, "No disc in CD/DVD drive");
+	break;
+
+      case CDS_DRIVE_NOT_READY:
+	logmsg(LOG_INFO, "Drive not ready, please retry later");
+	break;
+
+      case CDS_TRAY_OPEN:
+	logmsg(LOG_INFO, "Drive tray already open");
+	break;
+
+      default:
+	logmsg(LOG_INFO, "CDROM_DRIVE_STATUS returned %d", ret);
+    }
+
+  close(fd);
 }
 
 
@@ -66,15 +96,6 @@ cd_eject_fix_config(void)
   if (eject_cfg.device == NULL)
     {
       eject_cfg.enabled = 0;
-      return;
-    }
-
-  if (strlen(eject_cfg.device) > 100)
-    {
-      eject_cfg.enabled = 0;
-
-      logmsg(LOG_INFO, "CD/DVD device path too long, CD ejection disabled");
-
       return;
     }
 }

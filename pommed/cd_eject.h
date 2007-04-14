@@ -6,9 +6,6 @@
 #define __CD_EJECT_H__
 
 
-#define CD_EJECT_CMD            "/usr/bin/eject"
-
-
 void
 cd_eject(void);
 
