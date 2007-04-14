@@ -31,6 +31,7 @@
 #include "kbd_backlight.h"
 #include "ambient.h"
 #include "audio.h"
+#include "cd_eject.h"
 
 
 static DBusError err;
@@ -332,7 +333,7 @@ mbpdbus_send_cd_eject(void)
 
 
 static void
-process_lcd_level_call(DBusMessage *req)
+process_lcd_getlevel_call(DBusMessage *req)
 {
   DBusMessage *msg;
   DBusMessageIter args;
@@ -378,7 +379,7 @@ process_lcd_level_call(DBusMessage *req)
 
 
 static void
-process_kbd_level_call(DBusMessage *req)
+process_kbd_getlevel_call(DBusMessage *req)
 {
   DBusMessage *msg;
   DBusMessageIter args;
@@ -424,7 +425,7 @@ process_kbd_level_call(DBusMessage *req)
 
 
 static void
-process_ambient_level_call(DBusMessage *req)
+process_ambient_getlevel_call(DBusMessage *req)
 {
   DBusMessage *msg;
   DBusMessageIter args;
@@ -470,7 +471,7 @@ process_ambient_level_call(DBusMessage *req)
 }
 
 static void
-process_audio_volume_call(DBusMessage *req)
+process_audio_getvolume_call(DBusMessage *req)
 {
   DBusMessage *msg;
   DBusMessageIter args;
@@ -514,9 +515,8 @@ process_audio_volume_call(DBusMessage *req)
   dbus_message_unref(msg);
 }
 
-
 static void
-process_audio_mute_call(DBusMessage *req)
+process_audio_getmute_call(DBusMessage *req)
 {
   DBusMessage *msg;
   DBusMessageIter args;
@@ -560,6 +560,140 @@ process_audio_mute_call(DBusMessage *req)
 }
 
 
+static void
+process_lcd_backlight_step_call(DBusMessage *req, int dir)
+{
+  DBusMessage *msg;
+
+  int ret;
+
+  logdebug("Got lcdBacklight levelUp/levelDown call\n");
+
+  mops->lcd_backlight_step(dir);
+
+  msg = dbus_message_new_method_return(req);
+
+  ret = dbus_connection_send(conn, msg, NULL);
+  if (ret == FALSE)
+    {
+      logdebug("Could not send lcdBacklight levelUp/levelDown reply\n");
+
+      dbus_message_unref(msg);
+
+      return;
+    }
+
+  dbus_message_unref(msg);
+}
+
+static void
+process_kbd_backlight_inhibit_call(DBusMessage *req, int inhibit)
+{
+  DBusMessage *msg;
+
+  int ret;
+
+  logdebug("Got kbdBacklight inhibit call\n");
+
+  if (inhibit)
+    kbd_backlight_inhibit_set(KBD_INHIBIT_USER);
+  else
+    kbd_backlight_inhibit_clear(KBD_INHIBIT_USER);
+
+  msg = dbus_message_new_method_return(req);
+
+  ret = dbus_connection_send(conn, msg, NULL);
+  if (ret == FALSE)
+    {
+      logdebug("Could not send kbdBacklight inhibit reply\n");
+
+      dbus_message_unref(msg);
+
+      return;
+    }
+
+  dbus_message_unref(msg);
+}
+
+static void
+process_audio_volume_step_call(DBusMessage *req, int dir)
+{
+  DBusMessage *msg;
+
+  int ret;
+
+  logdebug("Got audio volumeUp/volumeDown call\n");
+
+  audio_step(dir);
+
+  msg = dbus_message_new_method_return(req);
+
+  ret = dbus_connection_send(conn, msg, NULL);
+  if (ret == FALSE)
+    {
+      logdebug("Could not send audio volumeUp/volumeDown reply\n");
+
+      dbus_message_unref(msg);
+
+      return;
+    }
+
+  dbus_message_unref(msg);
+}
+
+static void
+process_audio_toggle_mute_call(DBusMessage *req)
+{
+  DBusMessage *msg;
+
+  int ret;
+
+  logdebug("Got audio toggleMute call\n");
+
+  audio_toggle_mute();
+
+  msg = dbus_message_new_method_return(req);
+
+  ret = dbus_connection_send(conn, msg, NULL);
+  if (ret == FALSE)
+    {
+      logdebug("Could not send audio toggleMute reply\n");
+
+      dbus_message_unref(msg);
+
+      return;
+    }
+
+  dbus_message_unref(msg);
+}
+
+static void
+process_cd_eject_call(DBusMessage *req)
+{
+  DBusMessage *msg;
+
+  int ret;
+
+  logdebug("Got cd eject call\n");
+
+  cd_eject();
+
+  msg = dbus_message_new_method_return(req);
+
+  ret = dbus_connection_send(conn, msg, NULL);
+  if (ret == FALSE)
+    {
+      logdebug("Could not send cd eject reply\n");
+
+      dbus_message_unref(msg);
+
+      return;
+    }
+
+  dbus_message_unref(msg);
+}
+
+
 void
 mbpdbus_process_requests(void)
 {
@@ -589,16 +723,34 @@ mbpdbus_process_requests(void)
 	  break;
 	}
 
+      // Get methods
       if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "getLevel"))
-	process_lcd_level_call(msg);
+	process_lcd_getlevel_call(msg);
       else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "getLevel"))
-	process_kbd_level_call(msg);
+	process_kbd_getlevel_call(msg);
       else if (dbus_message_is_method_call(msg, "org.pommed.ambient", "getLevel"))
-	process_ambient_level_call(msg);
+	process_ambient_getlevel_call(msg);
       else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getVolume"))
-	process_audio_volume_call(msg);
+	process_audio_getvolume_call(msg);
       else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getMute"))
-	process_audio_mute_call(msg);
+	process_audio_getmute_call(msg);
+      // Set methods
+      else if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "levelUp"))
+        process_lcd_backlight_step_call(msg, STEP_UP);
+      else if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "levelDown"))
+        process_lcd_backlight_step_call(msg, STEP_DOWN);
+      else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "inhibit"))
+        process_kbd_backlight_inhibit_call(msg, 1);
+      else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "disinhibit"))
+        process_kbd_backlight_inhibit_call(msg, 0);
+      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "volumeUp"))
+        process_audio_volume_step_call(msg, STEP_UP);
+      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "volumeDown"))
+        process_audio_volume_step_call(msg, STEP_DOWN);
+      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "toggleMute"))
+        process_audio_toggle_mute_call(msg);
+      else if (dbus_message_is_method_call(msg, "org.pommed.cd", "eject"))
+        process_cd_eject_call(msg);
       else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
 	{
 	  logmsg(LOG_INFO, "DBus disconnected");
