@@ -35,7 +35,8 @@
 #include <sys/ioctl.h>
 #include <linux/i2c.h>
 
-#include "oflib/of_api.h"
+#include <ofapi/of_api.h>
+
 #include "../pommed.h"
 #include "../conffile.h"
 #include "../kbd_backlight.h"

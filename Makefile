@@ -1,9 +1,11 @@
 # Top-level Makefile for pommed & tools
 
+OFLIB ?=
+
 all: pommed gpomme wmpomme
 
 pommed:
-	$(MAKE) -C pommed
+	$(MAKE) -C pommed OFLIB=$(OFLIB)
 
 gpomme:
 	$(MAKE) -C gpomme

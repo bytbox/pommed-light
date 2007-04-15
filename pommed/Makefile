@@ -14,18 +14,25 @@ CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(CONFUSE_CFLAGS)
 
 ifeq ($(ARCH), ppc)
+OFLIB ?=
+
 LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
 		pmac/sysfs_backlight.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
-OF_SOURCES = pmac/oflib/of_externals.c pmac/oflib/of_internals.c \
-		pmac/oflib/of_standard.c
+OF_SOURCES = pmac/ofapi/of_externals.c pmac/ofapi/of_internals.c \
+		pmac/ofapi/of_standard.c
 
 OF_OBJS = $(OF_SOURCES:%.c=%.o)
 
-LIBS = pmac/oflib/oflib.a
+ifneq ($(OFLIB),)
+CFLAGS += -Ipmac
+LIBS = pmac/ofapi/oflib.a
+else
+LDFLAGS += -lofapi
+endif
 
 else
 
@@ -64,14 +71,14 @@ pmac/sysfs_backlight.o: pmac/sysfs_backlight.c pommed.h lcd_backlight.h conffile
 pmac/ambient.o: pmac/ambient.c ambient.h pommed.h dbus.h
 
 # OFlib
-pmac/oflib/oflib.a: $(OF_OBJS)
+pmac/ofapi/oflib.a: $(OF_OBJS)
 	ar cru $@ $^
 
-pmac/oflib/of_externals.o: pmac/oflib/of_externals.c pmac/oflib/of_api.h
+pmac/ofapi/of_externals.o: pmac/ofapi/of_externals.c pmac/ofapi/of_api.h
 
-pmac/oflib/of_internals.o: pmac/oflib/of_internals.c pmac/oflib/of_api.h
+pmac/ofapi/of_internals.o: pmac/ofapi/of_internals.c pmac/ofapi/of_api.h
 
-pmac/oflib/of_standard.o: pmac/oflib/of_standard.c pmac/oflib/of_api.h
+pmac/ofapi/of_standard.o: pmac/ofapi/of_standard.c pmac/ofapi/of_api.h
 
 
 # Mactel-specific files
@@ -85,5 +92,5 @@ mactel/ambient.o: mactel/ambient.c ambient.h pommed.h dbus.h
 
 
 clean:
-	rm -f pommed $(OBJS) $(OF_OBJS) pmac/oflib/oflib.a
-	rm -f *~ mactel/*~ pmac/*~ pmac/oflib/*~
+	rm -f pommed $(OBJS) $(OF_OBJS) pmac/ofapi/oflib.a
+	rm -f *~ mactel/*~ pmac/*~ pmac/ofapi/*~
