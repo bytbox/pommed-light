@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <time.h>
 
 #include <syslog.h>
 
@@ -87,6 +88,11 @@ kbd_backlight_set(int val, int who)
 {
   int curval;
 
+  int i;
+  float tmpval;
+  float step;
+  struct timespec fade_step;
+
   FILE *fp;
 
   if (kbd_bck_info.inhibit)
@@ -99,6 +105,35 @@ kbd_backlight_set(int val, int who)
 
   if ((val < KBD_BACKLIGHT_OFF) || (val > KBD_BACKLIGHT_MAX))
     return;
+
+  if (who == KBD_AUTO)
+    {
+      fade_step.tv_sec = 0;
+      fade_step.tv_nsec = (KBD_BACKLIGHT_FADE_LENGTH / KBD_BACKLIGHT_FADE_STEPS) * 1000000;
+
+      tmpval = (float)curval;
+      step = (float)(val - tmpval) / (float)KBD_BACKLIGHT_FADE_STEPS;
+
+      for (i = 0; i < KBD_BACKLIGHT_FADE_STEPS; i++)
+	{
+	  tmpval += step;
+
+	  fp = fopen(KBD_BACKLIGHT, "a");
+	  if (fp == NULL)
+	    {
+	      logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno));
+	      continue;
+	    }
+
+	  fprintf(fp, "%d", (int)tmpval);
+
+	  fclose(fp);
+
+	  logdebug("KBD backlight value faded to %d\n", (int)tmpval);
+
+	  nanosleep(&fade_step, NULL);
+	}
+    }
 
   fp = fopen(KBD_BACKLIGHT, "a");
   if (fp == NULL)

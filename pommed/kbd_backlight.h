@@ -23,6 +23,9 @@ kbd_probe_lmu(int addr, char* i2cdev);
 #define KBD_BACKLIGHT_OFF       0
 #define KBD_BACKLIGHT_MAX       255
 
+/* fading duration in milliseconds */
+#define KBD_BACKLIGHT_FADE_LENGTH 350
+#define KBD_BACKLIGHT_FADE_STEPS 20
 
 #define KBD_INHIBIT_USER        (1 << 0)
 #define KBD_INHIBIT_LID         (1 << 1)
