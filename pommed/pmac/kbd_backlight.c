@@ -28,6 +28,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <time.h>
 
 #include <syslog.h>
 
@@ -81,7 +82,15 @@ kbd_backlight_get(void)
 static void
 kbd_backlight_set(int val, int who)
 {
-  int fd, curval, ret;
+  int curval;
+
+  int i;
+  float fadeval;
+  float step;
+  struct timespec fade_step;
+
+  int fd;
+  int ret;
   unsigned char buf[8];
 
   if (kbd_bck_info.inhibit)
@@ -97,19 +106,6 @@ kbd_backlight_set(int val, int who)
 
   if (lmuaddr == 0)
     return;
-
-  buf[0] = 0x01;   /* i2c register */
-  
-  /* The format appears to be: (taken from pbbuttonsd)
-   *          byte 1   byte 2
-   *         |<---->| |<---->|
-   *         xxxx7654 3210xxxx
-   *             |<----->|
-   *                 ^-- brightness
-   */
-  
-  buf[1] = (unsigned char) val >> 4;
-  buf[2] = (unsigned char) val << 4;
 
   fd = open (i2cdev, O_RDWR);
   if (fd < 0)
@@ -127,6 +123,48 @@ kbd_backlight_set(int val, int who)
       close(fd);
       return;
     }
+
+  buf[0] = 0x01;   /* i2c register */
+
+  if (who == KBD_AUTO)
+    {
+      fade_step.tv_sec = 0;
+      fade_step.tv_nsec = (KBD_BACKLIGHT_FADE_LENGTH / KBD_BACKLIGHT_FADE_STEPS) * 1000000;
+
+      fadeval = (float)curval;
+      step = (float)(val - curval) / (float)KBD_BACKLIGHT_FADE_STEPS;
+
+      for (i = 0; i < KBD_BACKLIGHT_FADE_STEPS; i++)
+	{
+	  fadeval += step;
+
+	  /* See below for the format */
+	  buf[1] = (unsigned char) fadeval >> 4;
+	  buf[2] = (unsigned char) fadeval << 4;
+
+	  if (write (fd, buf, 3) < 0)
+	    {
+	      logmsg(LOG_ERR, "Could not set kbd brightness: %s\n", strerror(errno));
+
+	      continue;
+	    }
+
+	  logdebug("KBD backlight value faded to %d\n", (int)fadeval);
+
+	  nanosleep(&fade_step, NULL);
+	}
+    }
+  
+  /* The format appears to be: (taken from pbbuttonsd)
+   *          byte 1   byte 2
+   *         |<---->| |<---->|
+   *         xxxx7654 3210xxxx
+   *             |<----->|
+   *                 ^-- brightness
+   */
+  
+  buf[1] = (unsigned char) val >> 4;
+  buf[2] = (unsigned char) val << 4;
 
   if (write (fd, buf, 3) < 0)
     logmsg(LOG_ERR, "Could not set kbd brightness: %s\n", strerror(errno));
