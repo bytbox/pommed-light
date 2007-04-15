@@ -9,6 +9,9 @@ version 1.3:
 	sends the dbus notification before ejecting the CD.
 	- pommed: add DBus methods to control pommed over DBus. Original
 	patch by Alexis ROBERT <alexis@fnux.org>.
+	- pommed: add keyboard backlight fading for automatic keyboard
+	backlight. Based on a patch from Mario Oschwald
+	<mario.oschwald@hpi.uni-potsdam.de>.
 
 version 1.2:
 	- pommed: PowerBook5,5 has an ADB keyboard, not a USB keyboard.
