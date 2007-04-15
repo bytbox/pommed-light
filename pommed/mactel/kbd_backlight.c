@@ -89,7 +89,7 @@ kbd_backlight_set(int val, int who)
   int curval;
 
   int i;
-  float tmpval;
+  float fadeval;
   float step;
   struct timespec fade_step;
 
@@ -111,12 +111,12 @@ kbd_backlight_set(int val, int who)
       fade_step.tv_sec = 0;
       fade_step.tv_nsec = (KBD_BACKLIGHT_FADE_LENGTH / KBD_BACKLIGHT_FADE_STEPS) * 1000000;
 
-      tmpval = (float)curval;
-      step = (float)(val - tmpval) / (float)KBD_BACKLIGHT_FADE_STEPS;
+      fadeval = (float)curval;
+      step = (float)(val - curval) / (float)KBD_BACKLIGHT_FADE_STEPS;
 
       for (i = 0; i < KBD_BACKLIGHT_FADE_STEPS; i++)
 	{
-	  tmpval += step;
+	  fadeval += step;
 
 	  fp = fopen(KBD_BACKLIGHT, "a");
 	  if (fp == NULL)
@@ -125,11 +125,11 @@ kbd_backlight_set(int val, int who)
 	      continue;
 	    }
 
-	  fprintf(fp, "%d", (int)tmpval);
+	  fprintf(fp, "%d", (int)fadeval);
 
 	  fclose(fp);
 
-	  logdebug("KBD backlight value faded to %d\n", (int)tmpval);
+	  logdebug("KBD backlight value faded to %d\n", (int)fadeval);
 
 	  nanosleep(&fade_step, NULL);
 	}
