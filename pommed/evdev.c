@@ -56,6 +56,19 @@
 #endif
 
 
+#define EVDEV_ADB_KBD       (1 << 0)
+#define EVDEV_ADB_BUTTONS   (1 << 1)
+#define EVDEV_USB_KBD1      (1 << 2)
+#define EVDEV_USB_KBD2      (1 << 3)
+#define EVDEV_APPLEIR       (1 << 5)
+#define EVDEV_MOUSEEMU      (1 << 6)
+#define EVDEV_SW_LID        (1 << 7)
+
+#define EVDEV_NO_EVDEV      0
+
+static unsigned int evdevs;
+
+
 void
 evdev_process_events(int fd)
 {
@@ -200,8 +213,19 @@ evdev_is_adb(unsigned short *id)
   if (id[ID_VENDOR] != 0x0001)
     return 0;
 
-  return ((product == ADB_PRODUCT_ID_KEYBOARD)
-	  || (product == ADB_PRODUCT_ID_PBBUTTONS));
+  if (product == ADB_PRODUCT_ID_KEYBOARD)
+    {
+      evdevs |= EVDEV_ADB_KBD;
+      return 1;
+    }
+
+  if (product == ADB_PRODUCT_ID_PBBUTTONS)
+    {
+      evdevs |= EVDEV_ADB_BUTTONS;
+      return 1;
+    }
+
+  return 0;
 }
 
 /* PowerBook G4 */
@@ -216,9 +240,19 @@ evdev_is_fountain(unsigned short *id)
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
-  return ((product == USB_PRODUCT_ID_FOUNTAIN_ANSI)
-	  || (product == USB_PRODUCT_ID_FOUNTAIN_ISO)
-	  || (product == USB_PRODUCT_ID_FOUNTAIN_JIS));
+  if ((product == USB_PRODUCT_ID_FOUNTAIN_ANSI)
+      || (product == USB_PRODUCT_ID_FOUNTAIN_ISO)
+      || (product == USB_PRODUCT_ID_FOUNTAIN_JIS))
+    {
+      if (evdevs & EVDEV_USB_KBD1)
+	evdevs |= EVDEV_USB_KBD2;
+      else
+	evdevs |= EVDEV_USB_KBD1;
+
+      return 1;
+    }
+
+  return 0;
 }
 
 /* PMU Lid switch */
@@ -236,7 +270,13 @@ evdev_is_lidswitch(unsigned short *id)
   if (id[ID_VERSION] != 0x0100)
     return 0;
 
-  return (product == 0x0001);
+  if (product == 0x0001)
+    {
+      evdevs |= EVDEV_SW_LID;
+      return 1;
+    }
+
+  return 0;
 }
 
 #else
@@ -253,9 +293,19 @@ evdev_is_geyser3(unsigned short *id)
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
-  return ((product == USB_PRODUCT_ID_GEYSER3_ANSI)
-	  || (product == USB_PRODUCT_ID_GEYSER3_ISO)
-	  || (product == USB_PRODUCT_ID_GEYSER3_JIS));
+  if ((product == USB_PRODUCT_ID_GEYSER3_ANSI)
+      || (product == USB_PRODUCT_ID_GEYSER3_ISO)
+      || (product == USB_PRODUCT_ID_GEYSER3_JIS))
+    {
+      if (evdevs & EVDEV_USB_KBD1)
+	evdevs |= EVDEV_USB_KBD2;
+      else
+	evdevs |= EVDEV_USB_KBD1;
+
+      return 1;
+    }
+
+  return 0;
 }
 
 /* Core2 Duo MacBook & MacBook Pro */
@@ -270,9 +320,19 @@ evdev_is_geyser4(unsigned short *id)
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
-  return ((product == USB_PRODUCT_ID_GEYSER4_ANSI)
-	  || (product == USB_PRODUCT_ID_GEYSER4_ISO)
-	  || (product == USB_PRODUCT_ID_GEYSER4_JIS));
+  if ((product == USB_PRODUCT_ID_GEYSER4_ANSI)
+      || (product == USB_PRODUCT_ID_GEYSER4_ISO)
+      || (product == USB_PRODUCT_ID_GEYSER4_JIS))
+    {
+      if (evdevs & EVDEV_USB_KBD1)
+	evdevs |= EVDEV_USB_KBD2;
+      else
+	evdevs |= EVDEV_USB_KBD1;
+
+      return 1;
+    }
+
+  return 0;
 }
 
 /* Apple Remote IR Receiver */
@@ -287,7 +347,13 @@ evdev_is_appleir(unsigned short *id)
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
-  return (product == USB_PRODUCT_ID_APPLEIR);
+  if (product == USB_PRODUCT_ID_APPLEIR)
+    {
+      evdevs |= EVDEV_APPLEIR;
+      return 1;
+    }
+
+  return 0;
 }
 
 /* ACPI Lid switch */
@@ -302,7 +368,13 @@ evdev_is_lidswitch(unsigned short *id)
   if (id[ID_VENDOR] != 0)
     return 0;
 
-  return (product == 0x0005);
+  if (product == 0x0005)
+    {
+      evdevs |= EVDEV_SW_LID;
+      return 1;
+    }
+
+  return 0;
 }
 #endif /* !__powerpc__ */
 
@@ -318,7 +390,13 @@ evdev_is_mouseemu(unsigned short *id)
   if (id[ID_VENDOR] != 0x001f)
     return 0;
 
-  return (product == 0x001f);
+  if (product == 0x001f)
+    {
+      evdevs |= EVDEV_MOUSEEMU;
+      return 1;
+    }
+
+  return 0;
 }
 
 
@@ -335,6 +413,8 @@ evdev_open(struct pollfd **fds)
   unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
   char devname[256];
   char evdev[32];
+
+  evdevs = EVDEV_NO_EVDEV;
 
   for (i = 0; i < EVDEV_MAX; i++)
     {
@@ -459,22 +539,32 @@ int
 evdev_reopen(struct pollfd **fds, int nfds)
 {
   int i;
+  unsigned int prev_evdevs = evdevs;
 
   evdev_close(fds, nfds);
+
+  logdebug("Previous event devices: 0x%04x\n", prev_evdevs);
 
   /* When resuming, we need to reopen event devices which
    * disappear at suspend time. We need to wait for udev to
    * recreate the device nodes.
-   * Wait for up to 12 seconds, 24 * 0.5 seconds
    */
-  for (i = 0; i < 24; i++)
+  for (i = 0; i < 50; i++)
     {
       usleep(500000);
 
       nfds = evdev_open(fds);
 
       if (nfds > 0)
-	break;
+	{
+	  logdebug("Got event devices 0x%04x at iteration %d\n", prev_evdevs, i);
+
+	  if (evdevs == prev_evdevs)
+	    break;
+
+	  /* We haven't got all the event devices we need */
+	  evdev_close(fds, nfds);
+	}
     }
 
   return nfds;
