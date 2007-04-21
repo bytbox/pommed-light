@@ -12,6 +12,8 @@ version 1.3:
 	- pommed: add keyboard backlight fading for automatic keyboard
 	backlight. Based on a patch from Mario Oschwald
 	<mario.oschwald@hpi.uni-potsdam.de>.
+	- pommed: try harder to reopen the event devices when coming back
+	from suspend.
 
 version 1.2:
 	- pommed: PowerBook5,5 has an ADB keyboard, not a USB keyboard.
