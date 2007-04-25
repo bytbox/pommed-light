@@ -1,6 +1,9 @@
 ChangeLog for pommed
 --------------------
 
+version 1.4:
+
+
 version 1.3:
 	- gpomme: added configuration GUI, courtesy of Daniel G. SIEGEL.
 	- gpomme: added elegant-bright and elegant-dark themes, courtesy
