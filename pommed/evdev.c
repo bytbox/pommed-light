@@ -215,12 +215,16 @@ evdev_is_adb(unsigned short *id)
 
   if (product == ADB_PRODUCT_ID_KEYBOARD)
     {
+      logdebug(" -> ADB keyboard\n");
+
       evdevs |= EVDEV_ADB_KBD;
       return 1;
     }
 
   if (product == ADB_PRODUCT_ID_PBBUTTONS)
     {
+      logdebug(" -> ADB PowerBook buttons\n");
+
       evdevs |= EVDEV_ADB_BUTTONS;
       return 1;
     }
@@ -244,6 +248,8 @@ evdev_is_fountain(unsigned short *id)
       || (product == USB_PRODUCT_ID_FOUNTAIN_ISO)
       || (product == USB_PRODUCT_ID_FOUNTAIN_JIS))
     {
+      logdebug(" -> Fountain USB keyboard\n");
+
       if (evdevs & EVDEV_USB_KBD1)
 	evdevs |= EVDEV_USB_KBD2;
       else
@@ -270,6 +276,8 @@ evdev_is_geyser(unsigned short *id)
       || (product == USB_PRODUCT_ID_GEYSER_ISO)
       || (product == USB_PRODUCT_ID_GEYSER_JIS))
     {
+      logdebug(" -> Geyser USB keyboard\n");
+
       if (evdevs & EVDEV_USB_KBD1)
 	evdevs |= EVDEV_USB_KBD2;
       else
@@ -298,6 +306,8 @@ evdev_is_lidswitch(unsigned short *id)
 
   if (product == 0x0001)
     {
+      logdebug(" -> PMU LID switch\n");
+
       evdevs |= EVDEV_SW_LID;
       return 1;
     }
@@ -323,6 +333,8 @@ evdev_is_geyser3(unsigned short *id)
       || (product == USB_PRODUCT_ID_GEYSER3_ISO)
       || (product == USB_PRODUCT_ID_GEYSER3_JIS))
     {
+      logdebug(" -> Geyser III USB keyboard\n");
+
       if (evdevs & EVDEV_USB_KBD1)
 	evdevs |= EVDEV_USB_KBD2;
       else
@@ -350,6 +362,8 @@ evdev_is_geyser4(unsigned short *id)
       || (product == USB_PRODUCT_ID_GEYSER4_ISO)
       || (product == USB_PRODUCT_ID_GEYSER4_JIS))
     {
+      logdebug(" -> Geyser IV USB keyboard\n");
+
       if (evdevs & EVDEV_USB_KBD1)
 	evdevs |= EVDEV_USB_KBD2;
       else
@@ -375,6 +389,8 @@ evdev_is_appleir(unsigned short *id)
 
   if (product == USB_PRODUCT_ID_APPLEIR)
     {
+      logdebug(" -> Apple IR receiver\n");
+
       evdevs |= EVDEV_APPLEIR;
       return 1;
     }
@@ -396,6 +412,8 @@ evdev_is_lidswitch(unsigned short *id)
 
   if (product == 0x0005)
     {
+      logdebug(" -> ACPI LID switch\n");
+
       evdevs |= EVDEV_SW_LID;
       return 1;
     }
@@ -418,6 +436,8 @@ evdev_is_mouseemu(unsigned short *id)
 
   if (product == 0x001f)
     {
+      logdebug(" -> Mouseemu virtual keyboard\n");
+
       evdevs |= EVDEV_MOUSEEMU;
       return 1;
     }
@@ -460,7 +480,7 @@ evdev_open(struct pollfd **fds)
 
       devname[0] = '\0';
       ioctl(fd[i], EVIOCGNAME(sizeof(devname)), devname);
-      logdebug("Investigating evdev %d [%s]\n", i, devname);
+      logdebug("\nInvestigating evdev %d [%s]\n", i, devname);
 
 
       ioctl(fd[i], EVIOCGID, id);
@@ -472,7 +492,7 @@ evdev_open(struct pollfd **fds)
 	  && !(has_kbd_backlight() && evdev_is_lidswitch(id))
 	  && !(evdev_is_mouseemu(id)))
 	{
-	  logdebug("Discarding evdev %d vid 0x%04x, pid 0x%04x\n", i, id[ID_VENDOR], id[ID_PRODUCT]);
+	  logdebug("Discarding evdev %d: bus 0x%04x, vid 0x%04x, pid 0x%04x\n", i, id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT]);
 
 	  close(fd[i]);
 	  fd[i] = -1;
@@ -513,7 +533,7 @@ evdev_open(struct pollfd **fds)
       found++;
     }
 
-  logdebug("Found %d devices\n", found);
+  logdebug("\nFound %d devices\n", found);
 
   *fds = (struct pollfd *) malloc(found * sizeof(struct pollfd));
 
