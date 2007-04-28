@@ -255,6 +255,32 @@ evdev_is_fountain(unsigned short *id)
   return 0;
 }
 
+int
+evdev_is_geyser(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_GEYSER_ANSI)
+      || (product == USB_PRODUCT_ID_GEYSER_ISO)
+      || (product == USB_PRODUCT_ID_GEYSER_JIS))
+    {
+      if (evdevs & EVDEV_USB_KBD1)
+	evdevs |= EVDEV_USB_KBD2;
+      else
+	evdevs |= EVDEV_USB_KBD1;
+
+      return 1;
+    }
+
+  return 0;
+}
+
 /* PMU Lid switch */
 static int
 evdev_is_lidswitch(unsigned short *id)

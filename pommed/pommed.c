@@ -153,14 +153,14 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_58,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
-    .evdev_identify = evdev_is_fountain,
+    .evdev_identify = evdev_is_geyser,
   },
 
   {  /* PowerBook5,9 */
     .type = MACHINE_POWERBOOK_59,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
-    .evdev_identify = evdev_is_fountain,
+    .evdev_identify = evdev_is_geyser,
   },
 
   /* G4 iBooks & 12" PowerBooks */

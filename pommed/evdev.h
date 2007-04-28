@@ -23,6 +23,11 @@
 #define USB_PRODUCT_ID_FOUNTAIN_ISO   0x020f
 #define USB_PRODUCT_ID_FOUNTAIN_JIS   0x0210
 
+/* Apple Geyser keyboard + trackpad */
+#define USB_PRODUCT_ID_GEYSER_ANSI   0x0214
+#define USB_PRODUCT_ID_GEYSER_ISO    0x0215
+#define USB_PRODUCT_ID_GEYSER_JIS    0x0216
+
 /* Apple Geyser III keyboard + trackpad */
 #define USB_PRODUCT_ID_GEYSER3_ANSI   0x0217
 #define USB_PRODUCT_ID_GEYSER3_ISO    0x0218
@@ -71,6 +76,9 @@ evdev_is_adb(unsigned short *id);
 
 int
 evdev_is_fountain(unsigned short *id);
+
+int
+evdev_is_geyser(unsigned short *id);
 
 #else
 

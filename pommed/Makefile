@@ -15,7 +15,7 @@ CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(CONFUSE_CFLAGS)
 
 ifeq ($(ARCH), ppc)
 OFLIB ?=
-
+CFLAGS += -D__powerpc__
 LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
