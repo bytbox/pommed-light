@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2006 Yves-Alexis Perez <corsac@corsac.net>
  *
  * This program is free software; you can redistribute it and/or modify

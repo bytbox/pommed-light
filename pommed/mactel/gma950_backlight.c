@@ -6,7 +6,7 @@
  * $Id$
  *
  * Copyright (C) 2006 Ryan Lortie <desrt@desrt.ca>
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *  + Adapted for pommed
  *
  * This program is free software; you can redistribute it and/or modify

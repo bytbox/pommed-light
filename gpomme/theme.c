@@ -4,7 +4,7 @@
  * $Id$
  *
  * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
- * Copyright (C) 2006 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *
  * Portions of the GTK code below were shamelessly
  * stolen from pbbuttonsd. Thanks ! ;-)

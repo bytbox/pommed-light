@@ -548,7 +548,7 @@ static void
 usage(void)
 {
   printf("pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler\n");
-  printf("Copyright (C) 2006 Julien BLACHE <jb@jblache.org>\n");
+  printf("Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>\n");
 
   printf("Usage:\n");
   printf("\tpommed\t-- start pommed as a daemon\n");
