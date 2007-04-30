@@ -29,6 +29,7 @@ kbd_probe_lmu(int addr, char* i2cdev);
 
 #define KBD_INHIBIT_USER        (1 << 0)
 #define KBD_INHIBIT_LID         (1 << 1)
+#define KBD_INHIBIT_CFG         (1 << 2)
 
 
 #define KBD_USER     0
@@ -42,6 +43,8 @@ struct _kbd_bck_info
 
   int inhibit;
   int inhibit_lvl;
+
+  int toggle_lvl; /* backlight level for simple toggle */
 
   int auto_on;  /* automatic */
   int r_sens;   /* right sensor */
@@ -65,6 +68,9 @@ kbd_backlight_fix_config(void);
 
 
 /* In kbd_auto.c */
+void
+kbd_backlight_toggle(void);
+
 void
 kbd_backlight_inhibit_set(int mask);
 

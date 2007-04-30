@@ -93,7 +93,7 @@ kbd_backlight_set(int val, int who)
   int ret;
   unsigned char buf[8];
 
-  if (kbd_bck_info.inhibit)
+  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
     return;
 
   curval = kbd_backlight_get();
@@ -182,7 +182,7 @@ kbd_backlight_step(int dir)
   int val;
   int newval;
 
-  if (kbd_bck_info.inhibit)
+  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
     return;
 
   if (lmuaddr == 0)
@@ -230,7 +230,9 @@ kbd_backlight_init(void)
   if (kbd_cfg.auto_on)
     kbd_bck_info.inhibit = 0;
   else
-    kbd_bck_info.inhibit = KBD_INHIBIT_USER;
+    kbd_bck_info.inhibit = KBD_INHIBIT_CFG;
+
+  kbd_bck_info.toggle_lvl = kbd_cfg.auto_lvl;
 
   kbd_bck_info.inhibit_lvl = 0;
 

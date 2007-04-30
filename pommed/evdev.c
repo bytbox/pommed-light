@@ -129,7 +129,10 @@ evdev_process_events(int fd)
 	    if (!has_kbd_backlight())
 	      break;
 
-	    kbd_backlight_inhibit_toggle(KBD_INHIBIT_USER);
+	    if (kbd_cfg.auto_on)
+	      kbd_backlight_inhibit_toggle(KBD_INHIBIT_USER);
+	    else
+	      kbd_backlight_toggle();
 	    break;
 
 	  case K_KBD_BCK_DOWN:

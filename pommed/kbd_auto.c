@@ -19,6 +19,27 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/* simple backlight toggle */
+void
+kbd_backlight_toggle(void)
+{
+  int curval;
+
+  curval = kbd_backlight_get();
+
+  if (curval != KBD_BACKLIGHT_OFF)
+    {
+      kbd_bck_info.toggle_lvl = curval;
+      kbd_backlight_set(KBD_BACKLIGHT_OFF, KBD_USER);
+    }
+  else
+    {
+      kbd_backlight_set(kbd_bck_info.toggle_lvl, KBD_USER);
+    }
+}
+
+
+/* Automatic backlight */
 void
 kbd_backlight_inhibit_set(int mask)
 {
