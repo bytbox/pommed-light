@@ -45,15 +45,18 @@
 #include "../dbus.h"
 
 
-#define I2C_DEV       "/dev/i2c-7"
-#define I2C_SLAVE     0x0703
+/* I2C ioctl */
+#define I2C_SLAVE           0x0703
+
+#define SYSFS_I2C_BASE      "/sys/class/i2c-dev"
+#define I2C_ADAPTER_NAME    "uni-n 0"
 
 
 struct _kbd_bck_info kbd_bck_info;
 
 
-static int lmuaddr;  /* i2c bus address */
-static char *i2cdev; /* i2c bus device */
+static unsigned int lmuaddr;  /* i2c bus address */
+static char i2cdev[16]; /* i2c bus device */
 
 
 int
@@ -107,10 +110,10 @@ kbd_backlight_set(int val, int who)
   if (lmuaddr == 0)
     return;
 
-  fd = open (i2cdev, O_RDWR);
+  fd = open(i2cdev, O_RDWR);
   if (fd < 0)
     {
-      logmsg(LOG_ERR, "Could not open %s: %s\n", I2C_DEV, strerror(errno));
+      logmsg(LOG_ERR, "Could not open %s: %s\n", i2cdev, strerror(errno));
 
       return;
     }
@@ -222,6 +225,9 @@ kbd_backlight_step(int dir)
 #include "../kbd_auto.c"
 
 
+static int 
+kbd_probe_lmu(void);
+
 void
 kbd_backlight_init(void)
 {
@@ -238,15 +244,11 @@ kbd_backlight_init(void)
 
   kbd_bck_info.auto_on = 0;
 
-  lmuaddr = kbd_get_lmuaddr();
-  i2cdev = "/dev/i2c-7";
-
-  ret = kbd_probe_lmu(lmuaddr, i2cdev);
+  ret = kbd_probe_lmu();
 
   if ((!has_kbd_backlight()) || (ret < 0))
     {
       lmuaddr = 0;
-      i2cdev = NULL;
 
       kbd_bck_info.r_sens = 0;
       kbd_bck_info.l_sens = 0;
@@ -284,12 +286,75 @@ kbd_backlight_fix_config(void)
     kbd_cfg.step = KBD_BACKLIGHT_MAX / 2;
 }
 
+
+static int
+kbd_get_i2cdev(void)
+{
+  char buf[PATH_MAX];
+  int i2c_bus;
+  int ret;
+
+  FILE *fp;
+
+  /* All the 256 minors (major 89) are reserved for i2c adapters */
+  for (i2c_bus = 0; i2c_bus < 256; i2c_bus++)
+    {
+      ret = snprintf(buf, PATH_MAX - 1, "%s/i2c-%d/name", SYSFS_I2C_BASE, i2c_bus);
+      if ((ret < 0) || (ret >= (PATH_MAX - 1)))
+	{
+	  logmsg(LOG_WARNING, "Error: i2c device probe: device path too long");
+
+	  i2c_bus = 256;
+	  break;
+	}
+
+      fp = fopen(buf, "r");
+      if ((fp == NULL) && (errno != ENOENT))
+	{
+	  logmsg(LOG_ERR, "Error: i2c device probe: cannot open %s: %s", buf, strerror(errno));
+	  continue;
+	}
+
+      ret = fread(buf, 1, PATH_MAX - 1, fp);
+      fclose(fp);
+
+      if (ret < 1)
+	continue;
+
+      buf[ret - 1] = '\0';
+
+      logdebug("Found i2c adapter [%s]\n", buf);
+
+      if (ret < strlen(I2C_ADAPTER_NAME))
+	continue;
+
+      if (strncmp(buf, I2C_ADAPTER_NAME, strlen(I2C_ADAPTER_NAME)) == 0)
+	{
+	  logmsg(LOG_INFO, "Found %s i2c adapter at i2c-%d", I2C_ADAPTER_NAME, i2c_bus);
+	  break;
+	}
+    }
+
+  if (i2c_bus > 255)
+    return -1;
+
+  ret = snprintf(i2cdev, sizeof(i2cdev) - 1, "/dev/i2c-%d", i2c_bus);
+  if ((ret < 0) || (ret >= (sizeof(i2cdev) - 1)))
+    {
+      logmsg(LOG_WARNING, "Error: i2c device path too long");
+
+      return -1;
+    }
+
+  return 0;
+}
+
 int
 kbd_get_lmuaddr(void)
 {
   struct device_node *node;
-  int plen, lmuaddr = -1;
-  long *reg = NULL;
+  int plen;
+  unsigned long *reg = NULL;
 
   of_init();
 
@@ -298,72 +363,51 @@ kbd_get_lmuaddr(void)
     return -1;
 
   reg = of_find_property(node, "reg", &plen);
-  lmuaddr = (int) (*reg >> 1);
+  lmuaddr = (unsigned int) (*reg >> 1);
 
   free(reg);
   of_free_node(node);
 
-  return lmuaddr;
-}
-
-#if 0 /* Old code */
-int
-kbd_get_lmuaddr2(void)
-{
-  int fd;
-  int ret;
-  long reg;
-
-  fd = open(LMU_REG, O_RDONLY);
-  if (fd < 0)
-    {
-      logmsg(LOG_ERR, "Could not open lmu %s: %s\n", LMU_REG, strerror(errno));
-
-      fd = open(LMU_REG_55, O_RDONLY);
-      if (fd < 0)
-	{
-	  logmsg(LOG_ERR, "Could not open lmu %s: %s\n", LMU_REG_55, strerror(errno));
-
-	  return -1;
-	}
-    }
-
-  ret = read(fd, &reg, sizeof(long));
-  close(fd);
-
-  if (ret == sizeof(long))
-    return (int)(reg >> 1);
+  logdebug("Found LMU controller at address 0x%x\n", lmuaddr);
 
   return 0;
 }
-#endif /* 0 */
 
-
-char *
-kbd_get_i2cdev(int addr)
-{
-  return I2C_DEV;
-}
-
-int
-kbd_probe_lmu(int addr, char *dev)
+static int
+kbd_probe_lmu(void)
 {
   int fd;
   int ret;
   char buffer[4];
 
-  fd = open(dev, O_RDWR);
-  if (fd < 0)
+  ret = kbd_get_lmuaddr();
+  if (ret < 0)
     {
-      logmsg(LOG_WARNING, "Could not open device %s: %s\n", dev, strerror(errno));
+      lmuaddr = 0;
 
       return -1;
     }
 
-  ret = ioctl(fd, I2C_SLAVE, addr);
+  ret = kbd_get_i2cdev();
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "ioctl failed on %s: %s\n", dev, strerror(errno));
+      lmuaddr = 0;
+
+      return -1;
+    }
+
+  fd = open(i2cdev, O_RDWR);
+  if (fd < 0)
+    {
+      logmsg(LOG_WARNING, "Could not open device %s: %s\n", i2cdev, strerror(errno));
+
+      return -1;
+    }
+
+  ret = ioctl(fd, I2C_SLAVE, lmuaddr);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "ioctl failed on %s: %s\n", i2cdev, strerror(errno));
 
       close(fd);
       return -1;
@@ -372,14 +416,14 @@ kbd_probe_lmu(int addr, char *dev)
   ret = read(fd, buffer, 4);
   if (ret != 4)
     {
-      logmsg(LOG_WARNING, "Probing failed on %s: %s\n", dev, strerror(errno));
+      logmsg(LOG_WARNING, "Probing failed on %s: %s\n", i2cdev, strerror(errno));
 
       close(fd);
       return -1;
     }
   close(fd);
 
-  logdebug("Probing successful on %s\n", dev);
+  logdebug("Probing successful on %s\n", i2cdev);
 
   return 0;
 }

@@ -6,6 +6,7 @@ version 1.4:
 	least) and later.
 	- pommed: added a simple backlight toggle mode, used when the
 	automatic backlight is disabled in the configuration file.
+	- pommed: enumerate i2c adapters.
 
 version 1.3:
 	- gpomme: added configuration GUI, courtesy of Daniel G. SIEGEL.
