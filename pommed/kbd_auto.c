@@ -34,6 +34,9 @@ kbd_backlight_toggle(void)
     }
   else
     {
+      if (kbd_bck_info.toggle_lvl < kbd_cfg.auto_lvl)
+	kbd_bck_info.toggle_lvl = kbd_cfg.auto_lvl;
+
       kbd_backlight_set(kbd_bck_info.toggle_lvl, KBD_USER);
     }
 }
