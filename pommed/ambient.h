@@ -5,10 +5,24 @@
 #ifndef __AMBIENT_H__
 #define __AMBIENT_H__
 
-
-#define KBD_AMBIENT_SENSOR      "/sys/devices/platform/applesmc/light"
 #define KBD_AMBIENT_MIN         0
 #define KBD_AMBIENT_MAX         255
+
+#ifndef __powerpc__
+# define KBD_AMBIENT_SENSOR      "/sys/devices/platform/applesmc/light"
+#else
+/* I2C ioctl */
+# define I2C_SLAVE           0x0703
+
+struct _lmu_info
+{
+  unsigned int lmuaddr;  /* i2c bus address */
+  char i2cdev[16];       /* i2c bus device */
+};
+
+extern struct _lmu_info lmu_info;
+
+#endif /* !__powerpc__ */
 
 
 struct _ambient_info

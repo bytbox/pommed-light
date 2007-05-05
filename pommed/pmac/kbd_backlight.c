@@ -47,21 +47,15 @@
 #include "../dbus.h"
 
 
-/* I2C ioctl */
-#define I2C_SLAVE           0x0703
-
 #define SYSFS_I2C_BASE      "/sys/class/i2c-dev"
 #define I2C_ADAPTER_NAME    "uni-n 0"
 
-#define ADB_DEVICE          "/dev/adb"
-#define ADB_BUFFER_SIZE     32
+# define ADB_DEVICE          "/dev/adb"
+# define ADB_BUFFER_SIZE     32
 
 
+struct _lmu_info lmu_info;
 struct _kbd_bck_info kbd_bck_info;
-
-
-static unsigned int lmuaddr;  /* i2c bus address */
-static char i2cdev[16]; /* i2c bus device */
 
 
 int
@@ -102,7 +96,7 @@ kbd_lmu_backlight_set(int val, int who)
   if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
     return;
 
-  if (lmuaddr == 0)
+  if (lmu_info.lmuaddr == 0)
     return;
 
   curval = kbd_backlight_get();
@@ -113,15 +107,15 @@ kbd_lmu_backlight_set(int val, int who)
   if ((val < KBD_BACKLIGHT_OFF) || (val > KBD_BACKLIGHT_MAX))
     return;
 
-  fd = open(i2cdev, O_RDWR);
+  fd = open(lmu_info.i2cdev, O_RDWR);
   if (fd < 0)
     {
-      logmsg(LOG_ERR, "Could not open %s: %s\n", i2cdev, strerror(errno));
+      logmsg(LOG_ERR, "Could not open %s: %s\n", lmu_info.i2cdev, strerror(errno));
 
       return;
     }
 
-  ret = ioctl(fd, I2C_SLAVE, lmuaddr);
+  ret = ioctl(fd, I2C_SLAVE, lmu_info.lmuaddr);
   if (ret < 0)
     {
       logmsg(LOG_ERR, "Could not ioctl the i2c bus: %s\n", strerror(errno));
@@ -368,7 +362,7 @@ kbd_backlight_init(void)
 
   if ((!has_kbd_backlight()) || (ret < 0))
     {
-      lmuaddr = 0;
+      lmu_info.lmuaddr = 0;
 
       kbd_bck_info.r_sens = 0;
       kbd_bck_info.l_sens = 0;
@@ -458,8 +452,8 @@ kbd_get_i2cdev(void)
   if (i2c_bus > 255)
     return -1;
 
-  ret = snprintf(i2cdev, sizeof(i2cdev) - 1, "/dev/i2c-%d", i2c_bus);
-  if ((ret < 0) || (ret >= (sizeof(i2cdev) - 1)))
+  ret = snprintf(lmu_info.i2cdev, sizeof(lmu_info.i2cdev) - 1, "/dev/i2c-%d", i2c_bus);
+  if ((ret < 0) || (ret >= (sizeof(lmu_info.i2cdev) - 1)))
     {
       logmsg(LOG_WARNING, "Error: i2c device path too long");
 
@@ -487,12 +481,12 @@ kbd_get_lmuaddr(void)
     }
 
   reg = of_find_property(node, "reg", &plen);
-  lmuaddr = (unsigned int) (*reg >> 1);
+  lmu_info.lmuaddr = (unsigned int) (*reg >> 1);
 
   free(reg);
   of_free_node(node);
 
-  logdebug("Found LMU controller at address 0x%x\n", lmuaddr);
+  logdebug("Found LMU controller at address 0x%x\n", lmu_info.lmuaddr);
 
   return 0;
 }
@@ -506,32 +500,24 @@ kbd_probe_lmu(void)
 
   ret = kbd_get_lmuaddr();
   if (ret < 0)
-    {
-      lmuaddr = 0;
-
-      return -1;
-    }
+    return -1;
 
   ret = kbd_get_i2cdev();
   if (ret < 0)
-    {
-      lmuaddr = 0;
+    return -1;
 
-      return -1;
-    }
-
-  fd = open(i2cdev, O_RDWR);
+  fd = open(lmu_info.i2cdev, O_RDWR);
   if (fd < 0)
     {
-      logmsg(LOG_WARNING, "Could not open device %s: %s\n", i2cdev, strerror(errno));
+      logmsg(LOG_WARNING, "Could not open device %s: %s\n", lmu_info.i2cdev, strerror(errno));
 
       return -1;
     }
 
-  ret = ioctl(fd, I2C_SLAVE, lmuaddr);
+  ret = ioctl(fd, I2C_SLAVE, lmu_info.lmuaddr);
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "ioctl failed on %s: %s\n", i2cdev, strerror(errno));
+      logmsg(LOG_ERR, "ioctl failed on %s: %s\n", lmu_info.i2cdev, strerror(errno));
 
       close(fd);
       return -1;
@@ -540,14 +526,14 @@ kbd_probe_lmu(void)
   ret = read(fd, buffer, 4);
   if (ret != 4)
     {
-      logmsg(LOG_WARNING, "Probing failed on %s: %s\n", i2cdev, strerror(errno));
+      logmsg(LOG_WARNING, "Probing failed on %s: %s\n", lmu_info.i2cdev, strerror(errno));
 
       close(fd);
       return -1;
     }
   close(fd);
 
-  logdebug("Probing successful on %s\n", i2cdev);
+  logdebug("Probing successful on %s\n", lmu_info.i2cdev);
 
   return 0;
 }

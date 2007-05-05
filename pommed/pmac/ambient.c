@@ -40,9 +40,6 @@
 struct _ambient_info ambient_info;
 
 
-#define I2C_DEV	               "/dev/i2c-7"
-#define I2C_SLAVE              0x703
-#define LMU_ADDR               0x42
 #define KBD_AMBIENT_MAX_RAW    1600
 
 
@@ -53,7 +50,7 @@ ambient_get(int *r, int *l)
   int ret;
   char buf[4];
 
-  fd = open(I2C_DEV, O_RDONLY);
+  fd = open(lmu_info.i2cdev, O_RDONLY);
   if (fd < 0)
     {
       *r = -1;
@@ -62,11 +59,11 @@ ambient_get(int *r, int *l)
       ambient_info.right = 0;
       ambient_info.left = 0;
 
-      logmsg(LOG_ERR, "Could not open i2c device %s: %s\n",I2C_DEV, strerror(errno));
+      logmsg(LOG_ERR, "Could not open i2c device %s: %s\n", lmu_info.i2cdev, strerror(errno));
       return;
     }
 
-  ret = ioctl(fd, I2C_SLAVE, LMU_ADDR);
+  ret = ioctl(fd, I2C_SLAVE, lmu_info.lmuaddr);
   if (ret < 0)
     {
       close(fd);
@@ -77,7 +74,7 @@ ambient_get(int *r, int *l)
       ambient_info.right = 0;
       ambient_info.left = 0;
 
-      logmsg(LOG_ERR, "ioctl failed on %s: %s\n",I2C_DEV, strerror(errno));
+      logmsg(LOG_ERR, "ioctl failed on %s: %s\n", lmu_info.i2cdev, strerror(errno));
 
       return;
     }
