@@ -36,6 +36,8 @@
 #include <sys/ioctl.h>
 #include <linux/i2c.h>
 
+#include <linux/adb.h>
+
 #include <ofapi/of_api.h>
 
 #include "../pommed.h"
@@ -50,6 +52,9 @@
 
 #define SYSFS_I2C_BASE      "/sys/class/i2c-dev"
 #define I2C_ADAPTER_NAME    "uni-n 0"
+
+#define ADB_DEVICE          "/dev/adb"
+#define ADB_BUFFER_SIZE     32
 
 
 struct _kbd_bck_info kbd_bck_info;
@@ -76,14 +81,12 @@ has_kbd_backlight(void)
 static int
 kbd_backlight_get(void)
 {
-  if (lmuaddr == 0)
-    return 0;
-
   return kbd_bck_info.level;
 }
 
+
 static void
-kbd_backlight_set(int val, int who)
+kbd_lmu_backlight_set(int val, int who)
 {
   int curval;
 
@@ -99,15 +102,15 @@ kbd_backlight_set(int val, int who)
   if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
     return;
 
+  if (lmuaddr == 0)
+    return;
+
   curval = kbd_backlight_get();
 
   if (val == curval)
     return;
 
   if ((val < KBD_BACKLIGHT_OFF) || (val > KBD_BACKLIGHT_MAX))
-    return;
-
-  if (lmuaddr == 0)
     return;
 
   fd = open(i2cdev, O_RDWR);
@@ -147,7 +150,7 @@ kbd_backlight_set(int val, int who)
 
 	  if (write (fd, buf, 3) < 0)
 	    {
-	      logmsg(LOG_ERR, "Could not set kbd brightness: %s\n", strerror(errno));
+	      logmsg(LOG_ERR, "Could not set LMU kbd brightness: %s\n", strerror(errno));
 
 	      continue;
 	    }
@@ -170,7 +173,7 @@ kbd_backlight_set(int val, int who)
   buf[2] = (unsigned char) val << 4;
 
   if (write (fd, buf, 3) < 0)
-    logmsg(LOG_ERR, "Could not set kbd brightness: %s\n", strerror(errno));
+    logmsg(LOG_ERR, "Could not set LMU kbd brightness: %s\n", strerror(errno));
 
   close(fd);
 
@@ -179,6 +182,119 @@ kbd_backlight_set(int val, int who)
   kbd_bck_info.level = val;
 }
 
+static void
+kbd_pmu_backlight_set(int val, int who)
+{
+  int curval;
+
+  int i;
+  float fadeval;
+  float step;
+  struct timespec fade_step;
+
+  int fd;
+  int ret;
+  unsigned char buf[ADB_BUFFER_SIZE];
+
+  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
+    return;
+
+  curval = kbd_backlight_get();
+
+  if (val == curval)
+    return;
+
+  if ((val < KBD_BACKLIGHT_OFF) || (val > KBD_BACKLIGHT_MAX))
+    return;
+
+  fd = open(ADB_DEVICE, O_RDWR);
+  if (fd < 0)
+    {
+      logmsg(LOG_ERR, "Could not open %s: %s\n", ADB_DEVICE, strerror(errno));
+
+      return;
+    }
+
+  if (who == KBD_AUTO)
+    {
+      fade_step.tv_sec = 0;
+      fade_step.tv_nsec = (KBD_BACKLIGHT_FADE_LENGTH / KBD_BACKLIGHT_FADE_STEPS) * 1000000;
+
+      fadeval = (float)curval;
+      step = (float)(val - curval) / (float)KBD_BACKLIGHT_FADE_STEPS;
+
+      for (i = 0; i < KBD_BACKLIGHT_FADE_STEPS; i++)
+	{
+	  fadeval += step;
+
+	  buf[0] = PMU_PACKET;
+	  buf[1] = 0x4f; /* PMU command */
+	  buf[2] = 0;
+	  buf[3] = 0;
+	  buf[4] = (unsigned char)fadeval;
+
+	  ret = write(fd, buf, 5);
+	  if (ret != 5)
+	    {
+	      logmsg(LOG_ERR, "Could not set PMU kbd brightness: %s\n", strerror(errno));
+
+	      continue;
+	    }
+
+	  ret = read(fd, buf, ADB_BUFFER_SIZE);
+	  if (ret < 0)
+	    {
+	      logmsg(LOG_ERR, "Could not read PMU reply: %s\n", strerror(errno));
+
+	      continue;
+	    }
+
+	  logdebug("KBD backlight value faded to %d\n", (int)fadeval);
+
+	  nanosleep(&fade_step, NULL);
+	}
+    }
+  
+  buf[0] = PMU_PACKET;
+  buf[1] = 0x4f; /* PMU command */
+  buf[2] = 0;
+  buf[3] = 0;
+  buf[4] = val;
+
+  ret = write(fd, buf, 5);
+  if (ret != 5)
+    {
+      logmsg(LOG_ERR, "Could not set PMU kbd brightness: %s\n", strerror(errno));
+    }
+  else
+    {
+      ret = read(fd, buf, ADB_BUFFER_SIZE);
+      if (ret < 0)
+	logmsg(LOG_ERR, "Could not read PMU reply: %s\n", strerror(errno));
+    }
+
+  close(fd);
+
+  mbpdbus_send_kbd_backlight(val, kbd_bck_info.level, who);
+
+  kbd_bck_info.level = val;
+}
+
+static void
+kbd_backlight_set(int val, int who)
+{
+  if ((mops->type == MACHINE_POWERBOOK_58)
+      || (mops->type == MACHINE_POWERBOOK_59))
+    {
+      kbd_pmu_backlight_set(val, who);
+    }
+  else
+    {
+      kbd_lmu_backlight_set(val, who);
+    }
+}
+
+
 void
 kbd_backlight_step(int dir)
 {
@@ -186,9 +302,6 @@ kbd_backlight_step(int dir)
   int newval;
 
   if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
-    return;
-
-  if (lmuaddr == 0)
     return;
 
   val = kbd_backlight_get();
@@ -244,7 +357,14 @@ kbd_backlight_init(void)
 
   kbd_bck_info.auto_on = 0;
 
-  ret = kbd_probe_lmu();
+  if ((mops->type == MACHINE_POWERBOOK_58)
+      || (mops->type == MACHINE_POWERBOOK_59))
+    {
+      /* Nothing to probe for the PMU05 machines */
+      ret = 0;
+    }
+  else
+    ret = kbd_probe_lmu();
 
   if ((!has_kbd_backlight()) || (ret < 0))
     {
@@ -360,7 +480,11 @@ kbd_get_lmuaddr(void)
 
   node = of_find_node_by_type("lmu-controller", 0);
   if (node == NULL)
-    return -1;
+    {
+      logmsg(LOG_ERR, "Error: no lmu-controller found in device-tree");
+
+      return -1;
+    }
 
   reg = of_find_property(node, "reg", &plen);
   lmuaddr = (unsigned int) (*reg >> 1);
