@@ -2,8 +2,10 @@ ChangeLog for pommed
 --------------------
 
 version 1.4:
-	- pommed: add Geyser keyboard identification, PowerBook5,8 (at
-	least) and later.
+	- pommed: add proper support for the PowerBook5,8 and PowerBook5,9
+	(PMU05 machines); add Geyser keyboard identification, PMU05
+	ambient light sensors and keyboard backlight. Thanks Gaudenz
+	Steilin for the report and testing.
 	- pommed: added a simple backlight toggle mode, used when the
 	automatic backlight is disabled in the configuration file.
 	- pommed: enumerate i2c adapters.
