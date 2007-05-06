@@ -90,7 +90,7 @@ kbd_lmu_backlight_set(int val, int who)
   int ret;
   unsigned char buf[8];
 
-  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
+  if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
     return;
 
   if (lmu_info.lmuaddr == 0)
@@ -187,7 +187,7 @@ kbd_pmu_backlight_set(int val, int who)
   int ret;
   unsigned char buf[ADB_BUFFER_SIZE];
 
-  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
+  if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
     return;
 
   curval = kbd_backlight_get();
@@ -292,7 +292,7 @@ kbd_backlight_step(int dir)
   int val;
   int newval;
 
-  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
+  if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
     return;
 
   val = kbd_backlight_get();

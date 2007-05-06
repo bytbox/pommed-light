@@ -95,7 +95,7 @@ kbd_backlight_set(int val, int who)
 
   FILE *fp;
 
-  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
+  if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
     return;
 
   curval = kbd_backlight_get();
@@ -159,7 +159,7 @@ kbd_backlight_step(int dir)
   int val;
   int newval;
 
-  if (kbd_bck_info.inhibit ^ KBD_INHIBIT_CFG)
+  if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
     return;
 
   val = kbd_backlight_get();
