@@ -14,6 +14,9 @@
 /* I2C ioctl */
 # define I2C_SLAVE           0x0703
 
+# define ADB_DEVICE          "/dev/adb"
+# define ADB_BUFFER_SIZE     32
+
 struct _lmu_info
 {
   unsigned int lmuaddr;  /* i2c bus address */

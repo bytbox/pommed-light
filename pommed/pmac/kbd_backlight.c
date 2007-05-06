@@ -50,9 +50,6 @@
 #define SYSFS_I2C_BASE      "/sys/class/i2c-dev"
 #define I2C_ADAPTER_NAME    "uni-n 0"
 
-# define ADB_DEVICE          "/dev/adb"
-# define ADB_BUFFER_SIZE     32
-
 
 struct _lmu_info lmu_info;
 struct _kbd_bck_info kbd_bck_info;
