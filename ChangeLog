@@ -1,6 +1,9 @@
 ChangeLog for pommed
 --------------------
 
+version 1.5:
+
+
 version 1.4:
 	- pommed: add proper support for the PowerBook5,8 and PowerBook5,9
 	(PMU05 machines); add Geyser keyboard identification, PMU05
