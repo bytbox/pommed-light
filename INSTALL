@@ -17,6 +17,7 @@ pommed requires:
  - libdbus
  - libasound
  - libofapi (aka oflib); see below
+ - eject
 
 gpomme requires:
  - libdbus
