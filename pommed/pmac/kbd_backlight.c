@@ -472,9 +472,13 @@ kbd_get_lmuaddr(void)
   node = of_find_node_by_type("lmu-controller", 0);
   if (node == NULL)
     {
-      logmsg(LOG_ERR, "Error: no lmu-controller found in device-tree");
+      node = of_find_node_by_name("lmu-controller", 0);
+      if (node == NULL)
+	{
+	  logmsg(LOG_ERR, "Error: no lmu-controller found in device-tree");
 
-      return -1;
+	  return -1;
+	}
     }
 
   reg = of_find_property(node, "reg", &plen);
