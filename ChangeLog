@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.6:
+
 version 1.5:
 	- pommed: back to using eject(1) for CD ejection.
 	- pommed: fallback to of_find_node_by_name() for LMU controller
