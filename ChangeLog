@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.6:
+	- pommed: add new "Apple Inc." vendor ID in SMBIOS routine.
 
 version 1.5:
 	- pommed: back to using eject(1) for CD ejection.

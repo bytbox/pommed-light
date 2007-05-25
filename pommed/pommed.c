@@ -500,7 +500,8 @@ check_machine_smbios(void)
 
   logdebug("SMBIOS vendor name: [%s]\n", prop);
 
-  if (strcmp(prop, "Apple Computer, Inc.") == 0)
+  if ((strcmp(prop, "Apple Computer, Inc.") == 0)
+      || (strcmp(prop, "Apple Inc.") == 0))
     ret = MACHINE_MAC_UNKNOWN;
 
   SMBIOSFreeMemory(prop);
