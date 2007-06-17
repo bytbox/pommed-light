@@ -40,6 +40,7 @@
 
 /* Apple Remote IR Receiver */
 #define USB_PRODUCT_ID_APPLEIR        0x8240
+#define USB_PRODUCT_ID_APPLEIR_2      0x8242
 
 
 /* Keyboard hotkeys */

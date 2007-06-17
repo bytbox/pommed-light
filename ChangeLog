@@ -1,6 +1,11 @@
 ChangeLog for pommed
 --------------------
 
+version 1.7:
+	- pommed: add partial support for the MacBookPro3,1 (Core2 Duo,
+	15" & 17", June 2007). New Apple IR receiver too. Missing nVidia
+	backlight control.
+
 version 1.6:
 	- pommed: add new "Apple Inc." vendor ID in SMBIOS routine.
 

@@ -46,7 +46,8 @@ int
 has_kbd_backlight(void)
 {
   return ((mops->type == MACHINE_MACBOOKPRO_1)
-	  || (mops->type == MACHINE_MACBOOKPRO_2));
+	  || (mops->type == MACHINE_MACBOOKPRO_2)
+	  || (mops->type == MACHINE_MACBOOKPRO_3));
 }
 
 

@@ -219,6 +219,16 @@ struct machine_ops pb_mops[] = {
 
 #else
 
+int dummy_backlight_probe(void)
+{
+  return 0;
+}
+
+void dummy_backlight_step(int dir)
+{
+  return;
+}
+
 struct machine_ops mb_mops[] = {
   /* MacBook Pro machines */
 
@@ -236,6 +246,13 @@ struct machine_ops mb_mops[] = {
     .evdev_identify = evdev_is_geyser4,
   },
 
+  {  /* MacBookPro3,1 (15" & 17", Core2 Duo, June 2007) */
+    .type = MACHINE_MACBOOKPRO_3,
+    /* dummy backlight operations for now - nVidia support needed */
+    .lcd_backlight_probe = dummy_backlight_probe,
+    .lcd_backlight_step = dummy_backlight_step,
+    .evdev_identify = evdev_is_geyser4,
+  },
 
   /* MacBook machines */
 
@@ -526,6 +543,9 @@ check_machine_smbios(void)
   /* Core2 Duo MacBook Pro 17" & 15" (October 2006) */
   else if ((strcmp(prop, "MacBookPro2,1") == 0) || (strcmp(prop, "MacBookPro2,2") == 0))
     ret = MACHINE_MACBOOKPRO_2;
+  /* Core2 Duo MacBook Pro 15" & 17" (June 2007) */
+  else if (strcmp(prop, "MacBookPro3,1") == 0)
+    ret = MACHINE_MACBOOKPRO_3;
   /* Core Duo MacBook (May 2006) */
   else if (strcmp(prop, "MacBook1,1") == 0)
     ret = MACHINE_MACBOOK_1;

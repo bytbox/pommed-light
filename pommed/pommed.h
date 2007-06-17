@@ -6,7 +6,7 @@
 #define __POMMED_H__
 
 
-#define M_VERSION "1.6"
+#define M_VERSION "1.7"
 
 
 extern int debug;
@@ -32,6 +32,7 @@ typedef enum
 #ifndef __powerpc__
     MACHINE_MACBOOKPRO_1,
     MACHINE_MACBOOKPRO_2,
+    MACHINE_MACBOOKPRO_3,
     MACHINE_MACBOOK_1,
     MACHINE_MACBOOK_2,
 #else
