@@ -24,11 +24,18 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <string.h>
 
+#include <syslog.h>
+
 #include "../pommed.h"
 #include "../ambient.h"
+
+
+#define APPLESMC_SYSFS_BASE    "/sys/devices/platform"
+static char smcpath[64];
 
 
 struct _ambient_info ambient_info;
@@ -42,7 +49,7 @@ ambient_get(int *r, int *l)
   char buf[16];
   char *p;
 
-  fd = open(KBD_AMBIENT_SENSOR, O_RDONLY);
+  fd = open(smcpath, O_RDONLY);
   if (fd < 0)
     {
       *r = -1;
@@ -88,6 +95,37 @@ ambient_get(int *r, int *l)
 void
 ambient_init(int *r, int *l)
 {
+  DIR *pdev;
+  struct dirent *pdevent;
+
+  int ret;
+
+  /* Probe for the applesmc sysfs path */
+  pdev = opendir(APPLESMC_SYSFS_BASE);
+  if (pdev != NULL)
+    {
+      while ((pdevent = readdir(pdev)))
+	{
+	  if (pdevent->d_type != DT_DIR)
+	    continue;
+
+	  if (strstr(pdevent->d_name, "applesmc") == pdevent->d_name)
+	    {
+	      ret = snprintf(smcpath, sizeof(smcpath), "%s/%s/light",
+			    APPLESMC_SYSFS_BASE, pdevent->d_name);
+
+	      if ((ret < 0) || (ret >= sizeof(smcpath)))
+		logmsg(LOG_ERR, "Failed to build applesmc sysfs path");
+	      else
+		logmsg(LOG_INFO, "Found applesmc at %s", smcpath);
+
+	      break;
+	    }
+	}
+
+      closedir(pdev);
+    }
+
   ambient_get(r, l);
 
   ambient_info.max = KBD_AMBIENT_MAX;

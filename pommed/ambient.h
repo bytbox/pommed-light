@@ -8,9 +8,7 @@
 #define KBD_AMBIENT_MIN         0
 #define KBD_AMBIENT_MAX         255
 
-#ifndef __powerpc__
-# define KBD_AMBIENT_SENSOR      "/sys/devices/platform/applesmc/light"
-#else
+#ifdef __powerpc__
 /* I2C ioctl */
 # define I2C_SLAVE           0x0703
 
