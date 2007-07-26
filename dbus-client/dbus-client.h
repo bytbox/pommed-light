@@ -14,6 +14,9 @@
 #define MBP_DBUS_SIG_LIGHT  (1 << 5)
 
 
+#define LCD_USER      0
+#define LCD_AUTO      1
+
 #define KBD_USER      0
 #define KBD_AUTO      1
 

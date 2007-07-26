@@ -201,7 +201,7 @@ gma950_backlight_step(int dir)
 
   gma950_backlight_unmap();
 
-  mbpdbus_send_lcd_backlight(newval, val);
+  mbpdbus_send_lcd_backlight(newval, val, LCD_USER);
 
   lcd_bck_info.level = newval;
 }
@@ -223,17 +223,25 @@ gma950_backlight_toggle(int lvl)
     {
       case LCD_ON_AC_LEVEL:
 	logdebug("LCD switching to AC level\n");
+
 	gma950_backlight_set(lcd_bck_info.ac_lvl);
+
+	mbpdbus_send_lcd_backlight(lcd_bck_info.ac_lvl, lcd_bck_info.level, LCD_AUTO);
+
 	lcd_bck_info.level = lcd_bck_info.ac_lvl;
 	break;
 
       case LCD_ON_BATT_LEVEL:
 	logdebug("LCD switching to battery level\n");
+
 	lcd_bck_info.ac_lvl = lcd_bck_info.level;
+
 	if (lcd_bck_info.level > lcd_gma950_cfg.on_batt)
 	  {
 	    gma950_backlight_set(lcd_gma950_cfg.on_batt);
 	    lcd_bck_info.level = lcd_gma950_cfg.on_batt;
+
+	    mbpdbus_send_lcd_backlight(lcd_bck_info.level, lcd_bck_info.ac_lvl, LCD_AUTO);
 	  }
 	break;
     }

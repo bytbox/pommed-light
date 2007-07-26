@@ -16,6 +16,9 @@ struct _lcd_bck_info
 extern struct _lcd_bck_info lcd_bck_info;
 
 
+#define LCD_USER    0
+#define LCD_AUTO    1
+
 #define LCD_ON_AC_LEVEL    0
 #define LCD_ON_BATT_LEVEL  1
 

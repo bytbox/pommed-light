@@ -39,7 +39,7 @@ static DBusConnection *conn;
 
 
 void
-mbpdbus_send_lcd_backlight(int cur, int prev)
+mbpdbus_send_lcd_backlight(int cur, int prev, int who)
 {
   DBusMessage *msg;
 
@@ -64,6 +64,7 @@ mbpdbus_send_lcd_backlight(int cur, int prev)
 				 DBUS_TYPE_UINT32, &cur,
 				 DBUS_TYPE_UINT32, &prev,
 				 DBUS_TYPE_UINT32, &lcd_bck_info.max,
+				 DBUS_TYPE_UINT32, &who,
 				 DBUS_TYPE_INVALID);
   if (ret == FALSE)
     {

@@ -6,6 +6,10 @@ version 1.8:
 	handling code. The path has changed in Linux 2.6.22.
 	- pommed: added automatic LCD backlight dimming when switching
 	from AC to battery power (and vice-versa).
+	- pommed: send out DBus notification when the automatic LCD
+	backlight dimming kicks in (similar to the automatic keyboard
+	backlight notification).
+	- gpomme: adjust for the new LCD backlight notification.
 
 version 1.7:
 	- pommed: add partial support for the MacBookPro3,1 (Core2 Duo,

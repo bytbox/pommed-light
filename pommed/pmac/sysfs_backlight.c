@@ -192,7 +192,7 @@ sysfs_backlight_step(int dir)
 
   sysfs_backlight_set(newval);
 
-  mbpdbus_send_lcd_backlight(newval, val);
+  mbpdbus_send_lcd_backlight(newval, val, LCD_USER);
 
   lcd_bck_info.level = newval;
 }
@@ -208,17 +208,25 @@ sysfs_backlight_toggle(int lvl)
     {
       case LCD_ON_AC_LEVEL:
 	logdebug("LCD switching to AC level\n");
+
 	sysfs_backlight_set(lcd_bck_info.ac_lvl);
+
+	mbpdbus_send_lcd_backlight(lcd_bck_info.ac_lvl, lcd_bck_info.level, LCD_AUTO);
+
 	lcd_bck_info.level = lcd_bck_info.ac_lvl;
 	break;
 
       case LCD_ON_BATT_LEVEL:
 	logdebug("LCD switching to battery level\n");
+
 	lcd_bck_info.ac_lvl = lcd_bck_info.level;
+
 	if (lcd_bck_info.level > lcd_sysfs_cfg.on_batt)
 	  {
 	    sysfs_backlight_set(lcd_sysfs_cfg.on_batt);
 	    lcd_bck_info.level = lcd_sysfs_cfg.on_batt;
+
+	    mbpdbus_send_lcd_backlight(lcd_bck_info.level, lcd_bck_info.ac_lvl, LCD_AUTO);
 	  }
 	break;
     }
@@ -237,7 +245,7 @@ sysfs_backlight_step_kernel(int dir)
 
   logdebug("LCD stepping: %d -> %d\n", lcd_bck_info.level, val);
 
-  mbpdbus_send_lcd_backlight(val, lcd_bck_info.level);
+  mbpdbus_send_lcd_backlight(val, lcd_bck_info.level, LCD_USER);
 
   lcd_bck_info.level = val;
 }

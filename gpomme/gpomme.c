@@ -336,11 +336,15 @@ mbp_dbus_listen(gpointer userdata)
 				DBUS_TYPE_UINT32, &cur,
 				DBUS_TYPE_UINT32, &scratch, /* previous */
 				DBUS_TYPE_UINT32, &max,
+				DBUS_TYPE_UINT32, &who,
 				DBUS_TYPE_INVALID);
 
-	  ratio = (double)cur / (double)max;
+	  if (who == LCD_USER)
+	    {
+	      ratio = (double)cur / (double)max;
 
-	  show_window(IMG_LCD_BCK, _("LCD backlight level"), ratio);
+	      show_window(IMG_LCD_BCK, _("LCD backlight level"), ratio);
+	    }
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.kbdBacklight", "kbdBacklight"))
 	{
