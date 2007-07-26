@@ -174,6 +174,40 @@ x1600_backlight_step(int dir)
   lcd_bck_info.level = newval;
 }
 
+void
+x1600_backlight_toggle(int lvl)
+{
+  int ret;
+
+  if (lcd_x1600_cfg.on_batt == 0)
+    return;
+
+  ret = x1600_backlight_map();
+  if (ret < 0)
+    return;
+
+  switch (lvl)
+    {
+      case LCD_ON_AC_LEVEL:
+	logdebug("LCD switching to AC level\n");
+	x1600_backlight_set(lcd_bck_info.ac_lvl);
+	lcd_bck_info.level = lcd_bck_info.ac_lvl;
+	break;
+
+      case LCD_ON_BATT_LEVEL:
+	logdebug("LCD switching to battery level\n");
+	lcd_bck_info.ac_lvl = lcd_bck_info.level;
+	if (lcd_bck_info.level > lcd_x1600_cfg.on_batt)
+	  {
+	    x1600_backlight_set(lcd_x1600_cfg.on_batt);
+	    lcd_bck_info.level = lcd_x1600_cfg.on_batt;
+	  }
+	break;
+    }
+
+  x1600_backlight_unmap();
+}
+
 
 #define PCI_ID_VENDOR_ATI        0x1002
 #define PCI_ID_PRODUCT_X1600     0x71c5
@@ -238,6 +272,7 @@ x1600_backlight_probe(void)
     }
 
   lcd_bck_info.level = x1600_backlight_get();
+  lcd_bck_info.ac_lvl = lcd_bck_info.level;
 
   x1600_backlight_unmap();
 
@@ -259,4 +294,8 @@ x1600_backlight_fix_config(void)
 
   if (lcd_x1600_cfg.step > (X1600_BACKLIGHT_MAX / 2))
     lcd_x1600_cfg.step = X1600_BACKLIGHT_MAX / 2;
+
+  if ((lcd_x1600_cfg.on_batt > X1600_BACKLIGHT_MAX)
+      || (lcd_x1600_cfg.on_batt < X1600_BACKLIGHT_OFF))
+    lcd_x1600_cfg.on_batt = 0;
 }

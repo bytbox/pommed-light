@@ -53,6 +53,7 @@
 #include "conffile.h"
 #include "audio.h"
 #include "dbus.h"
+#include "power.h"
 
 
 /* Machine-specific operations */
@@ -74,6 +75,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_32,
     .lcd_backlight_probe = aty128_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step_kernel,
+    .lcd_backlight_toggle = sysfs_backlight_toggle_kernel,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -81,6 +83,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_33,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -88,6 +91,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_34,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -95,6 +99,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_35,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -104,6 +109,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_51,
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -111,6 +117,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_52,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -118,6 +125,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_53,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -125,6 +133,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_54,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -132,6 +141,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_55,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -139,6 +149,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_56,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_fountain,
   },
 
@@ -146,6 +157,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_57,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_fountain,
   },
 
@@ -153,6 +165,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_58,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_geyser,
   },
 
@@ -160,6 +173,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_59,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_geyser,
   },
 
@@ -169,6 +183,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_61,
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -176,6 +191,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_62,
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -183,6 +199,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_63,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -190,6 +207,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_64,
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -197,6 +215,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_65,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -206,6 +225,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_67,
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   },
 
@@ -213,6 +233,7 @@ struct machine_ops pb_mops[] = {
     .type = MACHINE_POWERBOOK_68,
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
     .evdev_identify = evdev_is_adb,
   }
 };
@@ -229,6 +250,11 @@ void dummy_backlight_step(int dir)
   return;
 }
 
+void dummy_backlight_toggle(int lvl)
+{
+  return;
+}
+
 struct machine_ops mb_mops[] = {
   /* MacBook Pro machines */
 
@@ -236,6 +262,7 @@ struct machine_ops mb_mops[] = {
     .type = MACHINE_MACBOOKPRO_1,
     .lcd_backlight_probe = x1600_backlight_probe,
     .lcd_backlight_step = x1600_backlight_step,
+    .lcd_backlight_toggle = x1600_backlight_toggle,
     .evdev_identify = evdev_is_geyser3,
   },
 
@@ -243,6 +270,7 @@ struct machine_ops mb_mops[] = {
     .type = MACHINE_MACBOOKPRO_2,
     .lcd_backlight_probe = x1600_backlight_probe,
     .lcd_backlight_step = x1600_backlight_step,
+    .lcd_backlight_toggle = x1600_backlight_toggle,
     .evdev_identify = evdev_is_geyser4,
   },
 
@@ -251,6 +279,7 @@ struct machine_ops mb_mops[] = {
     /* dummy backlight operations for now - nVidia support needed */
     .lcd_backlight_probe = dummy_backlight_probe,
     .lcd_backlight_step = dummy_backlight_step,
+    .lcd_backlight_toggle = dummy_backlight_toggle,
     .evdev_identify = evdev_is_geyser4,
   },
 
@@ -260,6 +289,7 @@ struct machine_ops mb_mops[] = {
     .type = MACHINE_MACBOOK_1,
     .lcd_backlight_probe = gma950_backlight_probe,
     .lcd_backlight_step = gma950_backlight_step,
+    .lcd_backlight_toggle = gma950_backlight_toggle,
     .evdev_identify = evdev_is_geyser3,
   },
 
@@ -267,6 +297,7 @@ struct machine_ops mb_mops[] = {
     .type = MACHINE_MACBOOK_2,
     .lcd_backlight_probe = gma950_backlight_probe,
     .lcd_backlight_step = gma950_backlight_step,
+    .lcd_backlight_toggle = gma950_backlight_toggle,
     .evdev_identify = evdev_is_geyser4,
   }
 };
@@ -718,6 +749,8 @@ main (int argc, char **argv)
       logmsg(LOG_WARNING, "Could not connect to DBus system bus");
     }
 
+  power_init();
+
   if (!console)
     {
       /*
@@ -803,36 +836,45 @@ main (int argc, char **argv)
 		evdev_process_events(fds[i].fd);
 	    }
 
-	  if (has_kbd_backlight())
+	  /* is it time to chek the ambient light sensors and AC state ? */
+	  gettimeofday(&tv_now, NULL);
+	  tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
+	  if (tv_diff.tv_sec < 0)
+	    tv_diff.tv_sec = 0;
+
+	  if (tv_diff.tv_sec == 0)
 	    {
-	      /* is it time to chek the ambient light sensors ? */
-	      gettimeofday(&tv_now, NULL);
-	      tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
-	      if (tv_diff.tv_sec < 0)
-		tv_diff.tv_sec = 0;
+	      tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
+	    }
+	  else
+	    {
+	      tv_diff.tv_sec--;
+	      tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
+	      tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
+	    }
 
-	      if (tv_diff.tv_sec == 0)
-		{
-		  tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
-		}
-	      else
-		{
-		  tv_diff.tv_sec--;
-		  tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
-		  tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
-		}
-
-	      if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
+	  if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
+	    {
+	      if (has_kbd_backlight())
 		{
 		  kbd_backlight_ambient_check();
-		  tv_als = tv_now;
 		}
+
+	      power_check_ac_state();
+
+	      tv_als = tv_now;
 	    }
 	}
-      else if (has_kbd_backlight())
+      else
 	{
-	  /* poll() timed out, check ambient light sensors */
-	  kbd_backlight_ambient_check();
+	  /* poll() timed out, check ambient light sensors and AC state */
+	  if (has_kbd_backlight())
+	    {
+	      kbd_backlight_ambient_check();
+	    }
+
+	  power_check_ac_state();
+
 	  gettimeofday(&tv_als, NULL);
 	}
 

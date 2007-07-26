@@ -198,6 +198,33 @@ sysfs_backlight_step(int dir)
 }
 
 
+void
+sysfs_backlight_toggle(int lvl)
+{
+  if (lcd_sysfs_cfg.on_batt == 0)
+    return;
+
+  switch (lvl)
+    {
+      case LCD_ON_AC_LEVEL:
+	logdebug("LCD switching to AC level\n");
+	sysfs_backlight_set(lcd_bck_info.ac_lvl);
+	lcd_bck_info.level = lcd_bck_info.ac_lvl;
+	break;
+
+      case LCD_ON_BATT_LEVEL:
+	logdebug("LCD switching to battery level\n");
+	lcd_bck_info.ac_lvl = lcd_bck_info.level;
+	if (lcd_bck_info.level > lcd_sysfs_cfg.on_batt)
+	  {
+	    sysfs_backlight_set(lcd_sysfs_cfg.on_batt);
+	    lcd_bck_info.level = lcd_sysfs_cfg.on_batt;
+	  }
+	break;
+    }
+}
+
+
 /* When brightness keys are handled by the kernel itself,
  * we're only updating our internal buffers
  */
@@ -213,6 +240,12 @@ sysfs_backlight_step_kernel(int dir)
   mbpdbus_send_lcd_backlight(val, lcd_bck_info.level);
 
   lcd_bck_info.level = val;
+}
+
+void
+sysfs_backlight_toggle_kernel(int lvl)
+{
+  return;
 }
 
 
@@ -233,6 +266,10 @@ sysfs_backlight_fix_config(void)
 
   if (lcd_sysfs_cfg.step > (lcd_bck_info.max / 2))
     lcd_sysfs_cfg.step = lcd_bck_info.max / 2;
+
+  if ((lcd_sysfs_cfg.on_batt > lcd_bck_info.max)
+      || (lcd_sysfs_cfg.on_batt < SYSFS_BACKLIGHT_OFF))
+    lcd_sysfs_cfg.on_batt = 0;
 }
 
 
@@ -275,6 +312,7 @@ sysfs_backlight_probe(int driver)
     }
 
   lcd_bck_info.level = sysfs_backlight_get();
+  lcd_bck_info.ac_lvl = lcd_bck_info.level;
 
   return 0;
 }

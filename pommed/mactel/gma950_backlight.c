@@ -207,6 +207,41 @@ gma950_backlight_step(int dir)
 }
 
 
+void
+gma950_backlight_toggle(int lvl)
+{
+  int ret;
+
+  if (lcd_gma950_cfg.on_batt == 0)
+    return;
+
+  ret = gma950_backlight_map();
+  if (ret < 0)
+    return;
+
+  switch (lvl)
+    {
+      case LCD_ON_AC_LEVEL:
+	logdebug("LCD switching to AC level\n");
+	gma950_backlight_set(lcd_bck_info.ac_lvl);
+	lcd_bck_info.level = lcd_bck_info.ac_lvl;
+	break;
+
+      case LCD_ON_BATT_LEVEL:
+	logdebug("LCD switching to battery level\n");
+	lcd_bck_info.ac_lvl = lcd_bck_info.level;
+	if (lcd_bck_info.level > lcd_gma950_cfg.on_batt)
+	  {
+	    gma950_backlight_set(lcd_gma950_cfg.on_batt);
+	    lcd_bck_info.level = lcd_gma950_cfg.on_batt;
+	  }
+	break;
+    }
+
+  gma950_backlight_unmap();
+}
+
+
 /*
  * We are hardware-dependent for GMA950_BACKLIGHT_MAX,
  * so here _fix_config() is static and called at probe time.
@@ -229,6 +264,10 @@ gma950_backlight_fix_config(void)
 
   if (lcd_gma950_cfg.step > 0x20)
     lcd_gma950_cfg.step = 0x20;
+
+  if ((lcd_gma950_cfg.on_batt > GMA950_BACKLIGHT_MAX)
+      || (lcd_gma950_cfg.on_batt < GMA950_BACKLIGHT_MIN))
+    lcd_gma950_cfg.on_batt = 0;
 }
 
 
@@ -294,6 +333,7 @@ gma950_backlight_probe(void)
 
   lcd_bck_info.max = GMA950_BACKLIGHT_MAX;
   lcd_bck_info.level = gma950_backlight_get();
+  lcd_bck_info.ac_lvl = lcd_bck_info.level;
 
   gma950_backlight_unmap();
 

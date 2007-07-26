@@ -18,8 +18,8 @@ OFLIB ?=
 
 LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
 
-SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
-		pmac/sysfs_backlight.c \
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c \
+		pmac/sysfs_backlight.c pmac/pmu.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
 OF_SOURCES = pmac/ofapi/of_externals.c pmac/ofapi/of_internals.c \
@@ -38,9 +38,9 @@ else
 
 LDFLAGS = -lz -lsmbios $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
 
-SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c \
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
-		mactel/kbd_backlight.c mactel/ambient.c
+		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
 
 LIBS = /usr/lib/libpci.a
 endif
@@ -62,6 +62,8 @@ audio.o: audio.c audio.h pommed.h conffile.h dbus.h
 
 dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 
+power.o: power.c power.h pommed.h lcd_backlight.h
+
 
 # PowerMac-specific files
 pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
@@ -69,6 +71,8 @@ pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h a
 pmac/sysfs_backlight.o: pmac/sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 pmac/ambient.o: pmac/ambient.c ambient.h pommed.h dbus.h
+
+pmac/pmu.o: pmac/pmu.c power.h
 
 # OFlib
 pmac/ofapi/oflib.a: $(OF_OBJS)
@@ -89,6 +93,8 @@ mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h co
 mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
 
 mactel/ambient.o: mactel/ambient.c ambient.h pommed.h dbus.h
+
+mactel/acpi.o: mactel/acpi.c power.h
 
 
 clean:

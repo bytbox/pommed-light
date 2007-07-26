@@ -19,11 +19,14 @@ lcd_sysfs {
 	init = -1
 	# step value (1 - 63)
 	step = 8
+	# backlight level when on battery [40] (1 - 127, 0 to disable)
+	on_batt = 40
 
 	# WARNING
 	# On some machines, the backlight is handled by the kernel, so
-	# the "step" configuration value is useless, as pommed doesn't
-	# get to set the backlight level when you press on the keys.
+	# the "step" and "on_batt" configuration values are useless, as
+	# pommed doesn't get to set the backlight level when you press
+	# on the keys.
 }
 
 # Audio support

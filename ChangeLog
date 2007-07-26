@@ -4,6 +4,8 @@ ChangeLog for pommed
 version 1.8:
 	- pommed: probe for the applesmc sysfs path in the ambient light
 	handling code. The path has changed in Linux 2.6.22.
+	- pommed: added automatic LCD backlight dimming when switching
+	from AC to battery power (and vice-versa).
 
 version 1.7:
 	- pommed: add partial support for the MacBookPro3,1 (Core2 Duo,
