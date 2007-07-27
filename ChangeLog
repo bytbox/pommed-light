@@ -10,6 +10,8 @@ version 1.8:
 	backlight dimming kicks in (similar to the automatic keyboard
 	backlight notification).
 	- gpomme: adjust for the new LCD backlight notification.
+	- Add the gpomme icon contributed by Jan Larres
+	<jan@majutsushi.net> under the icons/ directory.
 
 version 1.7:
 	- pommed: add partial support for the MacBookPro3,1 (Core2 Duo,
