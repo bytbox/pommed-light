@@ -249,6 +249,8 @@ x1600_backlight_probe(void)
 	{
 	  address = dev->base_addr[2];
 	  length = dev->size[2];
+
+	  break;
 	}
     }
 

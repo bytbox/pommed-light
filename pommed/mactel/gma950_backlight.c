@@ -311,6 +311,8 @@ gma950_backlight_probe(void)
 	{
 	  address = dev->base_addr[0];
 	  length = dev->size[0];
+
+	  break;
 	}
     }
 
