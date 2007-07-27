@@ -3,6 +3,7 @@ Version=1.0
 Encoding=UTF-8
 Name=pommed GTK client configuration GUI
 Comment=A graphical client for pommed (configuration GUI)
+Icon=gpomme
 Exec=gpomme -c
 StartupNotify=true
 Type=Application
