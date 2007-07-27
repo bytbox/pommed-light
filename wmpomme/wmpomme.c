@@ -150,6 +150,7 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &mbp.lcd_lvl,
 				DBUS_TYPE_UINT32, &scratch, /* previous */
 				DBUS_TYPE_UINT32, &mbp.lcd_max,
+				DBUS_TYPE_UINT32, &scratch, /* who */
 				DBUS_TYPE_INVALID);
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.kbdBacklight", "kbdBacklight"))
