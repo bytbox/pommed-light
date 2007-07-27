@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.9:
+
 version 1.8:
 	- pommed: probe for the applesmc sysfs path in the ambient light
 	handling code. The path has changed in Linux 2.6.22.
