@@ -240,21 +240,6 @@ struct machine_ops pb_mops[] = {
 
 #else
 
-int dummy_backlight_probe(void)
-{
-  return 0;
-}
-
-void dummy_backlight_step(int dir)
-{
-  return;
-}
-
-void dummy_backlight_toggle(int lvl)
-{
-  return;
-}
-
 struct machine_ops mb_mops[] = {
   /* MacBook Pro machines */
 
@@ -276,10 +261,9 @@ struct machine_ops mb_mops[] = {
 
   {  /* MacBookPro3,1 (15" & 17", Core2 Duo, June 2007) */
     .type = MACHINE_MACBOOKPRO_3,
-    /* dummy backlight operations for now - nVidia support needed */
-    .lcd_backlight_probe = dummy_backlight_probe,
-    .lcd_backlight_step = dummy_backlight_step,
-    .lcd_backlight_toggle = dummy_backlight_toggle,
+    .lcd_backlight_probe = nv8600mgt_backlight_probe,
+    .lcd_backlight_step = nv8600mgt_backlight_step,
+    .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
     .evdev_identify = evdev_is_geyser4,
   },
 

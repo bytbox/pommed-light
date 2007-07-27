@@ -41,6 +41,7 @@ struct _lcd_sysfs_cfg lcd_sysfs_cfg;
 #else
 struct _lcd_x1600_cfg lcd_x1600_cfg;
 struct _lcd_gma950_cfg lcd_gma950_cfg;
+struct _lcd_nv8600mgt_cfg lcd_nv8600mgt_cfg;
 #endif
 struct _audio_cfg audio_cfg;
 struct _kbd_cfg kbd_cfg;
@@ -93,6 +94,14 @@ static cfg_opt_t lcd_gma950_opts[] =
     CFG_END()
   };
 
+static cfg_opt_t lcd_nv8600mgt_opts[] =
+  {
+    CFG_INT("init", -1, CFGF_NONE),
+    CFG_INT("step", 1, CFGF_NONE),
+    CFG_INT("on_batt", 0, CFGF_NONE),
+    CFG_END()
+  };
+
 static cfg_opt_t audio_opts[] =
   {
     CFG_STR("card", "default", CFGF_NONE),
@@ -139,6 +148,7 @@ static cfg_opt_t opts[] =
 #else
     CFG_SEC("lcd_x1600", lcd_x1600_opts, CFGF_NONE),
     CFG_SEC("lcd_gma950", lcd_gma950_opts, CFGF_NONE),
+    CFG_SEC("lcd_nv8600mgt", lcd_nv8600mgt_opts, CFGF_NONE),
 #endif
     CFG_SEC("audio", audio_opts, CFGF_NONE),
     CFG_SEC("kbd", kbd_opts, CFGF_NONE),
@@ -199,6 +209,10 @@ config_print(void)
   printf("    initial level: 0x%x\n", lcd_gma950_cfg.init);
   printf("    step: 0x%x\n", lcd_gma950_cfg.step);
   printf("    on_batt: 0x%x\n", lcd_gma950_cfg.on_batt);
+  printf(" + nVidia GeForce 8600M GT backlight control:\n");
+  printf("    initial level: %d\n", lcd_nv8600mgt_cfg.init);
+  printf("    step: %d\n", lcd_nv8600mgt_cfg.step);
+  printf("    on_batt: %d\n", lcd_nv8600mgt_cfg.on_batt);
 #endif /* __powerpc__ */
   printf(" + Audio volume control:\n");
   printf("    card: %s\n", audio_cfg.card);
@@ -254,6 +268,9 @@ config_load(void)
   /* lcd_gma950 */
   cfg_set_validate_func(cfg, "lcd_gma950|step", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_gma950|on_batt", config_validate_positive_integer);
+  /* lcd_nv8600mgt */
+  cfg_set_validate_func(cfg, "lcd_nv8600mgt|step", config_validate_positive_integer);
+  cfg_set_validate_func(cfg, "lcd_nv8600mgt|on_batt", config_validate_positive_integer);
 #endif /* __powerpc__ */
   /* audio */
   cfg_set_validate_func(cfg, "audio|card", config_validate_string);
@@ -314,6 +331,12 @@ config_load(void)
   lcd_gma950_cfg.on_batt = cfg_getint(sec, "on_batt");
   /* No _fix_config() call here, as we're hardware-dependent
    * for the max backlight value */
+
+  sec = cfg_getsec(cfg, "lcd_nv8600mgt");
+  lcd_nv8600mgt_cfg.init = cfg_getint(sec, "init");
+  lcd_nv8600mgt_cfg.step = cfg_getint(sec, "step");
+  lcd_nv8600mgt_cfg.on_batt = cfg_getint(sec, "on_batt");
+  nv8600mgt_backlight_fix_config();
 #endif /* __powerpc__ */
 
   sec = cfg_getsec(cfg, "audio");

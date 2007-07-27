@@ -55,6 +55,24 @@ int
 gma950_backlight_probe(void);
 
 
+/* nv8600mgt_backlight.c */
+#define NV8600MGT_BACKLIGHT_OFF    0
+#define NV8600MGT_BACKLIGHT_MAX    15
+
+void
+nv8600mgt_backlight_step(int dir);
+
+void
+nv8600mgt_backlight_toggle(int lvl);
+
+int
+nv8600mgt_backlight_probe(void);
+
+void
+nv8600mgt_backlight_fix_config(void);
+
+
+
 #else
 
 

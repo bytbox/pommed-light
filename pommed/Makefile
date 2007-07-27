@@ -40,6 +40,7 @@ LDFLAGS = -lz -lsmbios $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
+		mactel/nv8600mgt_backlight.c \
 		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
 
 LIBS = /usr/lib/libpci.a
@@ -89,6 +90,8 @@ pmac/ofapi/of_standard.o: pmac/ofapi/of_standard.c pmac/ofapi/of_api.h
 mactel/x1600_backlight.o: mactel/x1600_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+
+mactel/nv8600mgt_backlight.o: mactel/nv8600mgt_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
 

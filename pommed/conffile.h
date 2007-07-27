@@ -29,6 +29,13 @@ struct _lcd_gma950_cfg {
   unsigned int step;
   unsigned int on_batt;
 };
+
+struct _lcd_nv8600mgt_cfg {
+  int init;
+  int step;
+  int on_batt;
+};
+
 #endif /* __powerpc__ */
 
 struct _audio_cfg {
@@ -66,6 +73,7 @@ extern struct _lcd_sysfs_cfg lcd_sysfs_cfg;
 #else
 extern struct _lcd_x1600_cfg lcd_x1600_cfg;
 extern struct _lcd_gma950_cfg lcd_gma950_cfg;
+extern struct _lcd_nv8600mgt_cfg lcd_nv8600mgt_cfg;
 #endif
 extern struct _audio_cfg audio_cfg;
 extern struct _kbd_cfg kbd_cfg;

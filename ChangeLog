@@ -12,6 +12,9 @@ version 1.8:
 	- gpomme: adjust for the new LCD backlight notification.
 	- Add the gpomme icon contributed by Jan Larres
 	<jan@majutsushi.net> under the icons/ directory.
+	- pommed: add support for the nVidia GeForce 8600M GT found in the
+	MacBookPro3,1. I don't like that code, if there's something better
+	that can be used, please mail me.
 
 version 1.7:
 	- pommed: add partial support for the MacBookPro3,1 (Core2 Duo,
