@@ -795,6 +795,8 @@ main (int argc, char **argv)
 
       ret = poll(fds, nfds, LOOP_TIMEOUT);
 
+      gettimeofday(&tv_now, NULL);
+
       if (ret < 0) /* error */
 	{
 	  if (errno != EINTR)
@@ -821,7 +823,6 @@ main (int argc, char **argv)
 	    }
 
 	  /* is it time to chek the ambient light sensors and AC state ? */
-	  gettimeofday(&tv_now, NULL);
 	  tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
 	  if (tv_diff.tv_sec < 0)
 	    tv_diff.tv_sec = 0;
@@ -839,24 +840,13 @@ main (int argc, char **argv)
 
 	  if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
 	    {
-	      if (has_kbd_backlight())
-		{
-		  /* Increment keyboard backlight idle timer */
-		  kbd_bck_info.idle++;
-		  if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > kbd_cfg.idle))
-		    kbd_backlight_inhibit_set(KBD_INHIBIT_IDLE);
-
-		  kbd_backlight_ambient_check();
-		}
-
-	      power_check_ac_state();
-
-	      tv_als = tv_now;
+	      ret = 0; /* go and check ALS, AC state and idle time */
 	    }
 	}
-      else
+
+      if (ret == 0)
 	{
-	  /* poll() timed out, check ambient light sensors and AC state */
+	  /* time to check ambient light sensors, AC state and idle time */
 	  if (has_kbd_backlight())
 	    {
 	      /* Increment keyboard backlight idle timer */
@@ -869,7 +859,7 @@ main (int argc, char **argv)
 
 	  power_check_ac_state();
 
-	  gettimeofday(&tv_als, NULL);
+	  tv_als = tv_now;
 	}
 
       /* Process DBus requests */

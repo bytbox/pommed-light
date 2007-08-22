@@ -5,6 +5,7 @@ version 1.9:
 	- pommed: add an idle timer to automatically switch off the
 	keyboard backlight. Suggested by Javier Marcet.
 	- pommed: turn has_kbd_backlight() into an inline function.
+	- pommed: kill code duplication in the main loop.
 
 version 1.8:
 	- pommed: probe for the applesmc sysfs path in the ambient light
