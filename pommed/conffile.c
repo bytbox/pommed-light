@@ -67,17 +67,8 @@ static cfg_opt_t lcd_sysfs_opts[] =
     CFG_END()
   };
 
-static cfg_opt_t audio_opts[] =
-  {
-    CFG_STR("card", "default", CFGF_NONE),
-    CFG_INT("init", -1, CFGF_NONE),
-    CFG_INT("step", 10, CFGF_NONE),
-    CFG_STR("volume", "Master", CFGF_NONE),
-    CFG_STR("speakers", "Master", CFGF_NONE),
-    CFG_STR("headphones", "Headphone", CFGF_NONE),
-    CFG_END()
-  };
 #else
+
 static cfg_opt_t lcd_x1600_opts[] =
   {
     CFG_INT("init", -1, CFGF_NONE),
@@ -101,6 +92,8 @@ static cfg_opt_t lcd_nv8600mgt_opts[] =
     CFG_INT("on_batt", 0, CFGF_NONE),
     CFG_END()
   };
+#endif /* __powerpc__ */
+
 
 static cfg_opt_t audio_opts[] =
   {
@@ -112,8 +105,6 @@ static cfg_opt_t audio_opts[] =
     CFG_STR("headphones", "Headphone", CFGF_NONE),
     CFG_END()
   };
-#endif /* __powerpc__ */
-
 
 static cfg_opt_t kbd_opts[] =
   {
