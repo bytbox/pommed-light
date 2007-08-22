@@ -47,9 +47,32 @@ struct _kbd_bck_info
 
 extern struct _kbd_bck_info kbd_bck_info;
 
+#ifdef __powerpc__
+static inline int
+has_kbd_backlight(void)
+{
+  return ((mops->type == MACHINE_POWERBOOK_51)
+	  || (mops->type == MACHINE_POWERBOOK_52)
+	  || (mops->type == MACHINE_POWERBOOK_53)
+	  || (mops->type == MACHINE_POWERBOOK_54)
+	  || (mops->type == MACHINE_POWERBOOK_55)
+	  || (mops->type == MACHINE_POWERBOOK_56)
+	  || (mops->type == MACHINE_POWERBOOK_57)
+	  || (mops->type == MACHINE_POWERBOOK_58)
+	  || (mops->type == MACHINE_POWERBOOK_59));
+}
 
-int
-has_kbd_backlight(void);
+#else
+
+static inline int
+has_kbd_backlight(void)
+{
+  return ((mops->type == MACHINE_MACBOOKPRO_1)
+	  || (mops->type == MACHINE_MACBOOKPRO_2)
+	  || (mops->type == MACHINE_MACBOOKPRO_3));
+}
+#endif /* __powerpc__ */
+
 
 void
 kbd_backlight_step(int dir);

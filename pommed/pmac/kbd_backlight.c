@@ -55,20 +55,6 @@ struct _lmu_info lmu_info;
 struct _kbd_bck_info kbd_bck_info;
 
 
-int
-has_kbd_backlight(void)
-{
-  return ((mops->type == MACHINE_POWERBOOK_51)
-	  || (mops->type == MACHINE_POWERBOOK_52)
-	  || (mops->type == MACHINE_POWERBOOK_53)
-	  || (mops->type == MACHINE_POWERBOOK_54)
-	  || (mops->type == MACHINE_POWERBOOK_55)
-	  || (mops->type == MACHINE_POWERBOOK_56)
-	  || (mops->type == MACHINE_POWERBOOK_57)
-	  || (mops->type == MACHINE_POWERBOOK_58)
-	  || (mops->type == MACHINE_POWERBOOK_59));
-}
-
 static int
 kbd_backlight_get(void)
 {
