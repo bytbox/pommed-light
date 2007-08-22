@@ -2,6 +2,8 @@ ChangeLog for pommed
 --------------------
 
 version 1.9:
+	- pommed: add an idle timer to automatically switch off the
+	keyboard backlight. Suggested by Javier Marcet.
 
 version 1.8:
 	- pommed: probe for the applesmc sysfs path in the ambient light

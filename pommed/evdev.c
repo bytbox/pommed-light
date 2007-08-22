@@ -87,6 +87,10 @@ evdev_process_events(int fd)
       if (ev.value == 0)
 	return;
 
+      /* Reset keyboard backlight idle timer */
+      kbd_bck_info.idle = 0;
+      kbd_backlight_inhibit_clear(KBD_INHIBIT_IDLE);
+
       switch (ev.code)
 	{
 	  case K_LCD_BCK_DOWN:

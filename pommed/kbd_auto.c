@@ -50,7 +50,7 @@ kbd_backlight_inhibit_set(int mask)
     kbd_bck_info.inhibit_lvl = kbd_bck_info.level;
 
   kbd_backlight_set(KBD_BACKLIGHT_OFF,
-		    (mask == KBD_INHIBIT_LID) ? (KBD_AUTO) : (KBD_USER));
+		    (mask & KBD_MASK_AUTO) ? (KBD_AUTO) : (KBD_USER));
 
   kbd_bck_info.inhibit |= mask;
 
@@ -60,11 +60,15 @@ kbd_backlight_inhibit_set(int mask)
 void
 kbd_backlight_inhibit_clear(int mask)
 {
+  int flag;
+
+  flag = kbd_bck_info.inhibit & mask;
+
   kbd_bck_info.inhibit &= ~mask;
 
   logdebug("KBD: inhibit clear 0x%02x -> 0x%02x\n", mask, kbd_bck_info.inhibit);
 
-  if (kbd_bck_info.inhibit)
+  if (kbd_bck_info.inhibit || !flag)
     return;
 
   if (kbd_bck_info.auto_on)
@@ -74,7 +78,7 @@ kbd_backlight_inhibit_clear(int mask)
     }
 
   kbd_backlight_set(kbd_bck_info.inhibit_lvl,
-		    (mask == KBD_INHIBIT_LID) ? (KBD_AUTO) : (KBD_USER));
+		    (mask & KBD_MASK_AUTO) ? (KBD_AUTO) : (KBD_USER));
 }
 
 void

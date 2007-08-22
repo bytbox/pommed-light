@@ -59,6 +59,8 @@ kbd {
 	off_threshold = 40
 	# enable/disable automatic backlight
 	auto = yes
+	# idle timer - switches off keyboard backlight automatically (timeout in seconds, -1 to disable)
+	idle_timer = 60
 }
 
 # CD/DVD drive ejection

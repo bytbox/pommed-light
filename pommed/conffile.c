@@ -122,6 +122,7 @@ static cfg_opt_t kbd_opts[] =
     CFG_INT("on_threshold", 20, CFGF_NONE),
     CFG_INT("off_threshold", 40, CFGF_NONE),
     CFG_BOOL("auto", 1, CFGF_NONE),
+    CFG_INT("idle_timer", 60, CFGF_NONE),
     CFG_END()
   };
 
@@ -227,6 +228,7 @@ config_print(void)
   printf("    auto on threshold: %d\n", kbd_cfg.on_thresh);
   printf("    auto off threshold: %d\n", kbd_cfg.off_thresh);
   printf("    auto enable: %s\n", (kbd_cfg.auto_on) ? "yes" : "no");
+  printf("    idle timer: %d%s\n", (kbd_cfg.idle * LOOP_TIMEOUT) / 1000, (kbd_cfg.idle > 0) ? "s" : "");
   printf(" + CD eject:\n");
   printf("    enabled: %s\n", (eject_cfg.enabled) ? "yes" : "no");
   printf("    device: %s\n", eject_cfg.device);
@@ -354,6 +356,7 @@ config_load(void)
   kbd_cfg.on_thresh = cfg_getint(sec, "on_threshold");
   kbd_cfg.off_thresh = cfg_getint(sec, "off_threshold");
   kbd_cfg.auto_on = cfg_getbool(sec, "auto");
+  kbd_cfg.idle = cfg_getint(sec, "idle_timer");
   kbd_backlight_fix_config();
 
   sec = cfg_getsec(cfg, "eject");

@@ -841,6 +841,11 @@ main (int argc, char **argv)
 	    {
 	      if (has_kbd_backlight())
 		{
+		  /* Increment keyboard backlight idle timer */
+		  kbd_bck_info.idle++;
+		  if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > kbd_cfg.idle))
+		    kbd_backlight_inhibit_set(KBD_INHIBIT_IDLE);
+
 		  kbd_backlight_ambient_check();
 		}
 
@@ -854,6 +859,11 @@ main (int argc, char **argv)
 	  /* poll() timed out, check ambient light sensors and AC state */
 	  if (has_kbd_backlight())
 	    {
+	      /* Increment keyboard backlight idle timer */
+	      kbd_bck_info.idle++;
+	      if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > kbd_cfg.idle))
+		kbd_backlight_inhibit_set(KBD_INHIBIT_IDLE);
+
 	      kbd_backlight_ambient_check();
 	    }
 

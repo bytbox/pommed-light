@@ -20,6 +20,9 @@
 #define KBD_INHIBIT_USER        (1 << 0)
 #define KBD_INHIBIT_LID         (1 << 1)
 #define KBD_INHIBIT_CFG         (1 << 2)
+#define KBD_INHIBIT_IDLE        (1 << 3)
+
+#define KBD_MASK_AUTO           (KBD_INHIBIT_LID | KBD_INHIBIT_IDLE)
 
 
 #define KBD_USER     0
@@ -37,6 +40,7 @@ struct _kbd_bck_info
   int toggle_lvl; /* backlight level for simple toggle */
 
   int auto_on;  /* automatic */
+  int idle;     /* idle timer */
   int r_sens;   /* right sensor */
   int l_sens;   /* left sensor */
 };
