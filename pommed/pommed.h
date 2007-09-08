@@ -6,7 +6,7 @@
 #define __POMMED_H__
 
 
-#define M_VERSION "1.9"
+#define M_VERSION "1.10svn"
 
 
 extern int debug;
