@@ -7,4 +7,4 @@ Icon=gpomme
 Exec=gpomme -c
 StartupNotify=true
 Type=Application
-Categories=Application;Utility
+Categories=Utility
