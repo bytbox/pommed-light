@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#define NDEBUG
 #include <alsa/asoundlib.h>
 
 #include "pommed.h"
