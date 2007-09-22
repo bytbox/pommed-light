@@ -188,7 +188,12 @@ evdev_process_events(int fd)
     }
   else if (ev.type == EV_SW)
     {
-      /* Lid switch */
+      /* Lid switch
+       *
+       * Note: this can't tell you when the machine comes back from suspend,
+       * because we close and reopen event devices at that time so we never
+       * get to see the lid open event on resume.
+       */
       if (ev.code == SW_LID)
 	{
 	  if (ev.value)
