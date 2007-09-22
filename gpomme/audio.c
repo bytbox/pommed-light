@@ -29,6 +29,7 @@
 
 #include <pthread.h>
 
+#define NDEBUG
 #include <alsa/asoundlib.h>
 
 #include <audiofile.h>
