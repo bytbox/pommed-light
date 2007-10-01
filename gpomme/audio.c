@@ -40,6 +40,12 @@
 
 struct dspdata _dsp;
 
+/*
+ * This code is also used in pommed/beep.c.
+ * If you find a bug in the code below, please fix it in pommed too.
+ */
+
+
 /* Called from the main thread */
 static struct sample *
 load_sample(char *theme, char *name)

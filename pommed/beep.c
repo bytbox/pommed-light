@@ -241,7 +241,7 @@ beep_fix_config(void)
 
 
 /* 
- * Beep thread - taken from gpomme
+ * Beep thread - taken from gpomme/audio.c
  * If there's a bug somewhere below, it's also in gpomme, so please fix it there too.
  */
 
