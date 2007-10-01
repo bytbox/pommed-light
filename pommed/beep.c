@@ -57,6 +57,7 @@
 
 
 struct _beep_info beep_info;
+static int beep_thread_running = 0;
 
 
 /* Beep thread */
@@ -82,12 +83,15 @@ beep_beep(void)
   beep_thread_command(AUDIO_CLICK);
 }
 
+
 int
 beep_open_device(void)
 {
   struct uinput_user_dev dv;
   int fd;
   int ret;
+
+  beep_info.fd = -1;
 
   if (beep_cfg.enabled == 0)
     return -1;
@@ -190,13 +194,15 @@ beep_init(void)
       return -1;
     }
 
+  beep_thread_running = 1;
+
   return 0;
 }
 
 void
 beep_cleanup(void)
 {
-  if (beep_cfg.enabled == 0)
+  if (!beep_thread_running)
     return;
 
   beep_thread_command(AUDIO_COMMAND_QUIT);

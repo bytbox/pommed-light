@@ -711,8 +711,6 @@ main (int argc, char **argv)
       exit(1);
     }
 
-  beep_init();
-
   nfds = evdev_open(&fds);
   if (nfds < 1)
     {
@@ -764,6 +762,9 @@ main (int argc, char **argv)
     }
   fprintf(pidfile, "%d\n", getpid());
   fclose(pidfile);
+
+  /* Spawn the beep thread */
+  beep_init();
 
   gettimeofday(&tv_als, NULL);
 
