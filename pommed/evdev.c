@@ -41,6 +41,7 @@
 #include "lcd_backlight.h"
 #include "cd_eject.h"
 #include "audio.h"
+#include "beep.h"
 
 
 #define BITS_PER_LONG (sizeof(long) * 8)
@@ -184,6 +185,16 @@ evdev_process_events(int fd)
 	    logdebug("\nKEY: %x\n", ev.code);
 #endif /* 0 */
 	    break;
+	}
+    }
+  else if (ev.type == EV_SND)
+    {
+      /* Beeper device */
+      if ((ev.code == SND_TONE) && (ev.value > 0))
+	{
+	  logdebug("\nBEEP: BEEP!\n");
+
+	  beep_beep(); /* Catch that, Coyote */
 	}
     }
   else if (ev.type == EV_SW)
@@ -548,7 +559,8 @@ evdev_open(struct pollfd **fds)
 
   logdebug("\nFound %d devices\n", found);
 
-  *fds = (struct pollfd *) malloc(found * sizeof(struct pollfd));
+  /* Allocate found pollfd structs + 1 for the beeper */
+  *fds = (struct pollfd *) malloc((found + 1) * sizeof(struct pollfd));
 
   if (*fds == NULL)
     {
@@ -574,6 +586,14 @@ evdev_open(struct pollfd **fds)
       j++;
     }
 
+  ret = beep_open_device();
+  if (ret == 0)
+    {
+      (*fds)[j].fd = beep_info.fd;
+      (*fds)[j].events = POLLIN;
+      found++;
+    }
+
   return found;
 }
 
@@ -585,7 +605,12 @@ evdev_close(struct pollfd **fds, int nfds)
   if (*fds != NULL)
     {
       for (i = 0; i < nfds; i++)
-	close((*fds)[i].fd);
+	{
+	  if ((*fds)[i].fd == beep_info.fd)
+	    beep_close_device();
+	  else
+	    close((*fds)[i].fd);
+	}
 
       free(*fds);
     }

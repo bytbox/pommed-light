@@ -81,6 +81,14 @@ eject {
 	device = "/dev/dvd"
 }
 
+# Beeper
+beep {
+	# enable/disable beeper
+	enabled = no
+	# WAV file to use
+	beepfile = "/usr/share/pommed/beep.wav"
+}
+
 # Apple Remote
 appleir {
 	# enable/disable the appleir support

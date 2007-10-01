@@ -32,6 +32,7 @@
 #include "lcd_backlight.h"
 #include "kbd_backlight.h"
 #include "cd_eject.h"
+#include "beep.h"
 #include "audio.h"
 
 
@@ -46,6 +47,7 @@ struct _lcd_nv8600mgt_cfg lcd_nv8600mgt_cfg;
 struct _audio_cfg audio_cfg;
 struct _kbd_cfg kbd_cfg;
 struct _eject_cfg eject_cfg;
+struct _beep_cfg beep_cfg;
 #ifndef __powerpc__
 struct _appleir_cfg appleir_cfg;
 #endif
@@ -124,6 +126,13 @@ static cfg_opt_t eject_opts[] =
     CFG_END()
   };
 
+static cfg_opt_t beep_opts[] =
+  {
+    CFG_BOOL("enabled", 0, CFGF_NONE),
+    CFG_STR("beepfile", BEEP_DEFAULT_FILE, CFGF_NONE),
+    CFG_END()
+  };
+
 #ifndef __powerpc__
 static cfg_opt_t appleir_opts[] =
   {
@@ -145,6 +154,7 @@ static cfg_opt_t opts[] =
     CFG_SEC("audio", audio_opts, CFGF_NONE),
     CFG_SEC("kbd", kbd_opts, CFGF_NONE),
     CFG_SEC("eject", eject_opts, CFGF_NONE),
+    CFG_SEC("beep", beep_opts, CFGF_NONE),
 #ifndef __powerpc__
     CFG_SEC("appleir", appleir_opts, CFGF_NONE),
 #endif
@@ -223,6 +233,9 @@ config_print(void)
   printf(" + CD eject:\n");
   printf("    enabled: %s\n", (eject_cfg.enabled) ? "yes" : "no");
   printf("    device: %s\n", eject_cfg.device);
+  printf(" + Beep:\n");
+  printf("    enabled: %s\n", (beep_cfg.enabled) ? "yes" : "no");
+  printf("    beepfile: %s\n", beep_cfg.beepfile);
 #ifndef __powerpc__
   printf(" + Apple Remote IR Receiver:\n");
   printf("    enabled: %s\n", (appleir_cfg.enabled) ? "yes" : "no");
@@ -278,6 +291,8 @@ config_load(void)
   cfg_set_validate_func(cfg, "kbd|off_threshold", config_validate_positive_integer);
   /* CD eject */
   cfg_set_validate_func(cfg, "eject|device", config_validate_string);
+  /* beep */
+  cfg_set_validate_func(cfg, "beep|beepfile", config_validate_string);
 
   /* 
    * Do the actual parsing.
@@ -355,6 +370,11 @@ config_load(void)
   eject_cfg.device = strdup(cfg_getstr(sec, "device"));
   cd_eject_fix_config();
 
+  sec = cfg_getsec(cfg, "beep");
+  beep_cfg.enabled = cfg_getbool(sec, "enabled");
+  beep_cfg.beepfile = strdup(cfg_getstr(sec, "beepfile"));
+  beep_fix_config();
+
 #ifndef __powerpc__
   sec = cfg_getsec(cfg, "appleir");
   appleir_cfg.enabled = cfg_getbool(sec, "enabled");
@@ -377,4 +397,6 @@ config_cleanup(void)
   free(audio_cfg.head);
 
   free(eject_cfg.device);
+
+  free(beep_cfg.beepfile);
 }

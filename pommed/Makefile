@@ -8,17 +8,20 @@ DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 ALSA_CFLAGS = $(shell pkg-config alsa --cflags)
 ALSA_LIBS = $(shell pkg-config alsa --libs)
 
+AUDIOFILE_CFLAGS = $(shell pkg-config audiofile --cflags)
+AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
+
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
-CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(CONFUSE_CFLAGS)
+CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS)
 
 ifeq ($(ARCH), ppc)
 OFLIB ?=
 
-LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
+LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
-SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c \
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c beep.c \
 		pmac/sysfs_backlight.c pmac/pmu.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
@@ -36,9 +39,9 @@ endif
 
 else
 
-LDFLAGS = -lz -lsmbios $(DBUS_LIBS) $(ALSA_LIBS) $(CONFUSE_LIBS)
+LDFLAGS = -lz -lsmbios $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
-SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c \
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c beep.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/nv8600mgt_backlight.c \
 		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
@@ -51,19 +54,21 @@ OBJS = $(SOURCES:%.c=%.o)
 
 pommed: $(OBJS) $(LIBS)
 
-pommed.o: pommed.c pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h dbus.h
+pommed.o: pommed.c pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h dbus.h beep.h
 
 cd_eject.o: cd_eject.c cd_eject.h pommed.h conffile.h dbus.h
 
-evdev.o: evdev.c evdev.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h
+evdev.o: evdev.c evdev.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h beep.h
 
-conffile.o: conffile.c conffile.h pommed.h lcd_backlight.h kbd_backlight.h cd_eject.h audio.h
+conffile.o: conffile.c conffile.h pommed.h lcd_backlight.h kbd_backlight.h cd_eject.h audio.h beep.h
 
 audio.o: audio.c audio.h pommed.h conffile.h dbus.h
 
 dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 
 power.o: power.c power.h pommed.h lcd_backlight.h
+
+beep.o: beep.c beep.h pommed.h audio.h
 
 
 # PowerMac-specific files

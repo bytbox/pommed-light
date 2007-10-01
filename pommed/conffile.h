@@ -61,6 +61,11 @@ struct _eject_cfg {
   char *device;
 };
 
+struct _beep_cfg {
+  int enabled;
+  char *beepfile;
+};
+
 #ifndef __powerpc__
 struct _appleir_cfg {
   int enabled;
@@ -79,6 +84,7 @@ extern struct _lcd_nv8600mgt_cfg lcd_nv8600mgt_cfg;
 extern struct _audio_cfg audio_cfg;
 extern struct _kbd_cfg kbd_cfg;
 extern struct _eject_cfg eject_cfg;
+extern struct _beep_cfg beep_cfg;
 #ifndef __powerpc__
 extern struct _appleir_cfg appleir_cfg;
 #endif

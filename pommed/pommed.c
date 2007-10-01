@@ -54,6 +54,7 @@
 #include "audio.h"
 #include "dbus.h"
 #include "power.h"
+#include "beep.h"
 
 
 /* Machine-specific operations */
@@ -710,6 +711,8 @@ main (int argc, char **argv)
       exit(1);
     }
 
+  beep_init();
+
   nfds = evdev_open(&fds);
   if (nfds < 1)
     {
@@ -867,6 +870,8 @@ main (int argc, char **argv)
     }
 
   evdev_close(&fds, nfds);
+
+  beep_cleanup();
 
   mbpdbus_cleanup();
 

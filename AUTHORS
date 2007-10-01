@@ -17,6 +17,9 @@ The following people contributed to pommed:
 On PowerBook machines, pommed uses the OFlib written by
 Alastair Poole <netstar@gatheringofgray.com>
 
+The beep sound KDE_Beep_Beep.wav included with pommed was taken from the kdebase
+package, version 3.5.7, under the GPL.
+
 
 gpomme
 ------
