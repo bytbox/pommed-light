@@ -1,6 +1,9 @@
 ChangeLog for pommed
 --------------------
 
+version 1.11:
+
+
 version 1.10:
 	- pommed: add a beeper feature as a substitute to the missing PC
 	Speaker. The feature is disabled by default, as not all machines
