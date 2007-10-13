@@ -37,8 +37,9 @@ To build everything, just run make from the top-level directory, or:
  - make gpomme, to build gpomme
  - make wmpomme, to build wmpomme
 
-If you do not have libofapi installed, can't find it or do not want to
-install it, run make pommed OFLIB=1 to use the embedded copy of libofapi.
+For PowerPC machines, if you do not have libofapi installed, can't find it or
+do not want to install it, run make pommed OFLIB=1 to use the embedded copy
+of libofapi.
 
 
 Installing
