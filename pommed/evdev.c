@@ -641,7 +641,7 @@ evdev_reopen(struct pollfd **fds, int nfds)
 
       if (nfds > 0)
 	{
-	  logdebug("Got event devices 0x%04x at iteration %d\n", prev_evdevs, i);
+	  logdebug("Got event devices 0x%04x at iteration %d\n", evdevs, i);
 
 	  if (evdevs == prev_evdevs)
 	    break;
