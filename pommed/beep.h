@@ -19,6 +19,9 @@ extern struct _beep_info beep_info;
 void
 beep_beep(void);
 
+void
+beep_audio(void);
+
 int
 beep_open_device(void);
 

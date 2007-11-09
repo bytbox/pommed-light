@@ -74,9 +74,18 @@ beep_thread_init(void);
 void
 beep_beep(void)
 {
-  if (beep_cfg.enabled == 0)
+  if (!beep_cfg.enabled)
     return;
 
+  if (audio_info.muted)
+    return;
+
+  beep_thread_command(AUDIO_CLICK);
+}
+
+void
+beep_audio(void)
+{
   if (audio_info.muted)
     return;
 
@@ -165,7 +174,7 @@ beep_open_device(void)
 void
 beep_close_device(void)
 {
-  if (beep_cfg.enabled == 0)
+  if (!beep_cfg.enabled)
     return;
 
   ioctl(beep_info.fd, UI_DEV_DESTROY, NULL);
@@ -180,9 +189,6 @@ int
 beep_init(void)
 {
   int ret;
-
-  if (beep_cfg.enabled == 0)
-    return 0;
 
   ret = beep_thread_init();
   if (ret < 0)
@@ -241,8 +247,7 @@ beep_fix_config(void)
 
 
 /* 
- * Beep thread - taken from gpomme/audio.c
- * If there's a bug somewhere below, it's also in gpomme, so please fix it there too.
+ * Beep thread
  */
 
 struct dspdata _dsp;
@@ -452,6 +457,9 @@ beep_thread (void *arg)
 static void
 beep_thread_command(int command)
 {
+  if (!beep_thread_running)
+    return;
+
   if (!_dsp.sample)
     return;
 

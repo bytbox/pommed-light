@@ -29,6 +29,7 @@
 #include "pommed.h"
 #include "conffile.h"
 #include "audio.h"
+#include "beep.h"
 #include "dbus.h"
 
 
@@ -91,6 +92,8 @@ audio_step(int dir)
 
   if (snd_mixer_selem_is_playback_mono(vol_elem) == 0)
     snd_mixer_selem_set_playback_volume(vol_elem, 1, newvol);
+
+  beep_audio();
 
   mbpdbus_send_audio_volume(newvol, vol);
 
