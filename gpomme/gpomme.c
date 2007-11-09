@@ -41,7 +41,6 @@
 
 #include "gpomme.h"
 #include "theme.h"
-#include "audio.h"
 #include "conffile.h"
 
 #include "../dbus-client/dbus-client.h"
@@ -373,10 +372,7 @@ mbp_dbus_listen(gpointer userdata)
 	  ratio = (double)cur / (double)max;
 
 	  if (!mbp.muted)
-	    {
-	      show_window(IMG_AUDIO_VOL_ON, _("Sound volume"), ratio);
-	      audio_command(AUDIO_CLICK);
-	    }
+	    show_window(IMG_AUDIO_VOL_ON, _("Sound volume"), ratio);
 	  else
 	    show_window(IMG_AUDIO_VOL_OFF, _("Sound volume (muted)"), ratio);
 	}
@@ -515,21 +511,13 @@ int main(int argc, char **argv)
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
 
-  ret = audio_init_thread();
-  if (ret < 0)
-    printf("Failed to create audio thread\n");
-
   create_window();
 
   g_timeout_add(100, mbp_check_events, NULL);
 
   gtk_main();
 
-
   close(cfg_ifd);
-
-  audio_command(AUDIO_COMMAND_QUIT);
-  audio_cleanup();
 
   mbp_dbus_cleanup();
 

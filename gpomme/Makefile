@@ -9,19 +9,13 @@ GLADE_LIBS = $(shell pkg-config --libs libglade-2.0)
 DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
 DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 
-ALSA_CFLAGS = $(shell pkg-config alsa --cflags)
-ALSA_LIBS = $(shell pkg-config alsa --libs)
-
-AUDIOFILE_CFLAGS = $(shell pkg-config audiofile --cflags)
-AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
-
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
-CFLAGS = -g -O2 -Wall $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS)
-LDFLAGS = -lpthread $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
+CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS)
+LDFLAGS = -lpthread $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
 
-SOURCES = gpomme.c theme.c audio.c conffile.c ../dbus-client/dbus-client.c
+SOURCES = gpomme.c theme.c conffile.c ../dbus-client/dbus-client.c
 POFILES = po/fr.po po/de.po po/es.po po/it.po
 
 OBJS = $(SOURCES:%.c=%.o)
@@ -33,11 +27,9 @@ mo: $(MOFILES)
 
 gpomme: $(OBJS) $(LIBS)
 
-gpomme.o: gpomme.c gpomme.h theme.h audio.h ../dbus-client/dbus-client.h
+gpomme.o: gpomme.c gpomme.h theme.h ../dbus-client/dbus-client.h
 
 theme.o: theme.c theme.h gpomme.h
-
-audio.o: audio.c audio.h gpomme.h
 
 conffile.o: conffile.c conffile.h gpomme.h theme.h
 

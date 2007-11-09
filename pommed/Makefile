@@ -1,4 +1,4 @@
-ARCH ?= $(shell uname -m)
+#ARCH ?= $(shell uname -m)
 
 CC = gcc
 
@@ -17,6 +17,7 @@ CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS)
 
 ifeq ($(ARCH), ppc)
+CFLAGS += -D__powerpc__
 OFLIB ?=
 
 LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)

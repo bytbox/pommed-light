@@ -22,8 +22,6 @@ pommed requires:
 
 gpomme requires:
  - libdbus
- - libasound
- - libaudiofile
  - GTK+ 2.0
  - glade 2.0
 

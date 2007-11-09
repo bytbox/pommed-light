@@ -7,6 +7,8 @@ Written by Julien BLACHE <jb@jblache.org>, with code taken from
        for the Radeon X1600 backlight support
   - Ryan LORTIE <desrt@desrt.ca>
        for the Intel GMA950 backlight support
+  - pbbuttonsd
+       for the audio thread code in pommed/beep.c
 
 The following people contributed to pommed:
   - Romain BEAUXIS <toots@rastageeks.org>
