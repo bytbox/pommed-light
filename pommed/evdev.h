@@ -38,6 +38,11 @@
 #define USB_PRODUCT_ID_GEYSER4_ISO    0x021b
 #define USB_PRODUCT_ID_GEYSER4_JIS    0x021c
 
+/* Apple Geyser IV-HF keyboard + trackpad */
+#define USB_PRODUCT_ID_GEYSER4HF_ANSI   0x0229
+#define USB_PRODUCT_ID_GEYSER4HF_ISO    0x022a
+#define USB_PRODUCT_ID_GEYSER4HF_JIS    0x022b
+
 /* Apple Remote IR Receiver */
 #define USB_PRODUCT_ID_APPLEIR        0x8240
 #define USB_PRODUCT_ID_APPLEIR_2      0x8242
@@ -88,6 +93,9 @@ evdev_is_geyser3(unsigned short *id);
 
 int
 evdev_is_geyser4(unsigned short *id);
+
+int
+evdev_is_geyser4hf(unsigned short *id);
 #endif /* __powerpc__ */
 
 

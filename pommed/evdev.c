@@ -398,6 +398,35 @@ evdev_is_geyser4(unsigned short *id)
   return 0;
 }
 
+/* Core2 Duo Santa Rosa MacBook (MacBook3,1) */
+int
+evdev_is_geyser4hf(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_GEYSER4HF_ANSI)
+      || (product == USB_PRODUCT_ID_GEYSER4HF_ISO)
+      || (product == USB_PRODUCT_ID_GEYSER4HF_JIS))
+    {
+      logdebug(" -> Geyser IV-HF USB keyboard\n");
+
+      if (evdevs & EVDEV_USB_KBD1)
+	evdevs |= EVDEV_USB_KBD2;
+      else
+	evdevs |= EVDEV_USB_KBD1;
+
+      return 1;
+    }
+
+  return 0;
+}
+
 /* Apple Remote IR Receiver */
 static int
 evdev_is_appleir(unsigned short *id)

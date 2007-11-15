@@ -241,6 +241,28 @@ struct machine_ops pb_mops[] = {
 
 #else
 
+/* Dummy backlight ops */
+
+int
+dummy_backlight_probe(void)
+{
+  logmsg(LOG_WARNING, "Backlight not supported on this model yet");
+
+  return 0;
+}
+
+void
+dummy_backlight_step(int dir)
+{
+  /* void */
+}
+
+void
+dummy_backlight_toggle(int lvl)
+{
+  /* void */
+}
+
 struct machine_ops mb_mops[] = {
   /* MacBook Pro machines */
 
@@ -284,6 +306,14 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
     .evdev_identify = evdev_is_geyser4,
+  },
+
+  {  /* MacBook3,1 (Core2 Duo Santa Rosa, November 2007) */
+    .type = MACHINE_MACBOOK_3,
+    .lcd_backlight_probe = dummy_backlight_probe,
+    .lcd_backlight_step = dummy_backlight_step,
+    .lcd_backlight_toggle = dummy_backlight_toggle,
+    .evdev_identify = evdev_is_geyser4hf,
   }
 };
 #endif /* __powerpc__ */
@@ -568,6 +598,9 @@ check_machine_smbios(void)
   /* Core2 Duo MacBook (November 2006) */
   else if (strcmp(prop, "MacBook2,1") == 0)
     ret = MACHINE_MACBOOK_2;
+  /* Core2 Duo Santa Rosa MacBook (November 2007) */
+  else if (strcmp(prop, "MacBook3,1") == 0)
+    ret = MACHINE_MACBOOK_3;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", prop);
 

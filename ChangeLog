@@ -5,6 +5,8 @@ version 1.11:
 	- pommed: beep on volume change, now that we have the audio code
 	in pommed itself.
 	- gpomme: remove audio-related code.
+	- pommed: partial support (ie. no LCD backlight yet) for the
+	MacBook3,1 (MacBook Core2 Duo Santa Rosa, November 2007).
 
 version 1.10:
 	- pommed: add a beeper feature as a substitute to the missing PC
