@@ -43,6 +43,10 @@
 #define USB_PRODUCT_ID_GEYSER4HF_ISO    0x022a
 #define USB_PRODUCT_ID_GEYSER4HF_JIS    0x022b
 
+/* Apple USB keyboards, external */
+#define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU     0x0221
+
 /* Apple Remote IR Receiver */
 #define USB_PRODUCT_ID_APPLEIR        0x8240
 #define USB_PRODUCT_ID_APPLEIR_2      0x8242

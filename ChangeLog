@@ -11,6 +11,9 @@ version 1.11:
 	polling instead of poll(). Use inotify to watch new event devices
 	appear in /dev/input. This effectively fixes our disappearing
 	event devices issues after suspend. YAY.
+	- pommed: add support for the external Apple USB keyboards, white
+	& alu. If you have such a keyboard with another USB ID, please
+	contact me. Patch from Carmine 'earcar' Paolino <earcar@gmail.com>.
 
 version 1.10:
 	- pommed: add a beeper feature as a substitute to the missing PC

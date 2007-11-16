@@ -626,6 +626,31 @@ evdev_is_lidswitch(unsigned short *id)
 }
 #endif /* !__powerpc__ */
 
+/* External Apple USB keyboards */
+int
+evdev_is_extkbd(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_APPLE_EXTKBD_WHITE)
+      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU))
+    {
+      logdebug(" -> External Apple USB keyboard\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
 /* Mouseemu virtual keyboard */
 static int
 evdev_is_mouseemu(unsigned short *id)
@@ -670,7 +695,8 @@ evdev_try_add(int fd)
       && !(appleir_cfg.enabled && evdev_is_appleir(id))
 #endif
       && !(has_kbd_backlight() && evdev_is_lidswitch(id))
-      && !(evdev_is_mouseemu(id)))
+      && !(evdev_is_mouseemu(id))
+      && !(evdev_is_extkbd(id)))
     {
       logdebug("Discarding evdev: bus 0x%04x, vid 0x%04x, pid 0x%04x\n", id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT]);
 
