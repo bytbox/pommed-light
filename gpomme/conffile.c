@@ -33,8 +33,7 @@
 #include <dirent.h>
 #include <libintl.h>
 
-#include <linux/inotify.h>
-#include "inotify-syscalls.h"
+#include <sys/inotify.h>
 
 #include <confuse.h>
 

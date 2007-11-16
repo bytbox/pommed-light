@@ -30,8 +30,7 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include <linux/inotify.h>
-#include "inotify-syscalls.h"
+#include <sys/inotify.h>
 
 #include <libintl.h>
 
