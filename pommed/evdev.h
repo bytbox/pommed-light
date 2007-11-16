@@ -72,8 +72,8 @@
 #define EVDEV_MAX               32
 
 
-void
-evdev_process_events(int fd);
+int
+evdev_event_loop(int *reopen);
 
 
 #ifdef __powerpc__
@@ -100,12 +100,12 @@ evdev_is_geyser4hf(unsigned short *id);
 
 
 int
-evdev_open(struct pollfd **fds);
+evdev_open(void);
 
 void
-evdev_close(struct pollfd **fds, int nfds);
+evdev_close(void);
 
 int
-evdev_reopen(struct pollfd **fds, int nfds);
+evdev_reopen(void);
 
 #endif /* !__EVDEV_H__ */

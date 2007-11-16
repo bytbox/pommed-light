@@ -28,7 +28,6 @@
 #include <sys/time.h>
 #include <time.h>
 #include <string.h>
-#include <poll.h>
 #include <signal.h>
 
 #include <syslog.h>
@@ -639,12 +638,8 @@ main (int argc, char **argv)
 {
   int ret;
   int c;
-  int i;
 
   FILE *pidfile;
-
-  struct pollfd *fds;
-  int nfds;
 
   int reopen;
   machine_type machine;
@@ -744,8 +739,8 @@ main (int argc, char **argv)
       exit(1);
     }
 
-  nfds = evdev_open(&fds);
-  if (nfds < 1)
+  ret = evdev_open();
+  if (ret < 1)
     {
       logmsg(LOG_ERR, "No suitable event devices found");
 
@@ -778,7 +773,7 @@ main (int argc, char **argv)
 	{
 	  logmsg(LOG_ERR, "daemon() failed: %s", strerror(errno));
 
-	  evdev_close(&fds, nfds);
+	  evdev_close();
 
 	  exit(-1);
 	}
@@ -789,7 +784,7 @@ main (int argc, char **argv)
     {
       logmsg(LOG_WARNING, "Could not open pidfile %s: %s", PIDFILE, strerror(errno));
 
-      evdev_close(&fds, nfds);
+      evdev_close();
 
       exit(-1);
     }
@@ -812,9 +807,9 @@ main (int argc, char **argv)
       /* Attempt to reopen event devices, typically after resuming */
       if (reopen)
 	{
-	  nfds = evdev_reopen(&fds, nfds);
+	  ret = evdev_reopen();
 
-	  if (nfds < 1)
+	  if (ret < 1)
 	    {
 	      logmsg(LOG_ERR, "No suitable event devices found (reopen)");
 
@@ -830,35 +825,17 @@ main (int argc, char **argv)
 	  reopen = 0;
 	}
 
-      ret = poll(fds, nfds, LOOP_TIMEOUT);
+      ret = evdev_event_loop(&reopen);
 
       gettimeofday(&tv_now, NULL);
 
       if (ret < 0) /* error */
 	{
-	  if (errno != EINTR)
-	    {
-	      logmsg(LOG_ERR, "poll() error: %s", strerror(errno));
-
-	      break;
-	    }
+	  if (ret == -2)
+	    break;
 	}
       else if (ret != 0)
 	{
-	  for (i = 0; i < nfds; i++)
-	    {
-	      /* the event devices cease to exist when suspending */
-	      if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
-		{
-		  logmsg(LOG_WARNING, "Error condition signaled on evdev, reopening");
-		  reopen = 1;
-		  break;
-		}
-
-	      if (fds[i].revents & POLLIN)
-		evdev_process_events(fds[i].fd);
-	    }
-
 	  /* is it time to chek the ambient light sensors and AC state ? */
 	  tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
 	  if (tv_diff.tv_sec < 0)
@@ -903,7 +880,7 @@ main (int argc, char **argv)
       mbpdbus_process_requests();
     }
 
-  evdev_close(&fds, nfds);
+  evdev_close();
 
   beep_cleanup();
 

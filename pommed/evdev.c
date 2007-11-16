@@ -67,10 +67,15 @@
 
 #define EVDEV_NO_EVDEV      0
 
+/* evdev bitmask */
 static unsigned int evdevs;
 
 
-void
+static struct pollfd *fds;
+static int nfds;
+
+
+static void
 evdev_process_events(int fd)
 {
   int ret;
@@ -222,6 +227,48 @@ evdev_process_events(int fd)
 	}
     }
 }
+
+
+int
+evdev_event_loop(int *reopen)
+{
+  int ret;
+  int i;
+
+  ret = poll(fds, nfds, LOOP_TIMEOUT);
+
+  if (ret < 0)
+    {
+      if (errno != EINTR)
+	{
+	  logmsg(LOG_ERR, "poll() error: %s", strerror(errno));
+
+	  return -2;
+	}
+      else
+	return -1;
+    }
+  else if (ret != 0)
+    {
+      for (i = 0; i < nfds; i++)
+	{
+	  /* the event devices cease to exist when suspending */
+	  if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
+	    {
+	      logmsg(LOG_WARNING, "Error condition signaled on evdev, reopening");
+	      *reopen = 1;
+
+	      return -1;
+	    }
+
+	  if (fds[i].revents & POLLIN)
+	    evdev_process_events(fds[i].fd);
+	}
+    }
+
+  return ret;
+}
+
 
 #ifdef __powerpc__
 /* PowerBook G4 Titanium */
@@ -500,12 +547,11 @@ evdev_is_mouseemu(unsigned short *id)
 
 
 int
-evdev_open(struct pollfd **fds)
+evdev_open(void)
 {
   int ret;
   int i, j;
 
-  int found = 0;
   int fd[32];
 
   unsigned short id[4];
@@ -583,15 +629,15 @@ evdev_open(struct pollfd **fds)
 	  continue;
 	}
 
-      found++;
+      nfds++;
     }
 
-  logdebug("\nFound %d devices\n", found);
+  logdebug("\nFound %d devices\n", nfds);
 
-  /* Allocate found pollfd structs + 1 for the beeper */
-  *fds = (struct pollfd *) malloc((found + 1) * sizeof(struct pollfd));
+  /* Allocate nfds pollfd structs + 1 for the beeper */
+  fds = (struct pollfd *) malloc((nfds + 1) * sizeof(struct pollfd));
 
-  if (*fds == NULL)
+  if (fds == NULL)
     {
       for (i = 0; i < EVDEV_MAX; i++)
 	{
@@ -599,62 +645,62 @@ evdev_open(struct pollfd **fds)
 	    close(fd[i]);
 	}
 
-      logmsg(LOG_ERR, "Out of memory for %d pollfd structs", found);
+      logmsg(LOG_ERR, "Out of memory for %d pollfd structs", nfds);
 
       return -1;
     }
 
   j = 0;
-  for (i = 0; i < EVDEV_MAX && j < found; i++)
+  for (i = 0; i < EVDEV_MAX && j < nfds; i++)
     {
       if (fd[i] < 0)
 	continue;
 
-      (*fds)[j].fd = fd[i];
-      (*fds)[j].events = POLLIN;
+      fds[j].fd = fd[i];
+      fds[j].events = POLLIN;
       j++;
     }
 
   ret = beep_open_device();
   if (ret == 0)
     {
-      (*fds)[j].fd = beep_info.fd;
-      (*fds)[j].events = POLLIN;
-      found++;
+      fds[j].fd = beep_info.fd;
+      fds[j].events = POLLIN;
+      nfds++;
     }
 
-  return found;
+  return nfds;
 }
 
 void
-evdev_close(struct pollfd **fds, int nfds)
+evdev_close(void)
 {
   int i;
 
-  if (*fds != NULL)
+  if (fds != NULL)
     {
       for (i = 0; i < nfds; i++)
 	{
-	  if ((*fds)[i].fd == beep_info.fd)
+	  if (fds[i].fd == beep_info.fd)
 	    beep_close_device();
 	  else
-	    close((*fds)[i].fd);
+	    close(fds[i].fd);
 	}
 
-      free(*fds);
+      free(fds);
     }
 
-  *fds = NULL;
+  fds = NULL;
 }
 
 
 int
-evdev_reopen(struct pollfd **fds, int nfds)
+evdev_reopen(void)
 {
   int i;
   unsigned int prev_evdevs = evdevs;
 
-  evdev_close(fds, nfds);
+  evdev_close();
 
   logdebug("Previous event devices: 0x%04x\n", prev_evdevs);
 
@@ -666,7 +712,7 @@ evdev_reopen(struct pollfd **fds, int nfds)
     {
       usleep(500000);
 
-      nfds = evdev_open(fds);
+      nfds = evdev_open();
 
       if (nfds > 0)
 	{
@@ -676,7 +722,7 @@ evdev_reopen(struct pollfd **fds, int nfds)
 	    break;
 
 	  /* We haven't got all the event devices we need */
-	  evdev_close(fds, nfds);
+	  evdev_close();
 	}
     }
 
