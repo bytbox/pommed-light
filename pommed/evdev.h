@@ -68,12 +68,15 @@
 #define K_IR_MENU               0x8b
 
 
+#define EVDEV_DIR               "/dev/input"
 #define EVDEV_BASE              "/dev/input/event"
 #define EVDEV_MAX               32
 
+#define MAX_EPOLL_EVENTS        8
+
 
 int
-evdev_event_loop(int *reopen);
+evdev_event_loop(void);
 
 
 #ifdef __powerpc__
@@ -100,12 +103,9 @@ evdev_is_geyser4hf(unsigned short *id);
 
 
 int
-evdev_open(void);
+evdev_init(void);
 
 void
-evdev_close(void);
-
-int
-evdev_reopen(void);
+evdev_cleanup(void);
 
 #endif /* !__EVDEV_H__ */

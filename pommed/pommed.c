@@ -641,7 +641,6 @@ main (int argc, char **argv)
 
   FILE *pidfile;
 
-  int reopen;
   machine_type machine;
 
   struct timeval tv_now;
@@ -739,15 +738,14 @@ main (int argc, char **argv)
       exit(1);
     }
 
-  ret = evdev_open();
-  if (ret < 1)
+  ret = evdev_init();
+  if (ret < 3)
     {
       logmsg(LOG_ERR, "No suitable event devices found");
 
       exit(1);
     }
 
-  kbd_set_fnmode();
   kbd_backlight_init();
 
   ret = audio_init();
@@ -773,7 +771,7 @@ main (int argc, char **argv)
 	{
 	  logmsg(LOG_ERR, "daemon() failed: %s", strerror(errno));
 
-	  evdev_close();
+	  evdev_cleanup();
 
 	  exit(-1);
 	}
@@ -784,7 +782,7 @@ main (int argc, char **argv)
     {
       logmsg(LOG_WARNING, "Could not open pidfile %s: %s", PIDFILE, strerror(errno));
 
-      evdev_close();
+      evdev_cleanup();
 
       exit(-1);
     }
@@ -800,39 +798,16 @@ main (int argc, char **argv)
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
 
-  reopen = 0;
 
   while (running)
     {
-      /* Attempt to reopen event devices, typically after resuming */
-      if (reopen)
-	{
-	  ret = evdev_reopen();
-
-	  if (ret < 1)
-	    {
-	      logmsg(LOG_ERR, "No suitable event devices found (reopen)");
-
-	      break;
-	    }
-
-	  /* Re-set the keyboard mode
-	   * When we need to reopen the event devices, it means we've
-	   * just resumed from sleep
-	   */
-	  kbd_set_fnmode();
-
-	  reopen = 0;
-	}
-
-      ret = evdev_event_loop(&reopen);
+      ret = evdev_event_loop();
 
       gettimeofday(&tv_now, NULL);
 
       if (ret < 0) /* error */
 	{
-	  if (ret == -2)
-	    break;
+	  break;
 	}
       else if (ret != 0)
 	{
@@ -880,7 +855,7 @@ main (int argc, char **argv)
       mbpdbus_process_requests();
     }
 
-  evdev_close();
+  evdev_cleanup();
 
   beep_cleanup();
 

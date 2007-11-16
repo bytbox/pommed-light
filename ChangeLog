@@ -7,6 +7,10 @@ version 1.11:
 	- gpomme: remove audio-related code.
 	- pommed: partial support (ie. no LCD backlight yet) for the
 	MacBook3,1 (MacBook Core2 Duo Santa Rosa, November 2007).
+	- pommed: rework the event management. Use epoll() for event
+	polling instead of poll(). Use inotify to watch new event devices
+	appear in /dev/input. This effectively fixes our disappearing
+	event devices issues after suspend. YAY.
 
 version 1.10:
 	- pommed: add a beeper feature as a substitute to the missing PC

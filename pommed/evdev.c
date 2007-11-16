@@ -26,11 +26,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
-#include <poll.h>
 
 #include <syslog.h>
 
 #include <errno.h>
+
+#include <sys/epoll.h>
+#include <sys/inotify.h>
 
 #include <linux/input.h>
 
@@ -57,22 +59,76 @@
 #endif
 
 
-#define EVDEV_ADB_KBD       (1 << 0)
-#define EVDEV_ADB_BUTTONS   (1 << 1)
-#define EVDEV_USB_KBD1      (1 << 2)
-#define EVDEV_USB_KBD2      (1 << 3)
-#define EVDEV_APPLEIR       (1 << 5)
-#define EVDEV_MOUSEEMU      (1 << 6)
-#define EVDEV_SW_LID        (1 << 7)
+/* Open event devices */
+static int ev_fds[EVDEV_MAX];
 
-#define EVDEV_NO_EVDEV      0
+/* epoll fd */
+static int epfd;
 
-/* evdev bitmask */
-static unsigned int evdevs;
+/* inotify fd */
+static int ifd;
 
 
-static struct pollfd *fds;
-static int nfds;
+static int
+evdev_try_add(int fd);
+
+
+static int
+evdev_add(int fd)
+{
+  int i;
+  int ret;
+
+  struct epoll_event epoll_ev;
+
+  for (i = 0; i < EVDEV_MAX; i++)
+    {
+      if (ev_fds[i] == -1)
+	{
+	  ev_fds[i] = fd;
+
+	  break;
+	}
+    }
+
+  epoll_ev.events = EPOLLIN;
+  epoll_ev.data.fd = fd;
+
+  ret = epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &epoll_ev);
+
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not add device to epoll: %s", strerror(errno));
+
+      return -1;
+    }
+
+  return 0;
+}
+
+static void
+evdev_remove(int fd)
+{
+  int i;
+  int ret;
+
+  for (i = 0; i < EVDEV_MAX; i++)
+    {
+      if (ev_fds[i] == fd)
+	{
+	  ev_fds[i] = -1;
+
+	  break;
+	}
+    }
+
+  ret = epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
+
+  if (ret < 0)
+    logmsg(LOG_ERR, "Could not remove device from epoll: %s", strerror(errno));
+
+  close(fd);
+}
 
 
 static void
@@ -204,12 +260,7 @@ evdev_process_events(int fd)
     }
   else if (ev.type == EV_SW)
     {
-      /* Lid switch
-       *
-       * Note: this can't tell you when the machine comes back from suspend,
-       * because we close and reopen event devices at that time so we never
-       * get to see the lid open event on resume.
-       */
+      /* Lid switch */
       if (ev.code == SW_LID)
 	{
 	  if (ev.value)
@@ -229,44 +280,119 @@ evdev_process_events(int fd)
 }
 
 
-int
-evdev_event_loop(int *reopen)
+static void
+evdev_inotify_process(void)
 {
   int ret;
-  int i;
+  int fd;
 
-  ret = poll(fds, nfds, LOOP_TIMEOUT);
+  struct inotify_event ie[2];
+  char evdev[32];
 
+  ret = read(ifd, ie, sizeof(ie));
   if (ret < 0)
     {
-      if (errno != EINTR)
-	{
-	  logmsg(LOG_ERR, "poll() error: %s", strerror(errno));
+      logdebug("inotify read failed: %s\n", strerror(errno));
 
-	  return -2;
-	}
-      else
-	return -1;
+      return;
     }
-  else if (ret != 0)
-    {
-      for (i = 0; i < nfds; i++)
-	{
-	  /* the event devices cease to exist when suspending */
-	  if (fds[i].revents & (POLLERR | POLLHUP | POLLNVAL))
-	    {
-	      logmsg(LOG_WARNING, "Error condition signaled on evdev, reopening");
-	      *reopen = 1;
 
-	      return -1;
+  /* ie[0] contains the inotify event information
+   * the memory space for ie[1] contains the name of the file
+   * see the inotify documentation
+   */
+
+  if ((ie[0].len == 0) || (ie[0].name == NULL))
+    {
+      logdebug("inotify event with no name\n");
+
+      return;
+    }
+
+  logdebug("Found new event device %s/%s\n", EVDEV_DIR, ie[0].name);
+
+  if (strncmp("event", ie[0].name, 5))
+    {
+      logdebug("Discarding %s/%s\n", EVDEV_DIR, ie[0].name);
+
+      return;
+    }
+
+  ret = snprintf(evdev, 32, "%s/%s", EVDEV_DIR, ie[0].name);
+
+  if ((ret <= 0) || (ret > 31))
+    return;
+
+  fd = open(evdev, O_RDWR);
+  if (fd < 0)
+    {
+      if (errno != ENOENT)
+	logmsg(LOG_WARNING, "Could not open %s: %s", evdev, strerror(errno));
+    }
+
+  evdev_try_add(fd);
+}
+
+
+int
+evdev_event_loop(void)
+{
+  int i;
+  int nfds;
+
+  int inotify = 0;
+
+  struct epoll_event events[MAX_EPOLL_EVENTS];
+
+  nfds = epoll_wait(epfd, events, MAX_EPOLL_EVENTS, LOOP_TIMEOUT);
+
+  if (nfds < 0)
+    {
+      if (errno == EINTR)
+	return 1; /* pommed.c will go on with the events management */
+      else
+	{
+	  logmsg(LOG_ERR, "epoll_wait() error: %s", strerror(errno));
+
+	  return -1; /* pommed.c will exit */
+	}
+    }
+
+
+  for (i = 0; i < nfds; i++)
+    {
+      /* some of the event devices cease to exist when suspending */
+      if (events[i].events & (EPOLLERR | EPOLLHUP))
+	{
+	  logmsg(LOG_INFO, "Error condition signaled on event device");
+
+	  if (events[i].data.fd == beep_info.fd)
+	    logmsg(LOG_WARNING, "Beeper device lost; this should not happen");
+
+	  if (events[i].data.fd == ifd)
+	    {
+	      logmsg(LOG_WARNING, "inotify fd lost; this should not happen");
+	      ifd = -1;
 	    }
 
-	  if (fds[i].revents & POLLIN)
-	    evdev_process_events(fds[i].fd);
+	  evdev_remove(events[i].data.fd);
+
+	  continue;
+	}
+
+      if (events[i].events & EPOLLIN)
+	{
+	  if (events[i].data.fd == ifd)
+	    inotify = 1; /* defer inotify events processing */
+	  else
+	    evdev_process_events(events[i].data.fd);
 	}
     }
 
-  return ret;
+  if (inotify)
+    evdev_inotify_process();
+
+  return nfds;
 }
 
 
@@ -287,7 +413,6 @@ evdev_is_adb(unsigned short *id)
     {
       logdebug(" -> ADB keyboard\n");
 
-      evdevs |= EVDEV_ADB_KBD;
       return 1;
     }
 
@@ -295,7 +420,6 @@ evdev_is_adb(unsigned short *id)
     {
       logdebug(" -> ADB PowerBook buttons\n");
 
-      evdevs |= EVDEV_ADB_BUTTONS;
       return 1;
     }
 
@@ -320,11 +444,6 @@ evdev_is_fountain(unsigned short *id)
     {
       logdebug(" -> Fountain USB keyboard\n");
 
-      if (evdevs & EVDEV_USB_KBD1)
-	evdevs |= EVDEV_USB_KBD2;
-      else
-	evdevs |= EVDEV_USB_KBD1;
-
       return 1;
     }
 
@@ -348,10 +467,7 @@ evdev_is_geyser(unsigned short *id)
     {
       logdebug(" -> Geyser USB keyboard\n");
 
-      if (evdevs & EVDEV_USB_KBD1)
-	evdevs |= EVDEV_USB_KBD2;
-      else
-	evdevs |= EVDEV_USB_KBD1;
+      kbd_set_fnmode();
 
       return 1;
     }
@@ -378,7 +494,6 @@ evdev_is_lidswitch(unsigned short *id)
     {
       logdebug(" -> PMU LID switch\n");
 
-      evdevs |= EVDEV_SW_LID;
       return 1;
     }
 
@@ -405,10 +520,7 @@ evdev_is_geyser3(unsigned short *id)
     {
       logdebug(" -> Geyser III USB keyboard\n");
 
-      if (evdevs & EVDEV_USB_KBD1)
-	evdevs |= EVDEV_USB_KBD2;
-      else
-	evdevs |= EVDEV_USB_KBD1;
+      kbd_set_fnmode();
 
       return 1;
     }
@@ -434,10 +546,7 @@ evdev_is_geyser4(unsigned short *id)
     {
       logdebug(" -> Geyser IV USB keyboard\n");
 
-      if (evdevs & EVDEV_USB_KBD1)
-	evdevs |= EVDEV_USB_KBD2;
-      else
-	evdevs |= EVDEV_USB_KBD1;
+      kbd_set_fnmode();
 
       return 1;
     }
@@ -463,10 +572,7 @@ evdev_is_geyser4hf(unsigned short *id)
     {
       logdebug(" -> Geyser IV-HF USB keyboard\n");
 
-      if (evdevs & EVDEV_USB_KBD1)
-	evdevs |= EVDEV_USB_KBD2;
-      else
-	evdevs |= EVDEV_USB_KBD1;
+      kbd_set_fnmode();
 
       return 1;
     }
@@ -491,7 +597,6 @@ evdev_is_appleir(unsigned short *id)
     {
       logdebug(" -> Apple IR receiver\n");
 
-      evdevs |= EVDEV_APPLEIR;
       return 1;
     }
 
@@ -514,7 +619,6 @@ evdev_is_lidswitch(unsigned short *id)
     {
       logdebug(" -> ACPI LID switch\n");
 
-      evdevs |= EVDEV_SW_LID;
       return 1;
     }
 
@@ -538,7 +642,6 @@ evdev_is_mouseemu(unsigned short *id)
     {
       logdebug(" -> Mouseemu virtual keyboard\n");
 
-      evdevs |= EVDEV_MOUSEEMU;
       return 1;
     }
 
@@ -546,21 +649,135 @@ evdev_is_mouseemu(unsigned short *id)
 }
 
 
-int
-evdev_open(void)
+static int
+evdev_try_add(int fd)
 {
-  int ret;
-  int i, j;
-
-  int fd[32];
-
   unsigned short id[4];
   unsigned long bit[EV_MAX][NBITS(KEY_MAX)];
   char devname[256];
+
+  int ret;
+
+  devname[0] = '\0';
+  ioctl(fd, EVIOCGNAME(sizeof(devname)), devname);
+
+  logdebug("\nInvestigating evdev [%s]\n", devname);
+
+  ioctl(fd, EVIOCGID, id);
+
+  if ((!mops->evdev_identify(id))
+#ifndef __powerpc__
+      && !(appleir_cfg.enabled && evdev_is_appleir(id))
+#endif
+      && !(has_kbd_backlight() && evdev_is_lidswitch(id))
+      && !(evdev_is_mouseemu(id)))
+    {
+      logdebug("Discarding evdev: bus 0x%04x, vid 0x%04x, pid 0x%04x\n", id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT]);
+
+      close(fd);
+
+      return -1;
+    }
+
+  memset(bit, 0, sizeof(bit));
+
+  ioctl(fd, EVIOCGBIT(0, EV_MAX), bit[0]);
+
+  if (!test_bit(EV_KEY, bit[0]))
+    {
+      logdebug("evdev: no EV_KEY event type (not a keyboard)\n");
+
+      if (!test_bit(EV_SW, bit[0]))
+	{
+	  logdebug("Discarding evdev: no EV_SW event type (not a switch)\n");
+
+	  close(fd);
+
+	  return -1;
+	}
+    }
+  else if (test_bit(EV_ABS, bit[0]))
+    {
+      logdebug("Discarding evdev with EV_ABS event type (mouse/trackpad)\n");
+
+      close(fd);
+
+      return -1;
+    }
+
+  ret = evdev_add(fd);
+
+  return ret;
+}
+
+
+static int
+evdev_inotify_init(void)
+{
+  int ret;
+  struct epoll_event epoll_ev;
+
+  ifd = inotify_init();
+  if (ifd < 0)
+    {
+      logmsg(LOG_ERR, "Failed to initialize inotify: %s", strerror(errno));
+
+      return -1;
+    }
+
+  ret = inotify_add_watch(ifd, EVDEV_DIR, IN_CREATE | IN_ONLYDIR);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Failed to add inotify watch for %s: %s", EVDEV_DIR, strerror(errno));
+
+      close(ifd);
+      ifd = -1;
+
+      return -1;
+    }
+
+  epoll_ev.events = EPOLLIN;
+  epoll_ev.data.fd = ifd;
+
+  ret = epoll_ctl(epfd, EPOLL_CTL_ADD, ifd, &epoll_ev);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Failed to add inotify fd to epoll: %s", strerror(errno));
+
+      close(ifd);
+
+      return -1;
+    }
+
+  return 0;
+}
+
+
+int
+evdev_init(void)
+{
+  int ret;
+  int i;
+
   char evdev[32];
 
-  evdevs = EVDEV_NO_EVDEV;
+  int ndevs;
+  int fd;
 
+  epfd = epoll_create(MAX_EPOLL_EVENTS);
+  if (epfd < 0)
+    {
+      logmsg(LOG_ERR, "Could not create epoll fd: %s", strerror(errno));
+
+      return -1;
+    }
+
+  for (i = 0; i < EVDEV_MAX; i++)
+    {
+      ev_fds[i] = -1;
+    }
+
+  ndevs = 0;
   for (i = 0; i < EVDEV_MAX; i++)
     {
       ret = snprintf(evdev, 32, "%s%d", EVDEV_BASE, i);
@@ -568,8 +785,8 @@ evdev_open(void)
       if ((ret <= 0) || (ret > 31))
 	return -1;
 
-      fd[i] = open(evdev, O_RDWR);
-      if (fd[i] < 0)
+      fd = open(evdev, O_RDWR);
+      if (fd < 0)
 	{
 	  if (errno != ENOENT)
 	    logmsg(LOG_WARNING, "Could not open %s: %s", evdev, strerror(errno));
@@ -577,154 +794,42 @@ evdev_open(void)
 	  continue;
 	}
 
-      devname[0] = '\0';
-      ioctl(fd[i], EVIOCGNAME(sizeof(devname)), devname);
-      logdebug("\nInvestigating evdev %d [%s]\n", i, devname);
-
-
-      ioctl(fd[i], EVIOCGID, id);
-
-      if ((!mops->evdev_identify(id))
-#ifndef __powerpc__
-	  && !(appleir_cfg.enabled && evdev_is_appleir(id))
-#endif
-	  && !(has_kbd_backlight() && evdev_is_lidswitch(id))
-	  && !(evdev_is_mouseemu(id)))
-	{
-	  logdebug("Discarding evdev %d: bus 0x%04x, vid 0x%04x, pid 0x%04x\n", i, id[ID_BUS], id[ID_VENDOR], id[ID_PRODUCT]);
-
-	  close(fd[i]);
-	  fd[i] = -1;
-
-	  continue;
-	}
-
-      memset(bit, 0, sizeof(bit));
-
-      ioctl(fd[i], EVIOCGBIT(0, EV_MAX), bit[0]);
-
-      if (!test_bit(EV_KEY, bit[0]))
-	{
-	  logdebug("evdev %d: no EV_KEY event type (not a keyboard)\n", i);
-
-	  if (!test_bit(EV_SW, bit[0]))
-	    {
-	      logdebug("evdev %d: no EV_SW event type (not a switch)\n", i);
-
-	      close(fd[i]);
-	      fd[i] = -1;
-
-	      logdebug("Discarding evdev %d\n", i);
-
-	      continue;
-	    }
-	}
-      else if (test_bit(EV_ABS, bit[0]))
-	{
-	  logdebug("Discarding evdev %d with EV_ABS event type (mouse/trackpad)\n", i);
-
-	  close(fd[i]);
-	  fd[i] = -1;
-
-	  continue;
-	}
-
-      nfds++;
+      if (evdev_try_add(fd) == 0)
+	ndevs++;
     }
 
-  logdebug("\nFound %d devices\n", nfds);
+  logdebug("\nFound %d devices\n", ndevs);
 
-  /* Allocate nfds pollfd structs + 1 for the beeper */
-  fds = (struct pollfd *) malloc((nfds + 1) * sizeof(struct pollfd));
-
-  if (fds == NULL)
-    {
-      for (i = 0; i < EVDEV_MAX; i++)
-	{
-	  if (fd[i] > 0)
-	    close(fd[i]);
-	}
-
-      logmsg(LOG_ERR, "Out of memory for %d pollfd structs", nfds);
-
-      return -1;
-    }
-
-  j = 0;
-  for (i = 0; i < EVDEV_MAX && j < nfds; i++)
-    {
-      if (fd[i] < 0)
-	continue;
-
-      fds[j].fd = fd[i];
-      fds[j].events = POLLIN;
-      j++;
-    }
-
+  /* Add the beeper device */
   ret = beep_open_device();
   if (ret == 0)
     {
-      fds[j].fd = beep_info.fd;
-      fds[j].events = POLLIN;
-      nfds++;
+      ret = evdev_add(beep_info.fd);
+
+      if (ret == 0)
+	  ndevs++;
     }
 
-  return nfds;
+  /* Initialize inotify */
+  evdev_inotify_init();
+
+  return ndevs;
 }
 
 void
-evdev_close(void)
+evdev_cleanup(void)
 {
   int i;
 
-  if (fds != NULL)
+  close(epfd);
+
+  close(ifd);
+
+  for (i = 0; i < EVDEV_MAX; i++)
     {
-      for (i = 0; i < nfds; i++)
-	{
-	  if (fds[i].fd == beep_info.fd)
-	    beep_close_device();
-	  else
-	    close(fds[i].fd);
-	}
-
-      free(fds);
+      if (ev_fds[i] == beep_info.fd)
+	beep_close_device();
+      else
+	close(ev_fds[i]);
     }
-
-  fds = NULL;
-}
-
-
-int
-evdev_reopen(void)
-{
-  int i;
-  unsigned int prev_evdevs = evdevs;
-
-  evdev_close();
-
-  logdebug("Previous event devices: 0x%04x\n", prev_evdevs);
-
-  /* When resuming, we need to reopen event devices which
-   * disappear at suspend time. We need to wait for udev to
-   * recreate the device nodes.
-   */
-  for (i = 0; i < 50; i++)
-    {
-      usleep(500000);
-
-      nfds = evdev_open();
-
-      if (nfds > 0)
-	{
-	  logdebug("Got event devices 0x%04x at iteration %d\n", evdevs, i);
-
-	  if (evdevs == prev_evdevs)
-	    break;
-
-	  /* We haven't got all the event devices we need */
-	  evdev_close();
-	}
-    }
-
-  return nfds;
 }
