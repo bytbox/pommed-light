@@ -12,6 +12,8 @@ DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
+INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INOTIFY_H)
+
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS)
 LDFLAGS = -lpthread $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
 

@@ -14,7 +14,9 @@ AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
-CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS)
+INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INOTIFY_H)
+
+CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(INOTIFY_CFLAGS)
 
 ifeq ($(ARCH), ppc)
 OFLIB ?=

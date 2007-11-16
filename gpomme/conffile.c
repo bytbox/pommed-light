@@ -33,7 +33,12 @@
 #include <dirent.h>
 #include <libintl.h>
 
-#include <sys/inotify.h>
+#ifndef NO_SYS_INOTIFY_H
+# include <sys/inotify.h>
+#else
+# include <linux/inotify.h>
+# include "inotify-syscalls.h"
+#endif
 
 #include <confuse.h>
 
