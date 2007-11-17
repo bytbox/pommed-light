@@ -14,6 +14,8 @@ version 1.11:
 	- pommed: add support for the external Apple USB keyboards, white
 	& alu. If you have such a keyboard with another USB ID, please
 	contact me. Patch from Carmine 'earcar' Paolino <earcar@gmail.com>.
+	- pommed: add secondary locations for the uinput device
+	node. Heads up & patch from Carmine 'earcar' Paolino.
 
 version 1.10:
 	- pommed: add a beeper feature as a substitute to the missing PC

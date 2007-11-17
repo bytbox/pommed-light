@@ -96,8 +96,15 @@ beep_audio(void)
 int
 beep_open_device(void)
 {
+  char *uinput_dev[3] =
+    {
+      "/dev/input/uinput",
+      "/dev/uinput",
+      "/dev/misc/uinput"
+    };
   struct uinput_user_dev dv;
   int fd;
+  int i;
   int ret;
 
   beep_info.fd = -1;
@@ -105,10 +112,17 @@ beep_open_device(void)
   if (beep_cfg.enabled == 0)
     return -1;
 
-  fd = open("/dev/input/uinput", O_RDWR, 0);
+  for (i = 0; i < (sizeof(uinput_dev) / sizeof(uinput_dev[0])); i++)
+    {
+      fd = open(uinput_dev[i], O_RDWR, 0);
+
+      if (fd >= 0)
+	break;
+    }
+
   if (fd < 0)
     {
-      logmsg(LOG_ERR, "beep: could not open /dev/input/uinput: %s", strerror(errno));
+      logmsg(LOG_ERR, "beep: could not open uinput: %s", strerror(errno));
       logmsg(LOG_ERR, "beep: Do you have the uinput module loaded?");
 
       return -1;
