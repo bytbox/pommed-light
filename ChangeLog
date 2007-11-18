@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.12:
+
 version 1.11:
 	- pommed: beep on volume change, now that we have the audio code
 	in pommed itself.
