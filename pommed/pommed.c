@@ -739,7 +739,7 @@ main (int argc, char **argv)
     }
 
   ret = evdev_init();
-  if (ret < 3)
+  if (ret < 1)
     {
       logmsg(LOG_ERR, "No suitable event devices found");
 
