@@ -42,6 +42,7 @@ struct _audio_cfg {
   char *card;
   int init;
   int step;
+  int beep;
   char *vol;
   char *spkr;
   char *head;

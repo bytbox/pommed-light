@@ -102,6 +102,7 @@ static cfg_opt_t audio_opts[] =
     CFG_STR("card", "default", CFGF_NONE),
     CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 10, CFGF_NONE),
+    CFG_BOOL("beep", 1, CFGF_NONE),
     CFG_STR("volume", "PCM", CFGF_NONE),
     CFG_STR("speakers", "Front", CFGF_NONE),
     CFG_STR("headphones", "Headphone", CFGF_NONE),
@@ -220,6 +221,7 @@ config_print(void)
   printf("    card: %s\n", audio_cfg.card);
   printf("    initial volume: %d%s\n", audio_cfg.init, (audio_cfg.init > -1) ? "%" : "");
   printf("    step: %d%%\n", audio_cfg.step);
+  printf("    beep: %s\n", (audio_cfg.beep) ? "yes" : "no");
   printf("    volume element: %s\n", audio_cfg.vol);
   printf("    speaker element: %s\n", audio_cfg.spkr);
   printf("    headphones element: %s\n", audio_cfg.head);
@@ -351,6 +353,7 @@ config_load(void)
   audio_cfg.card = strdup(cfg_getstr(sec, "card"));
   audio_cfg.init = cfg_getint(sec, "init");
   audio_cfg.step = cfg_getint(sec, "step");
+  audio_cfg.beep = cfg_getbool(sec, "beep");
   audio_cfg.vol = strdup(cfg_getstr(sec, "volume"));
   audio_cfg.spkr = strdup(cfg_getstr(sec, "speakers"));
   audio_cfg.head = strdup(cfg_getstr(sec, "headphones"));

@@ -50,6 +50,8 @@ audio {
 	init = -1
 	# step value (1 - 50%)
 	step = 10
+	# beep on volume change
+	beep = yes
 	# mixer element for volume adjustment
 	volume = "PCM"
 	# mixer element for muting the speakers
