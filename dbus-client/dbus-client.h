@@ -12,6 +12,7 @@
 #define MBP_DBUS_SIG_MUTE   (1 << 3)
 #define MBP_DBUS_SIG_EJECT  (1 << 4)
 #define MBP_DBUS_SIG_LIGHT  (1 << 5)
+#define MBP_DBUS_SIG_VIDEO  (1 << 6)
 
 
 #define LCD_USER      0

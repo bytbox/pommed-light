@@ -359,5 +359,12 @@ mbp_dbus_init(DBusError *error, unsigned int signals)
       return NULL;
     }
 
+  if ((signals & MBP_DBUS_SIG_VIDEO)
+      && (bus_add_match(conn, "type='signal',path='/org/pommed/notify/videoSwitch',interface='org.pommed.signal.videoSwitch'") < 0))
+    {
+      mbp_dbus_cleanup();
+      return NULL;
+    }
+
   return conn;
 }
