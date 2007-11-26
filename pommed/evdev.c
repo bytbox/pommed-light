@@ -49,6 +49,7 @@
 #include "lcd_backlight.h"
 #include "cd_eject.h"
 #include "audio.h"
+#include "video.h"
 #include "beep.h"
 
 
@@ -193,6 +194,8 @@ evdev_process_events(int fd)
 
 	  case K_VIDEO_TOGGLE:
 	    logdebug("\nKEY: video toggle\n");
+
+	    video_switch();
 	    break;
 
 	  case K_KBD_BCK_OFF:

@@ -23,7 +23,8 @@ OFLIB ?=
 
 LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
-SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c beep.c \
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
+		dbus.c power.c beep.c video.c \
 		pmac/sysfs_backlight.c pmac/pmu.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
@@ -43,7 +44,8 @@ else
 
 LDFLAGS = -lz -lsmbios $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
-SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c dbus.c power.c beep.c \
+SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
+		dbus.c power.c beep.c video.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/nv8600mgt_backlight.c \
 		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
@@ -60,7 +62,7 @@ pommed.o: pommed.c pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h c
 
 cd_eject.o: cd_eject.c cd_eject.h pommed.h conffile.h dbus.h
 
-evdev.o: evdev.c evdev.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h beep.h
+evdev.o: evdev.c evdev.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h video.h beep.h
 
 conffile.o: conffile.c conffile.h pommed.h lcd_backlight.h kbd_backlight.h cd_eject.h audio.h beep.h
 
@@ -71,6 +73,8 @@ dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 power.o: power.c power.h pommed.h lcd_backlight.h
 
 beep.o: beep.c beep.h pommed.h audio.h
+
+video.o: video.c video.h pommed.h dbus.h
 
 
 # PowerMac-specific files

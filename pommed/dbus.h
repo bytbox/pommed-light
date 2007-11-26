@@ -24,6 +24,9 @@ mbpdbus_send_audio_mute(int mute);
 void
 mbpdbus_send_cd_eject(void);
 
+void
+mbpdbus_send_video_switch(void);
+
 
 void
 mbpdbus_process_requests(void);
