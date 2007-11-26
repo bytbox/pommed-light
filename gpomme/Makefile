@@ -49,4 +49,4 @@ updatepo:
 
 clean:
 	rm -f gpomme $(OBJS) $(MOFILES)
-	rm -f *~ po/*~
+	rm -f *~ po/*~ ../dbus-client/*~

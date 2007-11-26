@@ -20,4 +20,4 @@ wmgeneral.o: wmgeneral.c wmgeneral.h
 
 clean:
 	rm -f wmpomme $(OBJS)
-	rm -f *~
+	rm -f *~ ../dbus-client/*~
