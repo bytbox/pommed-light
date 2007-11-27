@@ -3,10 +3,8 @@ TODO for pommed
 
  * General
  ---------
-  - external screen toggle
   - use ambient light sensor
     - for automatic LCD backlight tweaking (powersaving)
     - for (better) automatic keyboard backlight tweaking
 
-
- -- Julien BLACHE <jb@jblache.org>, Sun, 24 Dec 2006 12:13:23 +0100
+ -- Julien BLACHE <jb@jblache.org>, Tue, 27 Nov 2007 17:43:42 +0100
