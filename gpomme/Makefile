@@ -17,7 +17,7 @@ INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INO
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS)
 LDFLAGS = -lpthread $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
 
-SOURCES = gpomme.c theme.c conffile.c ../dbus-client/dbus-client.c
+SOURCES = gpomme.c theme.c conffile.c ../client-common/dbus-client.c
 POFILES = po/fr.po po/de.po po/es.po po/it.po
 
 OBJS = $(SOURCES:%.c=%.o)
@@ -29,13 +29,13 @@ mo: $(MOFILES)
 
 gpomme: $(OBJS) $(LIBS)
 
-gpomme.o: gpomme.c gpomme.h theme.h ../dbus-client/dbus-client.h
+gpomme.o: gpomme.c gpomme.h theme.h ../client-common/dbus-client.h
 
 theme.o: theme.c theme.h gpomme.h
 
 conffile.o: conffile.c conffile.h gpomme.h theme.h
 
-../dbus-client/dbus-client.o: ../dbus-client/dbus-client.c ../dbus-client/dbus-client.h
+../client-common/dbus-client.o: ../client-common/dbus-client.c ../client-common/dbus-client.h
 
 %.mo: %.po
 	@echo Building $@...
@@ -49,4 +49,4 @@ updatepo:
 
 clean:
 	rm -f gpomme $(OBJS) $(MOFILES)
-	rm -f *~ po/*~ ../dbus-client/*~
+	rm -f *~ po/*~ ../client-common/*~

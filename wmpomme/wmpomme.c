@@ -42,7 +42,7 @@
 #include "wmgeneral.h"
 #include "wmpomme-master.xpm"
 
-#include "../dbus-client/dbus-client.h"
+#include "../client-common/dbus-client.h"
 
 
 struct {

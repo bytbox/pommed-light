@@ -47,7 +47,7 @@
 #include "theme.h"
 #include "conffile.h"
 
-#include "../dbus-client/dbus-client.h"
+#include "../client-common/dbus-client.h"
 
 
 #define _(str) gettext(str)
