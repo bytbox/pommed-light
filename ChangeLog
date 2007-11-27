@@ -4,6 +4,7 @@ ChangeLog for pommed
 version 1.13:
 	- pommed: add an option to disable the beep on volume change.
 	- pommed: add the videoSwitch DBus notification.
+	- wmpomme: add video switch support.
 
 version 1.12:
 	- pommed: do not expect at least 3 evdevs at startup; there are

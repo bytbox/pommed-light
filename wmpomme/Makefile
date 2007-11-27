@@ -6,7 +6,9 @@ DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS)
 LDFLAGS = -lXpm -lXext -lX11 $(DBUS_LIBS)
 
-SOURCES = wmgeneral.c wmpomme.c ../client-common/dbus-client.c
+SOURCES = wmgeneral.c wmpomme.c \
+	../client-common/dbus-client.c \
+	../client-common/video-client.c
 
 OBJS = $(SOURCES:%.c=%.o)
 
@@ -17,6 +19,8 @@ wmpomme.o: wmpomme.c wmgeneral.h wmpomme-master.xpm ../client-common/dbus-client
 wmgeneral.o: wmgeneral.c wmgeneral.h
 
 ../client-common/dbus-client.o: ../client-common/dbus-client.c ../client-common/dbus-client.h
+
+../client-common/dbus-video.o: ../client-common/video-client.c ../client-common/video-client.h
 
 clean:
 	rm -f wmpomme $(OBJS)
