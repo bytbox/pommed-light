@@ -30,6 +30,9 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #ifndef NO_SYS_INOTIFY_H
 # include <sys/inotify.h>
 #else
@@ -470,6 +473,18 @@ void sig_int_term_handler(int signo)
   gtk_main_quit();
 }
 
+void
+sig_chld_handler(int signo)
+{
+  int ret;
+
+  do
+    {
+      ret = waitpid(-1, NULL, WNOHANG);
+    }
+  while (ret > 0);
+}
+
 int main(int argc, char **argv)
 {
   int c;
@@ -519,6 +534,7 @@ int main(int argc, char **argv)
 
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
+  signal(SIGCHLD, sig_chld_handler);
 
   create_window();
 

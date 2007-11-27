@@ -26,7 +26,6 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
 
 #include <errno.h>
 
@@ -35,6 +34,9 @@
 
 static char *vsw_user = NULL;
 
+/*
+ * NOTE: you MUST install a SIGCHLD handler if you use this function
+ */
 void
 mbp_video_switch(void)
 {
@@ -91,15 +93,6 @@ mbp_video_switch(void)
     {
       fprintf(stderr, "Could not fork: %s\n", strerror(errno));
       return;
-    }
-  else
-    {
-      waitpid(ret, &ret, 0);
-      if ((WIFEXITED(ret) == 0) || (WEXITSTATUS(ret) != 0))
-        {
-          fprintf(stderr, "Video switch script failed");
-          return;
-        }
     }
 }
 

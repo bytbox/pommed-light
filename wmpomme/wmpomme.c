@@ -33,6 +33,9 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include <signal.h>
 
 #include <X11/xpm.h>
@@ -541,6 +544,18 @@ sig_int_term_handler(int signo)
   running = 0;
 }
 
+void
+sig_chld_handler(int signo)
+{
+  int ret;
+
+  do
+    {
+      ret = waitpid(-1, NULL, WNOHANG);
+    }
+  while (ret > 0);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -548,6 +563,7 @@ main(int argc, char **argv)
 
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
+  signal(SIGCHLD, sig_chld_handler);
 
   ProgName = argv[0];
   if (strlen(ProgName) >= 5)
