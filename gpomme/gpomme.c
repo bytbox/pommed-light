@@ -48,6 +48,7 @@
 #include "conffile.h"
 
 #include "../client-common/dbus-client.h"
+#include "../client-common/video-client.h"
 
 
 #define _(str) gettext(str)
@@ -285,7 +286,7 @@ mbp_dbus_connect(void)
 
   signals = MBP_DBUS_SIG_LCD | MBP_DBUS_SIG_KBD
     | MBP_DBUS_SIG_VOL | MBP_DBUS_SIG_MUTE
-    | MBP_DBUS_SIG_EJECT;
+    | MBP_DBUS_SIG_EJECT | MBP_DBUS_SIG_VIDEO;
 
   conn = mbp_dbus_init(&dbus_err, signals);
 
@@ -394,6 +395,10 @@ mbp_dbus_listen(gpointer userdata)
       else if (dbus_message_is_signal(msg, "org.pommed.signal.cdEject", "cdEject"))
 	{
 	  show_window(IMG_CD_EJECT, _("Eject"), -1.0);
+	}
+      else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
+	{
+	  mbp_video_switch();
 	}
       else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
 	{
