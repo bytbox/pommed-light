@@ -1,7 +1,7 @@
 /*
  * pommed - Apple laptops hotkeys handler daemon
  *
- * MacBook Backlight Control (Intel GMA950)
+ * MacBook Backlight Control (Intel GMA950 & GMA965)
  *
  * $Id$
  *
@@ -25,16 +25,24 @@
  *
  * The GMA950 has a backlight control register at offset 0x00061254 in its
  * PCI memory space (512K region):
- *  - bits 0-15 represent the backlight value (/ 2)
+ *  - bits 0-15 represent the backlight value
  *  - bits 16 indicates legacy mode is in use when set
- *  - bits 17-31 hold the max backlight value (/ 2)
+ *  - bits 17-31 hold the max backlight value << 1
  *
  * Bit 16 indicates whether the backlight control should be used in legacy
  * mode or not. This bit is 0 on MacBooks, indicating native mode should be
  * used. This is the only method supported here.
  *
- * Max value and current value expressed on 15 bits; bit 0 on the current
- * backlight value is ignored.
+ *
+ * The GMA965 is slightly different; the backlight control register is at
+ * offset 0x00061250 in its PCI memory space (512K region):
+ *  - bits 0-15 represent the backlight value
+ *  - bits 16-31 hold the max backlight value
+ *  - bit 30 indicates legacy mode is in use when set
+ *
+ *
+ * For both cards, in the code below, max value and current value are expressed
+ * on 15 bits; the values are shifted as appropriate when appropriate.
  */
 
 #include <stdio.h>
@@ -60,17 +68,18 @@
 
 
 static unsigned int GMA950_BACKLIGHT_MAX;
-
+static unsigned int REGISTER_OFFSET;
 
 static int fd = -1;
 static char *memory = NULL;
 static long address = 0;
 static long length = 0;
 
+#define GMA950_LEGACY_MODE        (1 << 16)
+#define GMA950_REGISTER_OFFSET    0x00061254
 
-#define BACKLIGHT_LEGACY_MODE  (1 << 16)
-#define REGISTER_OFFSET        0x00061254
-
+#define GMA965_LEGACY_MODE        (1 << 30)
+#define GMA965_REGISTER_OFFSET    0x00061250
 
 static inline unsigned int
 readl(const volatile void *addr)
@@ -270,8 +279,9 @@ gma950_backlight_fix_config(void)
 
 #define PCI_ID_VENDOR_INTEL      0x8086
 #define PCI_ID_PRODUCT_GMA950    0x27A2
+#define PCI_ID_PRODUCT_GMA965    0x2A02
 
-/* Look for an Intel GMA950 */
+/* Look for an Intel GMA950 or GMA965 */
 int
 gma950_backlight_probe(void)
 {
@@ -279,6 +289,8 @@ gma950_backlight_probe(void)
   struct pci_dev *dev;
 
   int ret;
+
+  int card;
 
   pacc = pci_alloc();
   if (pacc == NULL)
@@ -290,14 +302,18 @@ gma950_backlight_probe(void)
   pci_init(pacc);
   pci_scan_bus(pacc);
 
+  card = 0;
   /* Iterate over all devices */
   for(dev = pacc->devices; dev; dev = dev->next)
     {
       pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES);
-      /* GMA950 */
+      /* GMA950 or GMA965 */
       if ((dev->vendor_id == PCI_ID_VENDOR_INTEL)
-	  && (dev->device_id == PCI_ID_PRODUCT_GMA950))
+	  && ((dev->device_id == PCI_ID_PRODUCT_GMA950)
+	      || (dev->device_id == PCI_ID_PRODUCT_GMA965)))
 	{
+	  card = dev->device_id;
+
 	  address = dev->base_addr[0];
 	  length = dev->size[0];
 
@@ -309,14 +325,29 @@ gma950_backlight_probe(void)
 
   if (!address)
     {
-      logdebug("Failed to detect Intel GMA950, aborting...\n");
+      logdebug("Failed to detect Intel GMA950 or GMA965, aborting...\n");
       return -1;
     }
 
-  if (INREG(REGISTER_OFFSET) & BACKLIGHT_LEGACY_MODE)
+  if (card == PCI_ID_PRODUCT_GMA950)
     {
-      logdebug("GMA is in legacy backlight control mode, unsupported\n");
-      return -1;
+      if (INREG(GMA950_REGISTER_OFFSET) & GMA950_LEGACY_MODE)
+	{
+	  logdebug("GMA950 is in legacy backlight control mode, unsupported\n");
+	  return -1;
+	}
+
+      REGISTER_OFFSET = GMA950_REGISTER_OFFSET;
+    }
+  else if (card == PCI_ID_PRODUCT_GMA965)
+    {
+      if (INREG(GMA965_REGISTER_OFFSET) & GMA965_LEGACY_MODE)
+	{
+	  logdebug("GMA965 is in legacy backlight control mode, unsupported\n");
+	  return -1;
+	}
+
+      REGISTER_OFFSET = GMA965_REGISTER_OFFSET;
     }
 
   /* Get the maximum backlight value */
