@@ -35,10 +35,13 @@
  *
  *
  * The GMA965 is slightly different; the backlight control register is at
- * offset 0x00061250 in its PCI memory space (512K region):
+ * offset 0x00061250 in its PCI memory space (first 512K in the 1M region):
  *  - bits 0-15 represent the backlight value
  *  - bits 16-31 hold the max backlight value
  *  - bit 30 indicates legacy mode is in use when set
+ *
+ *
+ * For BOTH cards, the register for the backlight value is at offset 0x00061254.
  *
  *
  * For both cards, in the code below, max value and current value are expressed
@@ -68,18 +71,19 @@
 
 
 static unsigned int GMA950_BACKLIGHT_MAX;
-static unsigned int REGISTER_OFFSET;
 
 static int fd = -1;
 static char *memory = NULL;
 static long address = 0;
 static long length = 0;
 
+#define REGISTER_OFFSET           0x00061254
+
 #define GMA950_LEGACY_MODE        (1 << 16)
-#define GMA950_REGISTER_OFFSET    0x00061254
+#define GMA950_CONTROL_REGISTER   0x00061254
 
 #define GMA965_LEGACY_MODE        (1 << 30)
-#define GMA965_REGISTER_OFFSET    0x00061250
+#define GMA965_CONTROL_REGISTER   0x00061250
 
 static inline unsigned int
 readl(const volatile void *addr)
@@ -288,9 +292,8 @@ gma950_backlight_probe(void)
   struct pci_access *pacc;
   struct pci_dev *dev;
 
-  int ret;
-
   int card;
+  int ret;
 
   pacc = pci_alloc();
   if (pacc == NULL)
@@ -338,27 +341,23 @@ gma950_backlight_probe(void)
 
   if (card == PCI_ID_PRODUCT_GMA950)
     {
-      if (INREG(GMA950_REGISTER_OFFSET) & GMA950_LEGACY_MODE)
+      if (INREG(GMA950_CONTROL_REGISTER) & GMA950_LEGACY_MODE)
 	{
 	  logdebug("GMA950 is in legacy backlight control mode, unsupported\n");
 
 	  gma950_backlight_unmap();
 	  return -1;
 	}
-
-      REGISTER_OFFSET = GMA950_REGISTER_OFFSET;
     }
   else if (card == PCI_ID_PRODUCT_GMA965)
     {
-      if (INREG(GMA965_REGISTER_OFFSET) & GMA965_LEGACY_MODE)
+      if (INREG(GMA965_CONTROL_REGISTER) & GMA965_LEGACY_MODE)
 	{
 	  logdebug("GMA965 is in legacy backlight control mode, unsupported\n");
 
 	  gma950_backlight_unmap();
 	  return -1;
 	}
-
-      REGISTER_OFFSET = GMA965_REGISTER_OFFSET;
     }
 
   /* Get the maximum backlight value */
