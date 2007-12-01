@@ -25,13 +25,16 @@
  *
  * The GMA950 has a backlight control register at offset 0x00061254 in its
  * PCI memory space (512K region):
- *  - bits 0-15 represent the backlight value, 0x00 to 0xff
+ *  - bits 0-15 represent the backlight value (/ 2)
  *  - bits 16 indicates legacy mode is in use when set
- *  - bits 17-31 hold the max backlight value / 2
+ *  - bits 17-31 hold the max backlight value (/ 2)
  *
  * Bit 16 indicates whether the backlight control should be used in legacy
  * mode or not. This bit is 0 on MacBooks, indicating native mode should be
  * used. This is the only method supported here.
+ *
+ * Max value and current value expressed on 15 bits; bit 0 on the current
+ * backlight value is ignored.
  */
 
 #include <stdio.h>
