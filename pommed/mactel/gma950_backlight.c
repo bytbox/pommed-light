@@ -341,6 +341,8 @@ gma950_backlight_probe(void)
       if (INREG(GMA950_REGISTER_OFFSET) & GMA950_LEGACY_MODE)
 	{
 	  logdebug("GMA950 is in legacy backlight control mode, unsupported\n");
+
+	  gma950_backlight_unmap();
 	  return -1;
 	}
 
@@ -351,6 +353,8 @@ gma950_backlight_probe(void)
       if (INREG(GMA965_REGISTER_OFFSET) & GMA965_LEGACY_MODE)
 	{
 	  logdebug("GMA965 is in legacy backlight control mode, unsupported\n");
+
+	  gma950_backlight_unmap();
 	  return -1;
 	}
 
