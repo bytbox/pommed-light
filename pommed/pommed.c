@@ -733,7 +733,7 @@ main (int argc, char **argv)
   ret = mops->lcd_backlight_probe();
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "No LCD backlight found");
+      logmsg(LOG_ERR, "LCD backlight probe failed, check debug output");
 
       exit(1);
     }
