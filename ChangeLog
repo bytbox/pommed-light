@@ -6,6 +6,8 @@ version 1.13:
 	- pommed: add the videoSwitch DBus notification.
 	- wmpomme: add video switch support.
 	- gpomme: add video switch support.
+	- pommed: add support for LCD backlight control on the Intel 965GM
+	found in the MacBook3,1.
 
 version 1.12:
 	- pommed: do not expect at least 3 evdevs at startup; there are
