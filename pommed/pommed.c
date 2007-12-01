@@ -240,28 +240,6 @@ struct machine_ops pb_mops[] = {
 
 #else
 
-/* Dummy backlight ops */
-
-int
-dummy_backlight_probe(void)
-{
-  logmsg(LOG_WARNING, "Backlight not supported on this model yet");
-
-  return 0;
-}
-
-void
-dummy_backlight_step(int dir)
-{
-  /* void */
-}
-
-void
-dummy_backlight_toggle(int lvl)
-{
-  /* void */
-}
-
 struct machine_ops mb_mops[] = {
   /* MacBook Pro machines */
 
@@ -309,9 +287,9 @@ struct machine_ops mb_mops[] = {
 
   {  /* MacBook3,1 (Core2 Duo Santa Rosa, November 2007) */
     .type = MACHINE_MACBOOK_3,
-    .lcd_backlight_probe = dummy_backlight_probe,
-    .lcd_backlight_step = dummy_backlight_step,
-    .lcd_backlight_toggle = dummy_backlight_toggle,
+    .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
+    .lcd_backlight_step = gma950_backlight_step,
+    .lcd_backlight_toggle = gma950_backlight_toggle,
     .evdev_identify = evdev_is_geyser4hf,
   }
 };
