@@ -5,6 +5,7 @@ Kernel version requirements:
  - on the MacBook and MacBook Pro
     + kernel >= 2.6.19 at least
     + kernel >= 2.6.20 recommended
+   Newer machines may require a newer kernel and/or patches.
 
  - on the PowerBook and iBook
     + kernel >= 2.6.19 recommended
