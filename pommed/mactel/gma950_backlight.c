@@ -363,6 +363,8 @@ gma950_backlight_probe(void)
   /* Get the maximum backlight value */
   GMA950_BACKLIGHT_MAX = gma950_backlight_get_max();
 
+  logdebug("Max LCD backlight value is 0x%x\n", GMA950_BACKLIGHT_MAX);
+
   /* Now, check the config and fix it if needed */
   gma950_backlight_fix_config();
 
