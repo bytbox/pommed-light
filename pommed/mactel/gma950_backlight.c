@@ -329,6 +329,13 @@ gma950_backlight_probe(void)
       return -1;
     }
 
+  ret = gma950_backlight_map();
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not map GMA950/GMA965 memory");
+      return -1;
+    }
+
   if (card == PCI_ID_PRODUCT_GMA950)
     {
       if (INREG(GMA950_REGISTER_OFFSET) & GMA950_LEGACY_MODE)
@@ -351,13 +358,6 @@ gma950_backlight_probe(void)
     }
 
   /* Get the maximum backlight value */
-  ret = gma950_backlight_map();
-  if (ret < 0)
-    {
-      logmsg(LOG_ERR, "Could not determine max backlight value");
-      return -1;
-    }
-
   GMA950_BACKLIGHT_MAX = gma950_backlight_get_max();
 
   /* Now, check the config and fix it if needed */
