@@ -5,7 +5,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Ryan Lortie <desrt@desrt.ca>
+ * Copyright (C) 2006-2007 Ryan Lortie <desrt@desrt.ca>
  * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *  + Adapted for pommed
  *
@@ -23,30 +23,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
  *
- * This program was written after I reverse engineered the
- * AppleIntelIntegratedFramebuffer.kext kernel extension in Mac OS X and
- * played with the register at the memory location I found therein.
+ * The GMA950 has a backlight control register at offset 0x00061254 in its
+ * PCI memory space (512K region):
+ *  - bits 0-7 represent the backlight value, 0x00 to 0xff
+ *  - bits 8-15 look unused (and should be 0)
+ *  - bits 16-31 are not to be touched (backlight duty cycle)
  *
- * From my experiments, the register appears to have two halves.
- *
- * yyyyyyyyyyyyyyy0xxxxxxxxxxxxxxx0
- *
- * The top (y) bits appear to be the maximum brightness level and the
- * bottom (x) bits are the current brightness level.  0s are always 0.
- * The brightness level is, therefore, x/y.
- *
- * As my Macbook boots, y is set to 0x94 and x is set to 0x1f.  Going below
- * 0x1f produces odd results.  For example, if you come from above, the
- * backlight will completely turn off at 0x12 (18).  Coming from below,
- * however, you need to get to 0x15 (21) before the backlight comes back on.
- *
- * Since there is no clear cut boundry, I assume that this value specifies
- * a raw voltage.  Also, it appears that the bootup value of 0x1f corresponds
- * to the lowest level that Mac OS X will set the backlight I choose this
- * value as a minimum.
- *
- * For the maximum I do not let the value exceed the value in the upper 15
- * bits.
+ * Bit 16 indicates whether the backlight control should be used in legacy
+ * mode or not. This bit is 0 on MacBooks, indicating native mode should be
+ * used.
  */
 
 #include <stdio.h>
@@ -80,7 +65,8 @@ static long address = 0;
 static long length = 0;
 
 
-#define REGISTER_OFFSET       0x00061254
+#define BACKLIGHT_LEGACY_MODE  (1 << 16)
+#define REGISTER_OFFSET        0x00061254
 
 
 static inline unsigned int
@@ -321,6 +307,12 @@ gma950_backlight_probe(void)
   if (!address)
     {
       logdebug("Failed to detect Intel GMA950, aborting...\n");
+      return -1;
+    }
+
+  if (INREG(REGISTER_OFFSET) & BACKLIGHT_LEGACY_MODE)
+    {
+      logdebug("GMA is in legacy backlight control mode, unsupported\n");
       return -1;
     }
 
