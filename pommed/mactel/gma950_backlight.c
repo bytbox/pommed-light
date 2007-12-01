@@ -94,7 +94,7 @@ gma950_backlight_get(void)
 static unsigned int
 gma950_backlight_get_max(void)
 {
-  return (INREG(REGISTER_OFFSET) >> 17) * 2;
+  return (INREG(REGISTER_OFFSET) >> 17);
 }
 
 static void
