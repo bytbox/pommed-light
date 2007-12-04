@@ -38,6 +38,7 @@
 
 #include <signal.h>
 
+#include <X11/Xlib.h>
 #include <X11/xpm.h>
 
 #include <dbus/dbus.h>
@@ -182,7 +183,7 @@ mbp_dbus_listen(int timeout)
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
 	{
-	  mbp_video_switch();
+	  mbp_video_switch(display);
 	}
       else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
 	{

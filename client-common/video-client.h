@@ -10,7 +10,7 @@
 
 
 void
-mbp_video_switch(void);
+mbp_video_switch(Display *dpy);
 
 
 #endif /* !__MBP_VIDEO_CLIENT_H__ */

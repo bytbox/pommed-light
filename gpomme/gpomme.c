@@ -43,6 +43,9 @@
 #include <libintl.h>
 
 #include <gtk/gtk.h>
+#include <gdk/gdkx.h>
+
+#include <X11/Xlib.h>
 
 #include <dbus/dbus.h>
 
@@ -319,6 +322,8 @@ mbp_dbus_listen(gpointer userdata)
   int who;
   double ratio;
 
+  Display *dpy;
+
   /* Disconnected, try to reconnect */
   if (conn == NULL)
     {
@@ -401,7 +406,8 @@ mbp_dbus_listen(gpointer userdata)
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
 	{
-	  mbp_video_switch();
+	  dpy = GDK_WINDOW_XDISPLAY(GTK_WIDGET(mbp_w.window)->window);
+	  mbp_video_switch(dpy);
 	}
       else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
 	{
