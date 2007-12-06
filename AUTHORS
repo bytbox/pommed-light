@@ -22,6 +22,10 @@ Alastair Poole <netstar@gatheringofgray.com>
 The beep sound KDE_Beep_Beep.wav included with pommed was taken from the kdebase
 package, version 3.5.7, under the GPL.
 
+The water drop sound goutte.wav included with pommed was contributed by
+Romain BEAUXIS <toots@rastageeks.org> under the WTFPL,
+Copyright (C) 2007 Yann Beauxis.
+
 
 gpomme
 ------

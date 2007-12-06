@@ -77,6 +77,6 @@ eject {
 beep {
 	# enable/disable beeper
 	enabled = no
-	# WAV file to use
+	# WAV file to use (from pommed: beep.wav or goutte.wav)
 	beepfile = "/usr/share/pommed/beep.wav"
 }

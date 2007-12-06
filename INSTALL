@@ -46,6 +46,7 @@ Installing
 To install pommed:
  - copy pommed somewhere in your PATH (/usr/bin)
  - install pommed/data/KDE_Beep_Beep.wav as /usr/share/pommed/beep.wav
+ - install pommed/data/goutte.wav as /usr/share/pommed/goutte.wav
  - copy pommed.conf.(mactel|pmac) as /etc/pommed.conf
  - copy dbus-policy.conf as /etc/dbus-1/system.d/pommed.conf
  - restart dbus
