@@ -127,7 +127,7 @@ mbp_frontend_is_active(Display *dpy)
   vt = mbp_get_x_vtnum(dpy);
 
   ret = snprintf(buf, sizeof(buf), "/dev/tty%d", vt);
-  if (ret >= sizeof(buf))
+  if ((ret < 0) || (ret >= sizeof(buf)))
     return 1;
 
   /* Try to open the VT our X session is running on */
