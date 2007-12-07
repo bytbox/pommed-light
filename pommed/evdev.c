@@ -304,7 +304,7 @@ evdev_inotify_process(void)
   ret = ioctl(ifd, FIONREAD, &qsize);
   if (ret < 0)
     {
-      logdebug("Could not determine inotify queue size: %s\n", strerror(errno));
+      logmsg(LOG_ERR, "Could not determine inotify queue size: %s", strerror(errno));
 
       return;
     }
