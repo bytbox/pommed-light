@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.15:
+
 version 1.14:
 	- pommed: fix error handling in the audio sample loading code to
 	properly report failure, preventing nasty segfaults later on in
