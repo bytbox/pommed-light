@@ -64,8 +64,18 @@ To install gpomme:
  - copy gpomme/gpomme*.desktop to /usr/share/applications
  - copy gpomme/gpomme.glade to /usr/share/gpomme
 
+Icons for gpomme are available in the icons/ directory. For the .desktop files
+provided with gpomme to work, the icons should be installed under
+/usr/share/icons/hicolor. PNG files go to the appropriate sub-directory
+depending on their size, gpomme.svg goes to the scalable/ sub-directory.
+
+
 To install wmpomme:
  - copy wmpomme somewhere in your PATH (/usr/bin)
+
+Pick an icon from the icons/ directory to display in the dock. You can install
+gpomme_32x32.xpm to /usr/share/pixmaps/wmpomme.xpm and use that in the dock for
+instance.
 
 
 Using pommed
