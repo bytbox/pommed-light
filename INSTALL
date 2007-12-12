@@ -48,7 +48,13 @@ To install pommed:
  - install pommed/data/KDE_Beep_Beep.wav as /usr/share/pommed/beep.wav
  - install pommed/data/goutte.wav as /usr/share/pommed/goutte.wav
  - copy pommed.conf.(mactel|pmac) as /etc/pommed.conf
- - copy dbus-policy.conf as /etc/dbus-1/system.d/pommed.conf
+ - configure DBus for pommed
+    + if you have a /etc/dbus-1/system.d directory, copy dbus-policy.conf
+      as /etc/dbus-1/system.d/pommed.conf
+    + otherwise, copy dbus-policy.conf as /etc/dbus-1/pommed.conf and add 
+          <include>pommed.conf</include>
+      in /etc/dbus-1/system.conf, between the <busconfig>...</busconfig> tags
+      (usually toward the end of the file, before the </busconfig> tag)
  - restart dbus
 
 To install gpomme:
