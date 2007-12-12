@@ -13,7 +13,7 @@ struct _beep_info
 extern struct _beep_info beep_info;
 
 
-#define BEEP_DEFAULT_FILE    "/usr/share/pommed/beep.wav"
+#define BEEP_DEFAULT_FILE    "/usr/share/pommed/goutte.wav"
 #define BEEP_DEVICE_NAME     "Pommed beeper device"
 
 void

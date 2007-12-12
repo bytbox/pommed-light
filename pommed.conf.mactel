@@ -87,8 +87,8 @@ eject {
 beep {
 	# enable/disable beeper
 	enabled = no
-	# WAV file to use (from pommed: beep.wav or goutte.wav)
-	beepfile = "/usr/share/pommed/beep.wav"
+	# WAV file to use (from pommed: goutte.wav or click.wav in /usr/share/pommed)
+	beepfile = "/usr/share/pommed/goutte.wav"
 }
 
 # Apple Remote - deprecated

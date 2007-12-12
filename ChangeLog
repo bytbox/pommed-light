@@ -5,6 +5,8 @@ version 1.14:
 	- pommed: fix error handling in the audio sample loading code to
 	properly report failure, preventing nasty segfaults later on in
 	case the sound file is not available.
+	- pommed: make goutte.wav the default beep sound, add click.wav
+	and remove the KDE beep sound.
 
 version 1.13:
 	- pommed: add an option to disable the beep on volume change.

@@ -45,8 +45,7 @@ Installing
 
 To install pommed:
  - copy pommed somewhere in your PATH (/usr/bin)
- - install pommed/data/KDE_Beep_Beep.wav as /usr/share/pommed/beep.wav
- - install pommed/data/goutte.wav as /usr/share/pommed/goutte.wav
+ - copy pommed/data/* to /usr/share/pommed
  - copy pommed.conf.(mactel|pmac) as /etc/pommed.conf
  - install the pommed.init initscript as /etc/init.d/pommed, make it executable
    and perform any additional configuration needed on your system (links to
