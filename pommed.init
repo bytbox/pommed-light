@@ -1,0 +1,85 @@
+#! /bin/sh
+#
+# $Id$
+#
+### BEGIN INIT INFO
+# Provides:          pommed
+# Required-Start:    $syslog $local_fs
+# Required-Stop:     $syslog $local_fs
+# Should-Start:      
+# Should-Stop:       
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Apple laptops hotkeys event handler
+# Description:       pommed handles the hotkeys found on the Apple MacBook Pro
+#                    and MacBook laptops and adjusts the LCD backlight, sound
+#                    volume, keyboard backlight or ejects the CD-ROM drive
+#                    accordingly.
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/pommed
+NAME=pommed
+DESC="Apple laptops hotkeys events handler"
+
+test -x $DAEMON || exit 0
+
+set -e
+
+pommed_start()
+{
+    $DAEMON
+}
+
+pommed_stop()
+{
+    pid=$(cat /var/run/pommed.pid)
+    kill $pid
+    rm -f /var/run/pommed.pid
+}
+
+
+case "$1" in
+  start)
+	echo -n "Starting $DESC: "
+	pommed_start
+	echo "$NAME."
+	;;
+  stop)
+	echo -n "Stopping $DESC: "
+	if [ -f /var/run/pommed.pid ]; then
+	    pommed_stop
+	    echo "$NAME."
+	else
+	    echo "no PID file found; $NAME not running?"
+	fi
+	;;
+  force-reload)
+	# check wether $DAEMON is running. If so, restart
+	if [ -f /var/run/pommed.pid ]; then
+	    $0 restart
+	else
+	    echo "Reloading $DESC: $NAME not running."
+	    exit 0
+	fi
+	;;
+  restart)
+	echo -n "Restarting $DESC: "
+	if [ -f /var/run/pommed.pid ]; then
+	    pommed_stop
+	else
+	    echo "no PID file found; $NAME not running?"
+	    exit 0
+	fi
+	sleep 1
+	pommed_start
+	echo "$NAME."
+	;;
+  *)
+	N=/etc/init.d/$NAME
+	echo "Usage: $N {start|stop|restart|force-reload}" >&2
+	exit 1
+	;;
+esac
+
+exit 0
