@@ -18,10 +18,10 @@ INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INO
 
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(INOTIFY_CFLAGS)
 
+LDFLAGS = -pthread $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
+
 ifeq ($(ARCH), ppc)
 OFLIB ?=
-
-LDFLAGS = -lz $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		dbus.c power.c beep.c video.c \
@@ -42,7 +42,7 @@ endif
 
 else
 
-LDFLAGS = -lz -lsmbios $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
+LDFLAGS += -lz -lsmbios
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		dbus.c power.c beep.c video.c \
