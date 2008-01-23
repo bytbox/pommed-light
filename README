@@ -10,7 +10,7 @@ README for pommed
 Kernel version requirements:
 ----------------------------
 
- - on the MacBook and MacBook Pro
+ - on the MacBook, MacBook Pro and MacBook Air
     + kernel >= 2.6.19 at least
     + kernel >= 2.6.20 recommended
    Newer machines may require a newer kernel and/or patches.
@@ -32,6 +32,7 @@ Supported machines:
    * MacBook Core Duo (May 2006)
    * MacBook Core2 Duo (November 2006 & May 2007)
    * MacBook Core2 Duo Santa Rosa (November 2007)
+   * MacBook Air Core2 Duo (January 2008)
 
 
  - PowerMac machines

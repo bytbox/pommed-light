@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.15:
+	- pommed: add support for the MacBook Air1,1.
 
 version 1.14:
 	- pommed: fix error handling in the audio sample loading code to
