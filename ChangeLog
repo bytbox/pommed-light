@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.16:
+
 version 1.15:
 	- pommed: add preliminary support for the MacBook Air1,1; USB IDs
 	missing.
