@@ -46,7 +46,7 @@ sysfs_check_ac_state(void);
 int
 check_ac_state(void)
 {
-  if (access(SYSFS_ACPI_AC_STATE, R_OK))
+  if (access(SYSFS_ACPI_AC_STATE, R_OK) == 0)
     return sysfs_check_ac_state();
   else
     return proc_check_ac_state();
