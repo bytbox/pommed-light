@@ -2,7 +2,8 @@ ChangeLog for pommed
 --------------------
 
 version 1.15:
-	- pommed: add support for the MacBook Air1,1.
+	- pommed: add preliminary support for the MacBook Air1,1; USB IDs
+	missing.
 	- pommed: add support for power_supply class to the ACPI code.
 
 version 1.14:
