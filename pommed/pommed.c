@@ -267,6 +267,14 @@ struct machine_ops mb_mops[] = {
     .evdev_identify = evdev_is_geyser4,
   },
 
+  {  /* MacBookPro4,1 (15" & 17", Core2 Duo, February 2008) */
+    .type = MACHINE_MACBOOKPRO_4,
+    .lcd_backlight_probe = nv8600mgt_backlight_probe,
+    .lcd_backlight_step = nv8600mgt_backlight_step,
+    .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
+    .evdev_identify = evdev_is_geyser4hf,
+  },
+
   /* MacBook machines */
 
   {  /* MacBook1,1 (Core Duo) */
