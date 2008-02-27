@@ -586,6 +586,9 @@ check_machine_smbios(void)
   /* Core2 Duo MacBook Pro 15" & 17" (June 2007) */
   else if (strcmp(prop, "MacBookPro3,1") == 0)
     ret = MACHINE_MACBOOKPRO_3;
+  /* Core2 Duo MacBook Pro 15" & 17" (February 2008) */
+  else if (strcmp(prop, "MacBookPro4,1") == 0)
+    ret = MACHINE_MACBOOKPRO_4;
   /* Core Duo MacBook (May 2006) */
   else if (strcmp(prop, "MacBook1,1") == 0)
     ret = MACHINE_MACBOOK_1;
