@@ -4,6 +4,7 @@ README for pommed
  - Kernel version requirements
  - Supported machines
  - Using pommed
+ - Beeper feature
  - Using gpomme and wmpomme
 
 
@@ -65,7 +66,32 @@ Supported machines:
 Using pommed
 ------------
 
-Launch pommed at startup, a simple init script will do.
+Launch pommed at startup, a simple init script will do. Your distribution
+should take care of this.
+
+
+Beeper feature
+--------------
+
+The beeper feature relies on the uinput kernel module being loaded. You can
+check for its availability by checking for the uinput device node, which is
+either one of:
+ - /dev/input/uinput
+ - /dev/uinput
+ - /dev/misc/uinput
+
+Or by checking the output of 
+ $ lsmod | grep uinput
+
+If the module is not loaded, load it manually with
+ # modprobe uinput
+then restart pommed. You'll need to ensure the module is loaded before pommed
+starts; to achieve that, add uinput to /etc/modules.
+
+For the curious, as I've been asked a couple times already: pommed uses the
+uinput facility to create a userspace input device which handles the console
+beep. Once this device is set up, the kernel happily passes down beep events
+to pommed through this device, and pommed only needs to ... well, *beep*.
 
 
 Using gpomme and wmpomme
