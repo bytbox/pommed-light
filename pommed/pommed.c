@@ -301,7 +301,16 @@ struct machine_ops mb_mops[] = {
     .evdev_identify = evdev_is_geyser4hf,
   },
 
+  {  /* MacBook4,1 (Core2 Duo, February 2008) */
+    .type = MACHINE_MACBOOK_4,
+    .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
+    .lcd_backlight_step = gma950_backlight_step,
+    .lcd_backlight_toggle = gma950_backlight_toggle,
+    .evdev_identify = evdev_is_geyser4hf,
+  },
+
   /* MacBook Air machines */
+
   {  /* MacBook Air1,1 (January 2008) */
     .type = MACHINE_MACBOOKAIR_1,
     .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
@@ -598,6 +607,9 @@ check_machine_smbios(void)
   /* Core2 Duo Santa Rosa MacBook (November 2007) */
   else if (strcmp(prop, "MacBook3,1") == 0)
     ret = MACHINE_MACBOOK_3;
+  /* Core2 Duo MacBook (February 2008) */
+  else if (strcmp(prop, "MacBook4,1") == 0)
+    ret = MACHINE_MACBOOK_4;
   /* MacBook Air (January 2008) */
   else if (strcmp(prop, "MacBook Air1,1") == 0)
     ret = MACHINE_MACBOOKAIR_1;
