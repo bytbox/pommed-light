@@ -5,6 +5,7 @@ README for pommed
  - Supported machines
  - Using pommed
  - Beeper feature
+ - When things go wrong
  - Using gpomme and wmpomme
 
 
@@ -92,6 +93,37 @@ For the curious, as I've been asked a couple times already: pommed uses the
 uinput facility to create a userspace input device which handles the console
 beep. Once this device is set up, the kernel happily passes down beep events
 to pommed through this device, and pommed only needs to ... well, *beep*.
+
+
+When things go wrong
+--------------------
+
+First and foremost: don't panic!
+
+If something doesn't work (or so it appears), there's usually a good reason to
+that, and pommed should be able to provide some insight as to what is going
+wrong if only you ask it.
+
+By default, pommed uses syslog to log warnings and errors, so check your
+system logs. If you can't find anything, running pommed in the foreground
+will help a lot; in this mode, pommed will log everything to stderr instead
+of syslog, so you'll see every message.
+
+First, stop pommed. Then run
+ # pommed -f
+
+Use Ctrl-C to stop pommed, fix the problem, and restart it.
+
+If you still can't see what's wrong, ask for more output by running pommed in
+debug mode. Be warned: in this mode, pommed is very chatty.
+
+First, stop pommed. Then run
+ # pommed -d
+
+Use Ctrl-C to stop pommed, fix the problem, and restart it.
+
+If the debug mode doesn't offer any hint as to what's going on, then contact
+me with the details of your problem and I'll be able to help.
 
 
 Using gpomme and wmpomme
