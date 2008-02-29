@@ -43,6 +43,11 @@
 #define USB_PRODUCT_ID_GEYSER4HF_ISO    0x022a
 #define USB_PRODUCT_ID_GEYSER4HF_JIS    0x022b
 
+/* Apple Geyser V-HF keyboard + trackpad (name to be confirmed) */
+#define USB_PRODUCT_ID_GEYSER5HF_ANSI   0x0224
+#define USB_PRODUCT_ID_GEYSER5HF_ISO    0x0225 /* to be confirmed */
+#define USB_PRODUCT_ID_GEYSER5HF_JIS    0x0226 /* to be confirmed */
+
 /* Apple USB keyboards, external */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c
 #define USB_PRODUCT_ID_APPLE_EXTKBD_ALU     0x0221
@@ -103,6 +108,9 @@ evdev_is_geyser4(unsigned short *id);
 
 int
 evdev_is_geyser4hf(unsigned short *id);
+
+int
+evdev_is_geyser5hf(unsigned short *id);
 #endif /* __powerpc__ */
 
 

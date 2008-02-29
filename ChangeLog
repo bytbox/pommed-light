@@ -2,10 +2,11 @@ ChangeLog for pommed
 --------------------
 
 version 1.16:
-	- pommed: add support for the MacBookPro4,1; USB IDs need to be
-	confirmed.
-	- pommed: add support for the MacBook4,1; USB IDs need to be
-	confirmed.
+	- pommed: add support for the MacBookPro4,1.
+	- pommed: add support for the MacBook4,1.
+	- pommed: add support for the Geyser V-HF keyboard+trackpad
+	assembly, found in the MacBookAir1,1, MacBook4,1 and
+	MacBookPro4,1. Thanks to Edgar Hucek for the report.
 
 version 1.15:
 	- pommed: add preliminary support for the MacBook Air1,1; USB IDs
