@@ -7,6 +7,9 @@ version 1.16:
 	- pommed: add support for the Geyser V-HF keyboard+trackpad
 	assembly, found in the MacBookAir1,1, MacBook4,1 and
 	MacBookPro4,1. Thanks to Edgar Hucek for the report.
+	- pommed: fix MacBook Air machine identification string, the real
+	string is MacBookAir1,1 and not MacBook Air1,1 as the Apple
+	technote puts it.
 
 version 1.15:
 	- pommed: add preliminary support for the MacBook Air1,1; USB IDs

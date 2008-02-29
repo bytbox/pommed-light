@@ -311,7 +311,7 @@ struct machine_ops mb_mops[] = {
 
   /* MacBook Air machines */
 
-  {  /* MacBook Air1,1 (January 2008) */
+  {  /* MacBookAir1,1 (January 2008) */
     .type = MACHINE_MACBOOKAIR_1,
     .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
     .lcd_backlight_step = gma950_backlight_step,
@@ -611,7 +611,7 @@ check_machine_smbios(void)
   else if (strcmp(prop, "MacBook4,1") == 0)
     ret = MACHINE_MACBOOK_4;
   /* MacBook Air (January 2008) */
-  else if (strcmp(prop, "MacBook Air1,1") == 0)
+  else if (strcmp(prop, "MacBookAir1,1") == 0)
     ret = MACHINE_MACBOOKAIR_1;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", prop);
