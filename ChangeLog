@@ -4,9 +4,10 @@ ChangeLog for pommed
 version 1.16:
 	- pommed: add support for the MacBookPro4,1.
 	- pommed: add support for the MacBook4,1.
-	- pommed: add support for the Geyser V-HF keyboard+trackpad
-	assembly, found in the MacBookAir1,1, MacBook4,1 and
-	MacBookPro4,1. Thanks to Edgar Hucek for the report.
+	- pommed: add support for the WellSpring keyboard+trackpad
+	assembly ("MultiTouch"), found in the MacBookAir1,1.
+	- pommed: add support for the WellSpring II keyboard+trackpad
+	assembly ("MultiTouch"), most likely found in the MacBookPro4,1.
 	- pommed: fix MacBook Air machine identification string, the real
 	string is MacBookAir1,1 and not MacBook Air1,1 as the Apple
 	technote puts it.

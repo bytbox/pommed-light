@@ -594,7 +594,8 @@ evdev_is_geyser4(unsigned short *id)
   return 0;
 }
 
-/* Core2 Duo Santa Rosa MacBook (MacBook3,1) */
+/* Core2 Duo Santa Rosa MacBook (MacBook3,1)
+   Core2 Duo MacBook (MacBook4,1, February 2008) */
 int
 evdev_is_geyser4hf(unsigned short *id)
 {
@@ -620,12 +621,9 @@ evdev_is_geyser4hf(unsigned short *id)
   return 0;
 }
 
-/* MacBook Air (MacBookAir1,1, January 2008),
- * Core2 Duo MacBook (MacBook4,1, February 2008),
- * Core2 Duo MacBookPro (MacBookPro4,1, February 2008)
- */
+/* MacBook Air (MacBookAir1,1, January 2008) */
 int
-evdev_is_geyser5hf(unsigned short *id)
+evdev_is_wellspring(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
 
@@ -635,11 +633,37 @@ evdev_is_geyser5hf(unsigned short *id)
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
-  if ((product == USB_PRODUCT_ID_GEYSER5HF_ANSI)
-      || (product == USB_PRODUCT_ID_GEYSER5HF_ISO)
-      || (product == USB_PRODUCT_ID_GEYSER5HF_JIS))
+  if ((product == USB_PRODUCT_ID_WELLSPRING_ANSI)
+      || (product == USB_PRODUCT_ID_WELLSPRING_ISO)
+      || (product == USB_PRODUCT_ID_WELLSPRING_JIS))
     {
-      logdebug(" -> Geyser V-HF USB keyboard\n");
+      logdebug(" -> WellSpring USB keyboard\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
+/* Core2 Duo MacBook Pro (MacBookPro4,1, February 2008) */
+int
+evdev_is_wellspring2(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_WELLSPRING2_ANSI)
+      || (product == USB_PRODUCT_ID_WELLSPRING2_ISO)
+      || (product == USB_PRODUCT_ID_WELLSPRING2_JIS))
+    {
+      logdebug(" -> WellSpring II USB keyboard\n");
 
       kbd_set_fnmode();
 

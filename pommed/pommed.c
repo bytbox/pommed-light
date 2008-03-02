@@ -272,7 +272,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = nv8600mgt_backlight_probe,
     .lcd_backlight_step = nv8600mgt_backlight_step,
     .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
-    .evdev_identify = evdev_is_geyser5hf,
+    .evdev_identify = evdev_is_wellspring2,
   },
 
   /* MacBook machines */
@@ -306,7 +306,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
-    .evdev_identify = evdev_is_geyser5hf,
+    .evdev_identify = evdev_is_geyser4hf,
   },
 
   /* MacBook Air machines */
@@ -316,7 +316,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
-    .evdev_identify = evdev_is_geyser5hf,
+    .evdev_identify = evdev_is_wellspring,
   }
 };
 #endif /* __powerpc__ */

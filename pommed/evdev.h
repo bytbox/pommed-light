@@ -18,6 +18,8 @@
 
 #define USB_VENDOR_ID_APPLE           0x05ac
 
+/* Fountain & Geyser devices : AppleUSBTopCase.kext/Contents/PlugIns/AppleUSBTrackpad.kext */
+
 /* Apple Fountain keyboard + trackpad */
 #define USB_PRODUCT_ID_FOUNTAIN_ANSI  0x020e
 #define USB_PRODUCT_ID_FOUNTAIN_ISO   0x020f
@@ -43,14 +45,23 @@
 #define USB_PRODUCT_ID_GEYSER4HF_ISO    0x022a
 #define USB_PRODUCT_ID_GEYSER4HF_JIS    0x022b
 
-/* Apple Geyser V-HF keyboard + trackpad (name to be confirmed) */
-#define USB_PRODUCT_ID_GEYSER5HF_ANSI   0x0224
-#define USB_PRODUCT_ID_GEYSER5HF_ISO    0x0225 /* to be confirmed */
-#define USB_PRODUCT_ID_GEYSER5HF_JIS    0x0226 /* to be confirmed */
+/* WellSpring devices : AppleUSBMultitouch.kext */
+
+/* Apple WellSpring keyboard + trackpad */
+#define USB_PRODUCT_ID_WELLSPRING_ANSI   0x0223
+#define USB_PRODUCT_ID_WELLSPRING_ISO    0x0224
+#define USB_PRODUCT_ID_WELLSPRING_JIS    0x0225
+
+/* Apple WellSpring II keyboard + trackpad */
+#define USB_PRODUCT_ID_WELLSPRING2_ANSI   0x0230
+#define USB_PRODUCT_ID_WELLSPRING2_ISO    0x0231
+#define USB_PRODUCT_ID_WELLSPRING2_JIS    0x0232
+
 
 /* Apple USB keyboards, external */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c
 #define USB_PRODUCT_ID_APPLE_EXTKBD_ALU     0x0221
+
 
 /* Apple Remote IR Receiver */
 #define USB_PRODUCT_ID_APPLEIR        0x8240
@@ -110,7 +121,10 @@ int
 evdev_is_geyser4hf(unsigned short *id);
 
 int
-evdev_is_geyser5hf(unsigned short *id);
+evdev_is_wellspring(unsigned short *id);
+
+int
+evdev_is_wellspring2(unsigned short *id);
 #endif /* __powerpc__ */
 
 
