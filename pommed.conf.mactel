@@ -19,7 +19,7 @@ lcd_x1600 {
 	on_batt = 80
 }
 
-# Intel 945GM, 965GM backlight control (MacBook)
+# Intel 945GM, 965GM backlight control (MacBook, MacBook Air)
 lcd_gma950 {
 	# initial backlight level [0x6f] (0x1f - 0x94 usually, -1 to disable)
 	init = -1
@@ -29,7 +29,7 @@ lcd_gma950 {
 	on_batt = 0x40
 }
 
-# nVidia GeForce 8600M GT backlight control (MacBook Pro v3)
+# nVidia GeForce 8600M GT backlight control (MacBook Pro v3 & v4)
 lcd_nv8600mgt {
 	# initial backlight level [12] (0 - 15, -1 to disable)
 	init = -1
