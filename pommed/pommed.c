@@ -385,6 +385,7 @@ logdebug(char *fmt, ...)
 void
 kbd_set_fnmode(void)
 {
+  int errno1;
   FILE *fp;
 
   if ((general_cfg.fnmode < 1) || (general_cfg.fnmode > 2))
@@ -393,10 +394,12 @@ kbd_set_fnmode(void)
   fp = fopen(KBD_FNMODE_FILE, "a");
   if (fp == NULL)
     {
+      errno1 = errno;
+
       fp = fopen(KBD_FNMODE_FILE2620, "a");
       if (fp == NULL)
         {
-          logmsg(LOG_INFO, "Could not open %s", KBD_FNMODE_FILE);
+          logmsg(LOG_INFO, "Could not open %s: %s", KBD_FNMODE_FILE, strerror(errno1));
           logmsg(LOG_INFO, "Could not open %s: %s", KBD_FNMODE_FILE2620, strerror(errno));
           return;
         }
