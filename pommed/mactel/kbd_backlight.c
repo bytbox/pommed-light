@@ -43,18 +43,39 @@ struct _kbd_bck_info kbd_bck_info;
 
 
 static int
+kbd_backlight_open(int flags)
+{
+  int errno1;
+  int fd;
+
+  fd = open(KBD_BACKLIGHT, flags);
+  if (fd < 0)
+    {
+      errno1 = errno;
+
+      fd = open(KBD_BACKLIGHT_2625, flags);
+      if (fd < 0)
+	{
+	  logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno1));
+	  logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT_2625, strerror(errno));
+	  return -1;
+	}
+    }
+
+  return fd;
+}
+
+
+static int
 kbd_backlight_get(void)
 {
   int fd;
   int ret;
   char buf[8];
 
-  fd = open(KBD_BACKLIGHT, O_RDONLY);
+  fd = kbd_backlight_open(O_RDONLY);
   if (fd < 0)
-    {
-      logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno));
-      return -1;
-    }
+    return -1;
 
   memset(buf, 0, 8);
 
@@ -85,6 +106,7 @@ kbd_backlight_set(int val, int who)
   float step;
   struct timespec fade_step;
 
+  int fd;
   FILE *fp;
 
   if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
@@ -110,10 +132,15 @@ kbd_backlight_set(int val, int who)
 	{
 	  fadeval += step;
 
-	  fp = fopen(KBD_BACKLIGHT, "a");
+	  fd = kbd_backlight_open(O_WRONLY);
+	  if (fd < 0)
+	    continue;
+
+	  fp = fdopen(fd, "a");
 	  if (fp == NULL)
 	    {
-	      logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno));
+	      logmsg(LOG_WARNING, "Could not fdopen backlight fd: %s", strerror(errno));
+	      close(fd);
 	      continue;
 	    }
 
@@ -127,10 +154,15 @@ kbd_backlight_set(int val, int who)
 	}
     }
 
-  fp = fopen(KBD_BACKLIGHT, "a");
+  fd = kbd_backlight_open(O_WRONLY);
+  if (fd < 0)
+    return;
+
+  fp = fdopen(fd, "a");
   if (fp == NULL)
     {
-      logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno));
+      logmsg(LOG_WARNING, "Could not fdopen backlight fd %d: %s", fd, strerror(errno));
+      close(fd);
       return;
     }
 

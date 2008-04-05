@@ -7,6 +7,7 @@
 
 #ifndef __powerpc__
 #define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
+#define KBD_BACKLIGHT_2625      "/sys/class/leds/smc::kbd_backlight/brightness"
 #endif /* !__powerpc__ */
 
 

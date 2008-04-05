@@ -2,6 +2,8 @@ ChangeLog for pommed
 --------------------
 
 version 1.17:
+	- pommed: handle path change for the applesmc led interface
+	starting with kernel 2.6.25.
 
 version 1.16:
 	- pommed: add support for the MacBookPro4,1.
