@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.18:
+	- pommed: add more IDs for Apple external keyboards
 
 version 1.17:
 	- pommed: handle path change for the applesmc led interface

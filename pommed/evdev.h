@@ -58,10 +58,18 @@
 #define USB_PRODUCT_ID_WELLSPRING2_JIS    0x0232
 
 
-/* Apple USB keyboards, external */
+/* Apple external USB keyboard, white */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c
-#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU     0x0221
 
+/* Apple external USB keyboard, aluminium */
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_ANSI 0x0220
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_ISO  0x0221
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_JIS  0x0222
+
+/* Apple external wireless keyboard, aluminium */
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_ANSI 0x022c
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_ISO  0x022d
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_JIS  0x022e
 
 /* Apple Remote IR Receiver */
 #define USB_PRODUCT_ID_APPLEIR        0x8240

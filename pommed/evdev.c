@@ -719,9 +719,9 @@ evdev_is_lidswitch(unsigned short *id)
 }
 #endif /* !__powerpc__ */
 
-/* External Apple USB keyboards */
+/* Apple external USB keyboard, white */
 int
-evdev_is_extkbd(unsigned short *id)
+evdev_is_extkbd_white(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
 
@@ -731,10 +731,9 @@ evdev_is_extkbd(unsigned short *id)
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
-  if ((product == USB_PRODUCT_ID_APPLE_EXTKBD_WHITE)
-      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU))
+  if (product == USB_PRODUCT_ID_APPLE_EXTKBD_WHITE)
     {
-      logdebug(" -> External Apple USB keyboard\n");
+      logdebug(" -> External Apple USB keyboard (white)\n");
 
       kbd_set_fnmode();
 
@@ -742,6 +741,65 @@ evdev_is_extkbd(unsigned short *id)
     }
 
   return 0;
+}
+
+/* Apple external USB keyboard, aluminium */
+int
+evdev_is_extkbd_alu(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_ANSI)
+      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_ISO)
+      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_JIS))
+    {
+      logdebug(" -> External Apple USB keyboard (aluminium)\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
+/* Apple external wireless keyboard, aluminium */
+int
+evdev_is_extkbd_alu_wl(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_ANSI)
+      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_ISO)
+      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_JIS))
+    {
+      logdebug(" -> External Apple wireless keyboard (aluminium)\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
+/* Any external Apple USB keyboard */
+int
+evdev_is_extkbd(unsigned short *id)
+{
+  return (evdev_is_extkbd_white(id) || evdev_is_extkbd_alu(id) || evdev_is_extkbd_alu_wl(id));
 }
 
 /* Mouseemu virtual keyboard */
