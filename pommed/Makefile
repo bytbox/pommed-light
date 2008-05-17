@@ -42,15 +42,26 @@ endif
 
 else
 
-LDFLAGS += -lz -lsmbios
+LIBPCI_SHARED = $(shell pkg-config libpci && echo true || echo false)
+
+ifeq ($(LIBPCI_SHARED), true)
+	LIBPCI_CFLAGS = $(shell pkg-config libpci --cflags)
+	LIBPCI_LIBS = $(shell pkg-config libpci --libs)
+
+	CFLAGS += $(LIBPCI_CFLAGS)
+	LDFLAGS += $(LIBPCI_LIBS)
+else
+	LIBS = /usr/lib/libpci.a
+	LDFLAGS += -lz	
+endif
+
+LDFLAGS += -lsmbios
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		dbus.c power.c beep.c video.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/nv8600mgt_backlight.c \
 		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
-
-LIBS = /usr/lib/libpci.a
 endif
 
 OBJS = $(SOURCES:%.c=%.o)
