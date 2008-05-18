@@ -20,7 +20,7 @@ CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUS
 
 LDFLAGS = -pthread $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
-ifeq ($(ARCH), ppc)
+ifneq (, $(findstring ppc, $(ARCH)))
 OFLIB ?=
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
