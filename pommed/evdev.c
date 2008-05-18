@@ -553,7 +553,7 @@ evdev_is_lidswitch(unsigned short *id)
 #else
 
 /* Core Duo MacBook & MacBook Pro */
-int
+static int
 evdev_is_geyser3(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -579,7 +579,7 @@ evdev_is_geyser3(unsigned short *id)
 }
 
 /* Core2 Duo MacBook & MacBook Pro */
-int
+static int
 evdev_is_geyser4(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -606,7 +606,7 @@ evdev_is_geyser4(unsigned short *id)
 
 /* Core2 Duo Santa Rosa MacBook (MacBook3,1)
    Core2 Duo MacBook (MacBook4,1, February 2008) */
-int
+static int
 evdev_is_geyser4hf(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -632,7 +632,7 @@ evdev_is_geyser4hf(unsigned short *id)
 }
 
 /* MacBook Air (MacBookAir1,1, January 2008) */
-int
+static int
 evdev_is_wellspring(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -658,7 +658,7 @@ evdev_is_wellspring(unsigned short *id)
 }
 
 /* Core2 Duo MacBook Pro (MacBookPro4,1, February 2008) */
-int
+static int
 evdev_is_wellspring2(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -742,7 +742,7 @@ evdev_is_lidswitch(unsigned short *id)
 #endif /* !__powerpc__ */
 
 /* Apple external USB keyboard, white */
-int
+static int
 evdev_is_extkbd_white(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -766,7 +766,7 @@ evdev_is_extkbd_white(unsigned short *id)
 }
 
 /* Apple external USB keyboard, aluminium */
-int
+static int
 evdev_is_extkbd_alu(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -792,7 +792,7 @@ evdev_is_extkbd_alu(unsigned short *id)
 }
 
 /* Apple external wireless keyboard, aluminium */
-int
+static int
 evdev_is_extkbd_alu_wl(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -818,7 +818,7 @@ evdev_is_extkbd_alu_wl(unsigned short *id)
 }
 
 /* Any external Apple USB keyboard */
-int
+static int
 evdev_is_extkbd(unsigned short *id)
 {
   return (evdev_is_extkbd_white(id) || evdev_is_extkbd_alu(id) || evdev_is_extkbd_alu_wl(id));
