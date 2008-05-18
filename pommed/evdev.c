@@ -821,7 +821,9 @@ evdev_is_extkbd_alu_wl(unsigned short *id)
 static int
 evdev_is_extkbd(unsigned short *id)
 {
-  return (evdev_is_extkbd_white(id) || evdev_is_extkbd_alu(id) || evdev_is_extkbd_alu_wl(id));
+  return (evdev_is_extkbd_white(id)
+	  || evdev_is_extkbd_alu(id)
+	  || evdev_is_extkbd_alu_wl(id));
 }
 
 /* Mouseemu virtual keyboard */
