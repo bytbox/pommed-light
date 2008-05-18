@@ -74,7 +74,6 @@ struct machine_ops
   int (*lcd_backlight_probe) (void);
   void (*lcd_backlight_step) (int dir);
   void (*lcd_backlight_toggle) (int lvl);
-  int (*evdev_identify) (unsigned short *id);
 };
 
 extern struct machine_ops *mops;

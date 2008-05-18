@@ -76,7 +76,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = aty128_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step_kernel,
     .lcd_backlight_toggle = sysfs_backlight_toggle_kernel,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook3,3 */
@@ -84,7 +84,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook3,4 */
@@ -92,7 +92,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook3,5 */
@@ -100,7 +100,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   /* PowerBook4,* -> G3 iBooks */
@@ -110,7 +110,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook5,2 */
@@ -118,7 +118,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook5,3 */
@@ -126,7 +126,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook5,4 */
@@ -134,7 +134,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook5,5 */
@@ -142,7 +142,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook5,6 */
@@ -150,7 +150,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_fountain,
+    /* .evdev_identify = evdev_is_fountain, */
   },
 
   {  /* PowerBook5,7 */
@@ -158,7 +158,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_fountain,
+    /* .evdev_identify = evdev_is_fountain, */
   },
 
   {  /* PowerBook5,8 */
@@ -166,7 +166,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_geyser,
+    /* .evdev_identify = evdev_is_geyser, */
   },
 
   {  /* PowerBook5,9 */
@@ -174,7 +174,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_geyser,
+    /* .evdev_identify = evdev_is_geyser, */
   },
 
   /* G4 iBooks & 12" PowerBooks */
@@ -184,7 +184,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook6,2 */
@@ -192,7 +192,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook6,3 */
@@ -200,7 +200,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook6,4 */
@@ -208,7 +208,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook6,5 */
@@ -216,7 +216,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   /* Looks like PowerBook6,6 never made it to the market ? */
@@ -226,7 +226,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = r9x00_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   },
 
   {  /* PowerBook6,8 */
@@ -234,7 +234,7 @@ struct machine_ops pb_mops[] = {
     .lcd_backlight_probe = nvidia_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    .evdev_identify = evdev_is_adb,
+    /* .evdev_identify = evdev_is_adb, */
   }
 };
 
@@ -248,7 +248,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = x1600_backlight_probe,
     .lcd_backlight_step = x1600_backlight_step,
     .lcd_backlight_toggle = x1600_backlight_toggle,
-    .evdev_identify = evdev_is_geyser3,
+    /* .evdev_identify = evdev_is_geyser3, */
   },
 
   {  /* MacBookPro2,1 / MacBookPro2,2 (Core2 Duo) */
@@ -256,7 +256,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = x1600_backlight_probe,
     .lcd_backlight_step = x1600_backlight_step,
     .lcd_backlight_toggle = x1600_backlight_toggle,
-    .evdev_identify = evdev_is_geyser4,
+    /* .evdev_identify = evdev_is_geyser4, */
   },
 
   {  /* MacBookPro3,1 (15" & 17", Core2 Duo, June 2007) */
@@ -264,7 +264,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = nv8600mgt_backlight_probe,
     .lcd_backlight_step = nv8600mgt_backlight_step,
     .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
-    .evdev_identify = evdev_is_geyser4,
+    /* .evdev_identify = evdev_is_geyser4, */
   },
 
   {  /* MacBookPro4,1 (15" & 17", Core2 Duo, February 2008) */
@@ -272,7 +272,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = nv8600mgt_backlight_probe,
     .lcd_backlight_step = nv8600mgt_backlight_step,
     .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
-    .evdev_identify = evdev_is_wellspring2,
+    /* .evdev_identify = evdev_is_wellspring2, */
   },
 
   /* MacBook machines */
@@ -282,7 +282,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = gma950_backlight_probe,
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
-    .evdev_identify = evdev_is_geyser3,
+    /* .evdev_identify = evdev_is_geyser3, */
   },
 
   {  /* MacBook2,1 (Core2 Duo) */
@@ -290,7 +290,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = gma950_backlight_probe,
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
-    .evdev_identify = evdev_is_geyser4,
+    /* .evdev_identify = evdev_is_geyser4, */
   },
 
   {  /* MacBook3,1 (Core2 Duo Santa Rosa, November 2007) */
@@ -298,7 +298,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
-    .evdev_identify = evdev_is_geyser4hf,
+    /* .evdev_identify = evdev_is_geyser4hf, */
   },
 
   {  /* MacBook4,1 (Core2 Duo, February 2008) */
@@ -306,7 +306,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
-    .evdev_identify = evdev_is_geyser4hf,
+    /* .evdev_identify = evdev_is_geyser4hf, */
   },
 
   /* MacBook Air machines */
@@ -316,7 +316,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = gma950_backlight_probe, /* gma950 supports the gma965 */
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
-    .evdev_identify = evdev_is_wellspring,
+    /* .evdev_identify = evdev_is_wellspring, */
   }
 };
 #endif /* __powerpc__ */

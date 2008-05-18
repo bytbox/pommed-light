@@ -438,7 +438,7 @@ evdev_event_loop(void)
 
 #ifdef __powerpc__
 /* PowerBook G4 Titanium */
-int
+static int
 evdev_is_adb(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -467,7 +467,7 @@ evdev_is_adb(unsigned short *id)
 }
 
 /* PowerBook G4 */
-int
+static int
 evdev_is_fountain(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -490,7 +490,7 @@ evdev_is_fountain(unsigned short *id)
   return 0;
 }
 
-int
+static int
 evdev_is_geyser(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
@@ -514,6 +514,16 @@ evdev_is_geyser(unsigned short *id)
 
   return 0;
 }
+
+/* Any internal keyboard */
+static int
+evdev_is_internal(unsigned short *id)
+{
+  return (evdev_is_adb(id)
+	  || evdev_is_fountain(id)
+	  || evdev_is_geyser(id));
+}
+
 
 /* PMU Lid switch */
 static int
@@ -672,6 +682,18 @@ evdev_is_wellspring2(unsigned short *id)
 
   return 0;
 }
+
+/* Any internal keyboard */
+static int
+evdev_is_internal(unsigned short *id)
+{
+  return (evdev_is_geyser3(id)
+	  || evdev_is_geyser4(id)
+	  || evdev_is_geyser4hf(id)
+	  || evdev_is_wellspring(id)
+	  || evdev_is_wellspring2(id));
+}
+
 
 /* Apple Remote IR Receiver */
 static int
@@ -841,7 +863,7 @@ evdev_try_add(int fd)
 
   ioctl(fd, EVIOCGID, id);
 
-  if ((!mops->evdev_identify(id))
+  if ((!evdev_is_internal(id))
 #ifndef __powerpc__
       && !(appleir_cfg.enabled && evdev_is_appleir(id))
 #endif

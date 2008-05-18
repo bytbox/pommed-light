@@ -106,36 +106,6 @@
 int
 evdev_event_loop(void);
 
-
-#ifdef __powerpc__
-int
-evdev_is_adb(unsigned short *id);
-
-int
-evdev_is_fountain(unsigned short *id);
-
-int
-evdev_is_geyser(unsigned short *id);
-
-#else
-
-int
-evdev_is_geyser3(unsigned short *id);
-
-int
-evdev_is_geyser4(unsigned short *id);
-
-int
-evdev_is_geyser4hf(unsigned short *id);
-
-int
-evdev_is_wellspring(unsigned short *id);
-
-int
-evdev_is_wellspring2(unsigned short *id);
-#endif /* __powerpc__ */
-
-
 int
 evdev_init(void);
 
