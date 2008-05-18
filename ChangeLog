@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.19:
+
 version 1.18:
 	- pommed: add more IDs for Apple external keyboards
 	- pommed: relax event devices identification for internal keyboard.
