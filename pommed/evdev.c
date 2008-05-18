@@ -482,7 +482,7 @@ evdev_is_fountain(unsigned short *id)
       || (product == USB_PRODUCT_ID_FOUNTAIN_ISO)
       || (product == USB_PRODUCT_ID_FOUNTAIN_JIS))
     {
-      logdebug(" -> Fountain USB keyboard\n");
+      logdebug(" -> Fountain USB assembly\n");
 
       return 1;
     }
@@ -505,7 +505,7 @@ evdev_is_geyser(unsigned short *id)
       || (product == USB_PRODUCT_ID_GEYSER_ISO)
       || (product == USB_PRODUCT_ID_GEYSER_JIS))
     {
-      logdebug(" -> Geyser USB keyboard\n");
+      logdebug(" -> Geyser USB assembly\n");
 
       kbd_set_fnmode();
 
@@ -568,7 +568,7 @@ evdev_is_geyser3(unsigned short *id)
       || (product == USB_PRODUCT_ID_GEYSER3_ISO)
       || (product == USB_PRODUCT_ID_GEYSER3_JIS))
     {
-      logdebug(" -> Geyser III USB keyboard\n");
+      logdebug(" -> Geyser III USB assembly\n");
 
       kbd_set_fnmode();
 
@@ -594,7 +594,7 @@ evdev_is_geyser4(unsigned short *id)
       || (product == USB_PRODUCT_ID_GEYSER4_ISO)
       || (product == USB_PRODUCT_ID_GEYSER4_JIS))
     {
-      logdebug(" -> Geyser IV USB keyboard\n");
+      logdebug(" -> Geyser IV USB assembly\n");
 
       kbd_set_fnmode();
 
@@ -621,7 +621,7 @@ evdev_is_geyser4hf(unsigned short *id)
       || (product == USB_PRODUCT_ID_GEYSER4HF_ISO)
       || (product == USB_PRODUCT_ID_GEYSER4HF_JIS))
     {
-      logdebug(" -> Geyser IV-HF USB keyboard\n");
+      logdebug(" -> Geyser IV-HF USB assembly\n");
 
       kbd_set_fnmode();
 
@@ -647,7 +647,7 @@ evdev_is_wellspring(unsigned short *id)
       || (product == USB_PRODUCT_ID_WELLSPRING_ISO)
       || (product == USB_PRODUCT_ID_WELLSPRING_JIS))
     {
-      logdebug(" -> WellSpring USB keyboard\n");
+      logdebug(" -> WellSpring USB assembly\n");
 
       kbd_set_fnmode();
 
@@ -673,7 +673,7 @@ evdev_is_wellspring2(unsigned short *id)
       || (product == USB_PRODUCT_ID_WELLSPRING2_ISO)
       || (product == USB_PRODUCT_ID_WELLSPRING2_JIS))
     {
-      logdebug(" -> WellSpring II USB keyboard\n");
+      logdebug(" -> WellSpring II USB assembly\n");
 
       kbd_set_fnmode();
 
