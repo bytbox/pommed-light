@@ -351,7 +351,7 @@ logmsg(int level, char *fmt, ...)
 	    break;
 
 	  case LOG_ERR:
-	    fprintf(stdout, "E: ");
+	    fprintf(stderr, "E: ");
 	    break;
 
 	  default:
