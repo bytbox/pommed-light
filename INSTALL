@@ -10,13 +10,13 @@ Building
 --------
 
 pommed requires:
- - pciutils (libpci.a, on Intel machines only)
+ - pciutils / libpci (on Intel machines only)
+ - libofapi aka oflib (PowerMac machines only, see below)
  - zlib
  - libconfuse
  - libdbus
  - libasound
  - libaudiofile
- - libofapi aka oflib (PowerMac machines only, see below)
  - eject
 
 gpomme requires:
