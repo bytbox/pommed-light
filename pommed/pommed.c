@@ -551,13 +551,6 @@ check_machine_smbios(void)
 
   const char *prop;
 
-  if (geteuid() != 0)
-    {
-      logmsg(LOG_ERR, "root privileges needed for SMBIOS machine detection");
-
-      return MACHINE_ERROR;
-    }
-
   /* Check vendor name */
   prop = SMBIOSGetVendorName();
 
@@ -689,6 +682,13 @@ main (int argc, char **argv)
 	    exit(-1);
 	    break;
 	}
+    }
+
+  if (geteuid() != 0)
+    {
+      logmsg(LOG_ERR, "pommed needs root privileges to operate\n");
+
+      exit(1);
     }
 
   if (!console)
