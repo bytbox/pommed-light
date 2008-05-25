@@ -681,7 +681,7 @@ main (int argc, char **argv)
 	  default:
 	    usage();
 
-	    exit(-1);
+	    exit(1);
 	    break;
 	}
     }
@@ -705,7 +705,7 @@ main (int argc, char **argv)
   ret = config_load();
   if (ret < 0)
     {
-      exit(-1);
+      exit(1);
     }
 
   /* Identify the machine we're running on */
@@ -791,7 +791,7 @@ main (int argc, char **argv)
 
 	  evdev_cleanup();
 
-	  exit(-1);
+	  exit(1);
 	}
     }
 
@@ -802,7 +802,7 @@ main (int argc, char **argv)
 
       evdev_cleanup();
 
-      exit(-1);
+      exit(1);
     }
   fprintf(pidfile, "%d\n", getpid());
   fclose(pidfile);
