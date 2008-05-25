@@ -55,8 +55,6 @@ else
 	LDFLAGS += -lz	
 endif
 
-LDFLAGS += -lsmbios
-
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		dbus.c power.c beep.c video.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \

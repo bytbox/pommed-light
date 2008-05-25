@@ -10,7 +10,6 @@ Building
 --------
 
 pommed requires:
- - libsmbios (on Intel machines only)
  - pciutils (libpci.a, on Intel machines only)
  - zlib
  - libconfuse

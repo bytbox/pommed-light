@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.19:
+	- pommed: get rid of the libsmbios dependency on Intel machines.
 
 version 1.18:
 	- pommed: add more IDs for Apple external keyboards

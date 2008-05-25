@@ -36,8 +36,7 @@
 #include <errno.h>
 
 #ifndef __powerpc__
-# include <smbios/SystemInfo.h>
-# define check_machine() check_machine_smbios()
+# define check_machine() check_machine_dmi()
 #else
 # define check_machine() check_machine_pmu()
 #endif /* __powerpc__ */
@@ -547,77 +546,122 @@ check_machine_pmu(void)
 #else
 
 static machine_type
-check_machine_smbios(void)
+check_machine_dmi(void)
 {
-  int ret = MACHINE_UNKNOWN;
+  int ret;
 
-  const char *prop;
+  int fd;
+  char buf[32];
+  int i;
+
+  char *vendor_node[] =
+    {
+      "/sys/class/dmi/id/sys_vendor",
+      "/sys/class/dmi/id/board_vendor",
+      "/sys/class/dmi/id/chassis_vendor",
+      "/sys/class/dmi/id/bios_vendor"
+    };
 
   /* Check vendor name */
-  prop = SMBIOSGetVendorName();
-
-  if (prop == NULL)
+  for (i = 0; i < sizeof(vendor_node); i++)
     {
-      logmsg(LOG_ERR, "Could not get vendor name from SMBIOS; running EFI ?");
+      fd = open(vendor_node[i], O_RDONLY);
+      if (fd > 0)
+	break;
+
+      logmsg(LOG_INFO, "Could not open %s: %s", vendor_node[i], strerror(errno));
+    }
+
+  if (fd < 0)
+    {
+      logmsg(LOG_ERR, "Could not determine vendor name");
+
       return MACHINE_ERROR;
     }
 
-  logdebug("SMBIOS vendor name: [%s]\n", prop);
+  memset(buf, 0, sizeof(buf));
 
-  if ((strcmp(prop, "Apple Computer, Inc.") == 0)
-      || (strcmp(prop, "Apple Inc.") == 0))
-    ret = MACHINE_MAC_UNKNOWN;
-
-  SMBIOSFreeMemory(prop);
-
-  if (ret != MACHINE_MAC_UNKNOWN)
-    return ret;
-
-  /* Check system name */
-  prop = SMBIOSGetSystemName();
-
-  if (prop == NULL)
+  ret = read(fd, buf, sizeof(buf) - 1);
+  if (ret < 0)
     {
-      logmsg(LOG_ERR, "Could not get system name from SMBIOS");
+      logmsg(LOG_ERR, "Could not read from %s: %s", vendor_node[i], strerror(errno));
+
+      close(fd);
+      return MACHINE_ERROR;
+    }
+
+  close(fd);
+
+  if (buf[ret - 1] == '\n')
+    buf[ret - 1] = '\0';
+
+  logdebug("DMI vendor name: [%s]\n", buf);
+
+  if ((strcmp(buf, "Apple Computer, Inc.") != 0)
+      && (strcmp(buf, "Apple Inc.") != 0))
+    return MACHINE_UNKNOWN;
+
+  /* Check product name */
+  fd = open("/sys/class/dmi/id/product_name", O_RDONLY);
+  if (fd < 0)
+    {
+      logmsg(LOG_INFO, "Could not open /sys/class/dmi/id/product_name: %s", strerror(errno));
+
       return MACHINE_MAC_UNKNOWN;
     }
 
-  logdebug("SMBIOS system name: [%s]\n", prop);
+  memset(buf, 0, sizeof(buf));
+
+  ret = read(fd, buf, sizeof(buf) - 1);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not read from /sys/class/dmi/id/product_name: %s", strerror(errno));
+
+      close(fd);
+      return MACHINE_MAC_UNKNOWN;
+    }
+
+  close(fd);
+
+  if (buf[ret - 1] == '\n')
+    buf[ret - 1] = '\0';
+
+  logdebug("DMI product name: [%s]\n", buf);
+
+  ret = MACHINE_MAC_UNKNOWN;
 
   /* Core Duo MacBook Pro 15" (January 2006) & 17" (April 2006) */
-  if ((strcmp(prop, "MacBookPro1,1") == 0) || (strcmp(prop, "MacBookPro1,2") == 0))
+  if ((strcmp(buf, "MacBookPro1,1") == 0) || (strcmp(buf, "MacBookPro1,2") == 0))
     ret = MACHINE_MACBOOKPRO_1;
   /* Core2 Duo MacBook Pro 17" & 15" (October 2006) */
-  else if ((strcmp(prop, "MacBookPro2,1") == 0) || (strcmp(prop, "MacBookPro2,2") == 0))
+  else if ((strcmp(buf, "MacBookPro2,1") == 0) || (strcmp(buf, "MacBookPro2,2") == 0))
     ret = MACHINE_MACBOOKPRO_2;
   /* Core2 Duo MacBook Pro 15" & 17" (June 2007) */
-  else if (strcmp(prop, "MacBookPro3,1") == 0)
+  else if (strcmp(buf, "MacBookPro3,1") == 0)
     ret = MACHINE_MACBOOKPRO_3;
   /* Core2 Duo MacBook Pro 15" & 17" (February 2008) */
-  else if (strcmp(prop, "MacBookPro4,1") == 0)
+  else if (strcmp(buf, "MacBookPro4,1") == 0)
     ret = MACHINE_MACBOOKPRO_4;
   /* Core Duo MacBook (May 2006) */
-  else if (strcmp(prop, "MacBook1,1") == 0)
+  else if (strcmp(buf, "MacBook1,1") == 0)
     ret = MACHINE_MACBOOK_1;
   /* Core2 Duo MacBook (November 2006) */
-  else if (strcmp(prop, "MacBook2,1") == 0)
+  else if (strcmp(buf, "MacBook2,1") == 0)
     ret = MACHINE_MACBOOK_2;
   /* Core2 Duo Santa Rosa MacBook (November 2007) */
-  else if (strcmp(prop, "MacBook3,1") == 0)
+  else if (strcmp(buf, "MacBook3,1") == 0)
     ret = MACHINE_MACBOOK_3;
   /* Core2 Duo MacBook (February 2008) */
-  else if (strcmp(prop, "MacBook4,1") == 0)
+  else if (strcmp(buf, "MacBook4,1") == 0)
     ret = MACHINE_MACBOOK_4;
   /* MacBook Air (January 2008) */
-  else if (strcmp(prop, "MacBookAir1,1") == 0)
+  else if (strcmp(buf, "MacBookAir1,1") == 0)
     ret = MACHINE_MACBOOKAIR_1;
   else
-    logmsg(LOG_ERR, "Unknown Apple machine: %s", prop);
+    logmsg(LOG_ERR, "Unknown Apple machine: %s", buf);
 
   if (ret != MACHINE_MAC_UNKNOWN)
-    logmsg(LOG_INFO, "SMBIOS machine check: running on a %s", prop);
-
-  SMBIOSFreeMemory(prop);
+    logmsg(LOG_INFO, "DMI machine check: running on a %s", buf);
 
   return ret;
 }
