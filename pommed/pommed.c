@@ -335,6 +335,7 @@ void
 logmsg(int level, char *fmt, ...)
 {
   va_list ap;
+  FILE *where = stdout;
 
   va_start(ap, fmt);
 
@@ -343,22 +344,23 @@ logmsg(int level, char *fmt, ...)
       switch (level)
 	{
 	  case LOG_INFO:
-	    fprintf(stdout, "I: ");
+	    fprintf(where, "I: ");
 	    break;
 
 	  case LOG_WARNING:
-	    fprintf(stdout, "W: ");
+	    fprintf(where, "W: ");
 	    break;
 
 	  case LOG_ERR:
-	    fprintf(stderr, "E: ");
+	    where = stderr;
+	    fprintf(where, "E: ");
 	    break;
 
 	  default:
 	    break;
 	}
-      vfprintf(stdout, fmt, ap);
-      fprintf(stdout, "\n");
+      vfprintf(where, fmt, ap);
+      fprintf(where, "\n");
     }
   else
     {
