@@ -70,9 +70,6 @@ struct
 DBusError dbus_err;
 DBusConnection *conn;
 
-/* inotify fd (config file monitoring) */
-int cfg_ifd = -1;
-
 
 /* Timer callback */
 gboolean
@@ -424,18 +421,15 @@ mbp_dbus_listen(gpointer userdata)
     }
 }
 
-void
-mbp_check_config(gpointer userdata)
+gboolean
+mbp_check_config(GIOChannel *ch, GIOCondition condition, gpointer userdata)
 {
-  struct inotify_event ie;
-
+  int fd;
   int ret;
 
-  if (cfg_ifd < 0)
-    return;
+  fd = g_io_channel_unix_get_fd(ch);
 
-  ret = read(cfg_ifd, &ie, sizeof(struct inotify_event));
-  if (ret > 0)
+  if (condition & G_IO_IN)
     {
       ret = config_load();
       if (ret < 0)
@@ -444,17 +438,25 @@ mbp_check_config(gpointer userdata)
 
 	  gtk_main_quit();
 	}
-
-      close(cfg_ifd);
-
-      cfg_ifd = config_monitor();
     }
+
+  close(fd);
+
+  fd = config_monitor();
+
+  if (fd > 0)
+    {
+      ch = g_io_channel_unix_new(fd);
+      g_io_channel_set_encoding(ch, NULL, NULL);
+      g_io_add_watch(ch, G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_NVAL, mbp_check_config, NULL);
+    }
+
+  return FALSE;
 }
 
 gboolean
 mbp_check_events(gpointer userdata)
 {
-  mbp_check_config(userdata);
   mbp_dbus_listen(userdata);
 
   return TRUE;
@@ -496,6 +498,9 @@ int main(int argc, char **argv)
   int c;
   int ret;
 
+  GIOChannel *ch;
+  int fd;
+
   gtk_init(&argc, &argv);
 
   bindtextdomain("gpomme", "/usr/share/locale");
@@ -536,7 +541,7 @@ int main(int argc, char **argv)
 
   mbp_dbus_connect();
 
-  cfg_ifd = config_monitor();
+  fd = config_monitor();
 
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
@@ -544,11 +549,16 @@ int main(int argc, char **argv)
 
   create_window();
 
+  if (fd > 0)
+    {
+      ch = g_io_channel_unix_new(fd);
+      g_io_channel_set_encoding(ch, NULL, NULL);
+      g_io_add_watch(ch, G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_NVAL, mbp_check_config, NULL);
+    }
+
   g_timeout_add(100, mbp_check_events, NULL);
 
   gtk_main();
-
-  close(cfg_ifd);
 
   mbp_dbus_cleanup();
 
