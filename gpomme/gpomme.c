@@ -4,7 +4,7 @@
  * $Id$
  *
  * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2007 daniel g. siegel <dgsiegel@gmail.com>
  *
  * Portions of the GTK code below were shamelessly
@@ -459,7 +459,7 @@ static void
 usage(void)
 {
   printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
-  printf("Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org> and others\n");
+  printf("Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org> and others\n");
 
   printf("Usage:\n");
   printf("\tgpomme\t\t-- start gpomme\n");
@@ -520,7 +520,7 @@ main(int argc, char **argv)
 
 	  case 'v':
 	    printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
-	    printf("Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org> and others\n");
+	    printf("Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org> and others\n");
 
 	    exit(0);
 	    break;
