@@ -76,7 +76,7 @@ dbus_uint32_t mute_serial = 0;
 
 
 /* Timer callback */
-gboolean
+static gboolean
 hide_window(gpointer userdata)
 {
   gtk_widget_hide(mbp_w.window);
@@ -87,7 +87,7 @@ hide_window(gpointer userdata)
 }
 
 
-void
+static void
 draw_window_bg(void)
 {
   GtkWidget *window = mbp_w.window;
@@ -137,7 +137,7 @@ draw_window_bg(void)
   g_object_unref(pixmap);
 }
 
-void
+static void
 show_window(int img, char *label, double fraction)
 {
   char *m_label;
@@ -205,7 +205,7 @@ show_window(int img, char *label, double fraction)
 }
 
 
-void
+static void
 create_window(void)
 {
   GtkWidget *window;
@@ -360,7 +360,7 @@ mbp_dbus_listen(DBusConnection *lconn, DBusMessage *msg, gpointer userdata)
   return DBUS_HANDLER_RESULT_HANDLED;
 }
 
-int
+static int
 mbp_dbus_connect(void)
 {
   unsigned int signals;
@@ -421,7 +421,7 @@ mbp_dbus_reconnect(gpointer userdata)
 }
 
 
-gboolean
+static gboolean
 mbp_check_config(GIOChannel *ch, GIOCondition condition, gpointer userdata)
 {
   int fd;
