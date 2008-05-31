@@ -9,13 +9,16 @@ GLADE_LIBS = $(shell pkg-config --libs libglade-2.0)
 DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
 DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 
+DBUSGLIB_CFLAGS = $(shell pkg-config dbus-glib-1 --cflags)
+DBUSGLIB_LIBS = $(shell pkg-config dbus-glib-1 --libs)
+
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
 INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INOTIFY_H)
 
-CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS) $(INOTIFY_CFLAGS)
-LDFLAGS = -lpthread $(DBUS_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
+CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(DBUSGLIB_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS) $(INOTIFY_CFLAGS)
+LDFLAGS = -lpthread $(DBUS_LIBS) $(DBUSGLIB_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
 
 SOURCES = gpomme.c theme.c conffile.c \
 		../client-common/dbus-client.c \

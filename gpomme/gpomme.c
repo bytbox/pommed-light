@@ -48,6 +48,8 @@
 #include <X11/Xlib.h>
 
 #include <dbus/dbus.h>
+#include <dbus/dbus-glib.h>
+#include <dbus/dbus-glib-lowlevel.h>
 
 #include "gpomme.h"
 #include "theme.h"
@@ -69,6 +71,8 @@ struct
 
 DBusError dbus_err;
 DBusConnection *conn;
+
+dbus_uint32_t mute_serial = 0;
 
 
 /* Timer callback */
@@ -249,43 +253,121 @@ create_window(void)
 }
 
 
-void
-audio_getmute_cb(DBusPendingCall *pending, void *status)
+static gboolean
+mbp_dbus_reconnect(gpointer userdata);
+
+static DBusHandlerResult
+mbp_dbus_listen(DBusConnection *lconn, DBusMessage *msg, gpointer userdata)
 {
-  DBusMessage *msg;
+  int scratch;
+  int cur;
+  int max;
+  int who;
+  double ratio;
 
-  msg = dbus_pending_call_steal_reply(pending);
+  Display *dpy;
 
-  if (msg == NULL)
+  if (dbus_message_is_signal(msg, "org.pommed.signal.lcdBacklight", "lcdBacklight"))
     {
-      printf("Could not steal reply\n");
+      dbus_message_get_args(msg, &dbus_err,
+			    DBUS_TYPE_UINT32, &cur,
+			    DBUS_TYPE_UINT32, &scratch, /* previous */
+			    DBUS_TYPE_UINT32, &max,
+			    DBUS_TYPE_UINT32, &who,
+			    DBUS_TYPE_INVALID);
 
-      dbus_pending_call_unref(pending);
+      if (who == LCD_USER)
+	{
+	  ratio = (double)cur / (double)max;
 
-      return;
+	  show_window(IMG_LCD_BCK, _("LCD backlight level"), ratio);
+	}
     }
+  else if (dbus_message_is_signal(msg, "org.pommed.signal.kbdBacklight", "kbdBacklight"))
+    {
+      dbus_message_get_args(msg, &dbus_err,
+			    DBUS_TYPE_UINT32, &cur,
+			    DBUS_TYPE_UINT32, &scratch, /* previous */
+			    DBUS_TYPE_UINT32, &max,
+			    DBUS_TYPE_UINT32, &who,
+			    DBUS_TYPE_INVALID);
 
-  dbus_pending_call_unref(pending);
+      if (who == KBD_USER)
+	{
+	  ratio = (double)cur / (double)max;
 
-  if (!mbp_dbus_check_error(msg))
+	  show_window(IMG_KBD_BCK, _("Keyboard backlight level"), ratio);
+	}
+    }
+  else if (dbus_message_is_signal(msg, "org.pommed.signal.audioVolume", "audioVolume"))
+    {
+      dbus_message_get_args(msg, &dbus_err,
+			    DBUS_TYPE_UINT32, &cur,
+			    DBUS_TYPE_UINT32, &scratch, /* previous */
+			    DBUS_TYPE_UINT32, &max,
+			    DBUS_TYPE_INVALID);
+
+      ratio = (double)cur / (double)max;
+
+      if (!mbp.muted)
+	show_window(IMG_AUDIO_VOL_ON, _("Sound volume"), ratio);
+      else
+	show_window(IMG_AUDIO_VOL_OFF, _("Sound volume (muted)"), ratio);
+    }
+  else if (dbus_message_is_signal(msg, "org.pommed.signal.audioMute", "audioMute"))
     {
       dbus_message_get_args(msg, &dbus_err,
 			    DBUS_TYPE_BOOLEAN, &mbp.muted,
 			    DBUS_TYPE_INVALID);
+
+      if (mbp.muted)
+	show_window(IMG_AUDIO_MUTE, _("Sound muted"), -1.0);
+      else
+	show_window(IMG_AUDIO_MUTE, _("Sound unmuted"), -1.0);
+    }
+  else if (dbus_message_is_signal(msg, "org.pommed.signal.cdEject", "cdEject"))
+    {
+      show_window(IMG_CD_EJECT, _("Eject"), -1.0);
+    }
+  else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
+    {
+      dpy = GDK_WINDOW_XDISPLAY(GTK_WIDGET(mbp_w.window)->window);
+      mbp_video_switch(dpy);
+    }
+  else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
+    {
+      printf("DBus disconnected\n");
+
+      g_timeout_add(200, mbp_dbus_reconnect, NULL);
+
+      mbp_dbus_cleanup();
     }
   else
-    *(int *)status = -1;
+    {
+      if ((dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_RETURN)
+	  && (dbus_message_get_reply_serial(msg) == mute_serial))
+	{
+	  dbus_message_get_args(msg, &dbus_err,
+				DBUS_TYPE_BOOLEAN, &mbp.muted,
+				DBUS_TYPE_INVALID);
+	}
+      else
+	{
+	  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	}
+    }
 
-  dbus_message_unref(msg);
+  return DBUS_HANDLER_RESULT_HANDLED;
 }
-
 
 int
 mbp_dbus_connect(void)
 {
   unsigned int signals;
+
+  DBusMessage *msg;
+
   int ret;
-  int cbret;
 
   signals = MBP_DBUS_SIG_LCD | MBP_DBUS_SIG_KBD
     | MBP_DBUS_SIG_VOL | MBP_DBUS_SIG_MUTE
@@ -296,130 +378,48 @@ mbp_dbus_connect(void)
   if (conn == NULL)
     return -1;
 
-  ret = mbp_call_audio_getmute(audio_getmute_cb, &cbret);
-  if ((ret < 0) || (cbret < 0))
+  dbus_connection_setup_with_g_main(conn, NULL);
+
+  dbus_connection_add_filter (conn, mbp_dbus_listen, NULL, NULL);
+
+
+  /* Get the mute state */
+  msg = dbus_message_new_method_call("org.pommed", "/org/pommed/audio",
+				     "org.pommed.audio", "getMute");
+
+  if (msg == NULL)
     {
-      printf("audio getMute call failed !\n");
+      printf("Failed to create method call message for audio getMute\n");
+
+      return 0;
     }
+
+  ret = dbus_connection_send(conn, msg, &mute_serial);
+  if (ret == FALSE)
+    {
+      printf("Could not send method call for audio getMute\n");
+
+      dbus_message_unref(msg);
+
+      return 0;
+    }
+
+  dbus_connection_flush(conn);
+
+  dbus_message_unref(msg);
 
   return 0;
 }
 
-
-void
-mbp_dbus_listen(gpointer userdata)
+static gboolean
+mbp_dbus_reconnect(gpointer userdata)
 {
-  DBusMessage *msg;
+  if (mbp_dbus_connect() < 0)
+    return TRUE;
 
-  int ret;
-
-  int scratch;
-  int cur;
-  int max;
-  int who;
-  double ratio;
-
-  Display *dpy;
-
-  /* Disconnected, try to reconnect */
-  if (conn == NULL)
-    {
-      ret = mbp_dbus_connect();
-
-      if (ret < 0)
-	return;
-    }
-
-  while (1)
-    {
-      dbus_connection_read_write(conn, 0);
-
-      msg = dbus_connection_pop_message(conn);
-
-      if (msg == NULL)
-	return;
-
-      if (dbus_message_is_signal(msg, "org.pommed.signal.lcdBacklight", "lcdBacklight"))
-	{
-	  dbus_message_get_args(msg, &dbus_err,
-				DBUS_TYPE_UINT32, &cur,
-				DBUS_TYPE_UINT32, &scratch, /* previous */
-				DBUS_TYPE_UINT32, &max,
-				DBUS_TYPE_UINT32, &who,
-				DBUS_TYPE_INVALID);
-
-	  if (who == LCD_USER)
-	    {
-	      ratio = (double)cur / (double)max;
-
-	      show_window(IMG_LCD_BCK, _("LCD backlight level"), ratio);
-	    }
-	}
-      else if (dbus_message_is_signal(msg, "org.pommed.signal.kbdBacklight", "kbdBacklight"))
-	{
-	  dbus_message_get_args(msg, &dbus_err,
-				DBUS_TYPE_UINT32, &cur,
-				DBUS_TYPE_UINT32, &scratch, /* previous */
-				DBUS_TYPE_UINT32, &max,
-				DBUS_TYPE_UINT32, &who,
-				DBUS_TYPE_INVALID);
-
-	  if (who == KBD_USER)
-	    {
-	      ratio = (double)cur / (double)max;
-
-	      show_window(IMG_KBD_BCK, _("Keyboard backlight level"), ratio);
-	    }
-	}
-      else if (dbus_message_is_signal(msg, "org.pommed.signal.audioVolume", "audioVolume"))
-	{
-	  dbus_message_get_args(msg, &dbus_err,
-				DBUS_TYPE_UINT32, &cur,
-				DBUS_TYPE_UINT32, &scratch, /* previous */
-				DBUS_TYPE_UINT32, &max,
-				DBUS_TYPE_INVALID);
-
-	  ratio = (double)cur / (double)max;
-
-	  if (!mbp.muted)
-	    show_window(IMG_AUDIO_VOL_ON, _("Sound volume"), ratio);
-	  else
-	    show_window(IMG_AUDIO_VOL_OFF, _("Sound volume (muted)"), ratio);
-	}
-      else if (dbus_message_is_signal(msg, "org.pommed.signal.audioMute", "audioMute"))
-	{
-	  dbus_message_get_args(msg, &dbus_err,
-				DBUS_TYPE_BOOLEAN, &mbp.muted,
-				DBUS_TYPE_INVALID);
-
-	  if (mbp.muted)
-	    show_window(IMG_AUDIO_MUTE, _("Sound muted"), -1.0);
-	  else
-	    show_window(IMG_AUDIO_MUTE, _("Sound unmuted"), -1.0);
-	}
-      else if (dbus_message_is_signal(msg, "org.pommed.signal.cdEject", "cdEject"))
-	{
-	  show_window(IMG_CD_EJECT, _("Eject"), -1.0);
-	}
-      else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
-	{
-	  dpy = GDK_WINDOW_XDISPLAY(GTK_WIDGET(mbp_w.window)->window);
-	  mbp_video_switch(dpy);
-	}
-      else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
-	{
-	  printf("DBus disconnected\n");
-
-	  mbp_dbus_cleanup();
-
-	  dbus_message_unref(msg);
-
-	  break;
-	}
-
-      dbus_message_unref(msg);
-    }
+  return FALSE;
 }
+
 
 gboolean
 mbp_check_config(GIOChannel *ch, GIOCondition condition, gpointer userdata)
@@ -454,14 +454,6 @@ mbp_check_config(GIOChannel *ch, GIOCondition condition, gpointer userdata)
   return FALSE;
 }
 
-gboolean
-mbp_check_events(gpointer userdata)
-{
-  mbp_dbus_listen(userdata);
-
-  return TRUE;
-}
-
 
 static void
 usage(void)
@@ -476,7 +468,8 @@ usage(void)
 }
 
 
-void sig_int_term_handler(int signo)
+void
+sig_int_term_handler(int signo)
 {
   gtk_main_quit();
 }
@@ -493,7 +486,8 @@ sig_chld_handler(int signo)
   while (ret > 0);
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
   int c;
   int ret;
@@ -543,12 +537,6 @@ int main(int argc, char **argv)
 
   fd = config_monitor();
 
-  signal(SIGINT, sig_int_term_handler);
-  signal(SIGTERM, sig_int_term_handler);
-  signal(SIGCHLD, sig_chld_handler);
-
-  create_window();
-
   if (fd > 0)
     {
       ch = g_io_channel_unix_new(fd);
@@ -556,7 +544,11 @@ int main(int argc, char **argv)
       g_io_add_watch(ch, G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_NVAL, mbp_check_config, NULL);
     }
 
-  g_timeout_add(100, mbp_check_events, NULL);
+  signal(SIGINT, sig_int_term_handler);
+  signal(SIGTERM, sig_int_term_handler);
+  signal(SIGCHLD, sig_chld_handler);
+
+  create_window();
 
   gtk_main();
 
