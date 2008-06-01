@@ -698,9 +698,9 @@ main (int argc, char **argv)
 
   machine_type machine;
 
-  struct timeval tv_now;
-  struct timeval tv_als;
-  struct timeval tv_diff;
+  struct timespec tp_now;
+  struct timespec tp_als;
+  struct timespec tp_diff;
 
   while ((c = getopt(argc, argv, "fdv")) != -1)
     {
@@ -792,6 +792,13 @@ main (int argc, char **argv)
       exit(1);
     }
 
+  ret = clock_gettime(CLOCK_MONOTONIC, &tp_als);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "clock_gettime() failed: %s", strerror(errno));
+      exit (1);
+    }
+
   ret = mops->lcd_backlight_probe();
   if (ret < 0)
     {
@@ -854,8 +861,6 @@ main (int argc, char **argv)
   /* Spawn the beep thread */
   beep_init();
 
-  gettimeofday(&tv_als, NULL);
-
   running = 1;
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
@@ -865,7 +870,7 @@ main (int argc, char **argv)
     {
       ret = evdev_event_loop();
 
-      gettimeofday(&tv_now, NULL);
+      ret = 42;
 
       if (ret < 0) /* error */
 	{
@@ -873,25 +878,32 @@ main (int argc, char **argv)
 	}
       else if (ret != 0)
 	{
-	  /* is it time to chek the ambient light sensors and AC state ? */
-	  tv_diff.tv_sec = tv_now.tv_sec - tv_als.tv_sec;
-	  if (tv_diff.tv_sec < 0)
-	    tv_diff.tv_sec = 0;
+	  clock_gettime(CLOCK_MONOTONIC, &tp_now);
 
-	  if (tv_diff.tv_sec == 0)
+	  /* is it time to chek the ambient light sensors and AC state ? */
+	  tp_diff.tv_sec = tp_now.tv_sec - tp_als.tv_sec;
+
+	  if (tp_diff.tv_sec > 1)
 	    {
-	      tv_diff.tv_usec = tv_now.tv_usec - tv_als.tv_usec;
+	      ret = 0;
 	    }
 	  else
 	    {
-	      tv_diff.tv_sec--;
-	      tv_diff.tv_usec = 1000000 - tv_als.tv_usec + tv_now.tv_usec;
-	      tv_diff.tv_usec += tv_diff.tv_sec * 1000000;
-	    }
+	      tp_diff.tv_nsec = tp_diff.tv_sec * 1000000000;
 
-	  if (tv_diff.tv_usec >= (1000 * LOOP_TIMEOUT))
-	    {
-	      ret = 0; /* go and check ALS, AC state and idle time */
+	      if (tp_now.tv_nsec > tp_als.tv_nsec)
+		{
+		  tp_diff.tv_nsec += tp_now.tv_nsec - tp_als.tv_nsec;
+		}
+	      else
+		{
+		  tp_diff.tv_nsec -= tp_als.tv_nsec - tp_now.tv_nsec;
+		}
+
+	      if (tp_diff.tv_nsec >= (1000000 * LOOP_TIMEOUT))
+		{
+		  ret = 0; /* go and check ALS, AC state and idle time */
+		}
 	    }
 	}
 
@@ -910,7 +922,7 @@ main (int argc, char **argv)
 
 	  power_check_ac_state();
 
-	  tv_als = tv_now;
+	  tp_als = tp_now;
 	}
 
       /* Process DBus requests */
