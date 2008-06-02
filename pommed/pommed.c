@@ -870,8 +870,6 @@ main (int argc, char **argv)
     {
       ret = evdev_event_loop();
 
-      ret = 42;
-
       if (ret < 0) /* error */
 	{
 	  break;
