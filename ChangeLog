@@ -5,6 +5,7 @@ version 1.19:
 	- pommed: get rid of the libsmbios dependency on Intel machines.
 	- gpomme: integrate config file monitoring and DBus messaging into
 	the main loop. Get rid of the 10 times per second polling.
+	- pommed: new event loop.
 
 version 1.18:
 	- pommed: add more IDs for Apple external keyboards

@@ -5,28 +5,12 @@
 #ifndef __BEEP_H__
 #define __BEEP_H__
 
-struct _beep_info
-{
-  int fd;
-};
-
-extern struct _beep_info beep_info;
-
 
 #define BEEP_DEFAULT_FILE    "/usr/share/pommed/goutte.wav"
 #define BEEP_DEVICE_NAME     "Pommed beeper device"
 
 void
-beep_beep(void);
-
-void
 beep_audio(void);
-
-int
-beep_open_device(void);
-
-void
-beep_close_device(void);
 
 int
 beep_init(void);

@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
  *
  * Portions of the code below dealing with the audio thread were shamelessly
@@ -33,6 +33,8 @@
 
 #include <syslog.h>
 
+#include <sys/epoll.h>
+
 #include <linux/input.h>
 #include <linux/uinput.h>
 
@@ -44,6 +46,7 @@
 #include <audiofile.h>
 
 #include "pommed.h"
+#include "evloop.h"
 #include "conffile.h"
 #include "audio.h"
 #include "beep.h"
@@ -56,7 +59,7 @@
 #endif
 
 
-struct _beep_info beep_info;
+static int beep_fd;
 static int beep_thread_running = 0;
 
 
@@ -71,7 +74,7 @@ static int
 beep_thread_init(void);
 
 
-void
+static void
 beep_beep(void)
 {
   if (!beep_cfg.enabled)
@@ -93,7 +96,7 @@ beep_audio(void)
 }
 
 
-int
+static int
 beep_open_device(void)
 {
   char *uinput_dev[3] =
@@ -106,8 +109,6 @@ beep_open_device(void)
   int fd;
   int i;
   int ret;
-
-  beep_info.fd = -1;
 
   if (beep_cfg.enabled == 0)
     return -1;
@@ -180,22 +181,61 @@ beep_open_device(void)
       return -1;
   }
 
-  beep_info.fd = fd;
+  beep_fd = fd;
 
   return 0;
 }
 
-void
+static void
 beep_close_device(void)
 {
-  if (!beep_cfg.enabled)
+  if (!beep_cfg.enabled || (beep_fd == -1))
     return;
 
-  ioctl(beep_info.fd, UI_DEV_DESTROY, NULL);
+  evloop_remove(beep_fd);
 
-  close(beep_info.fd);
+  ioctl(beep_fd, UI_DEV_DESTROY, NULL);
 
-  beep_info.fd = -1;
+  close(beep_fd);
+
+  beep_fd = -1;
+}
+
+
+void
+beep_process_events(int fd, uint32_t events)
+{
+  int ret;
+
+  struct input_event ev;
+
+  if (events & (EPOLLERR | EPOLLHUP))
+    {
+      logmsg(LOG_WARNING, "Beeper device lost; this should not happen");
+
+      ret = evloop_remove(fd);
+      if (ret < 0)
+	logmsg(LOG_ERR, "Could not remove beeper device from event loop");
+
+      beep_close_device();
+
+      return;
+    }
+
+  ret = read(fd, &ev, sizeof(struct input_event));
+
+  if (ret != sizeof(struct input_event))
+    return;
+
+  if (ev.type == EV_SND)
+    {
+      if ((ev.code == SND_TONE) && (ev.value > 0))
+	{
+	  logdebug("\nBEEP: BEEP!\n");
+
+	  beep_beep(); /* Catch that, Coyote */
+	}
+    }
 }
 
 
@@ -203,6 +243,8 @@ int
 beep_init(void)
 {
   int ret;
+
+  beep_fd = -1;
 
   ret = beep_thread_init();
   if (ret < 0)
@@ -216,17 +258,35 @@ beep_init(void)
 
   beep_thread_running = 1;
 
+  ret = beep_open_device();
+  if (ret < 0)
+    return -1;
+
+  ret = evloop_add(beep_fd, EPOLLIN, beep_process_events);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not add device to event loop");
+
+      beep_cfg.enabled = 0;
+
+      beep_close_device();
+
+      return -1;
+    }
+
   return 0;
 }
 
 void
 beep_cleanup(void)
 {
-  if (!beep_thread_running)
-    return;
+  if (beep_thread_running)
+    {
+      beep_thread_command(AUDIO_COMMAND_QUIT);
+      beep_thread_cleanup();
+    }
 
-  beep_thread_command(AUDIO_COMMAND_QUIT);
-  beep_thread_cleanup();
+  beep_close_device();
 }
 
 void

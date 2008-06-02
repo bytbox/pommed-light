@@ -24,7 +24,7 @@ ifneq (, $(findstring ppc, $(ARCH)))
 OFLIB ?=
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
-		dbus.c power.c beep.c video.c \
+		evloop.c dbus.c power.c beep.c video.c \
 		pmac/sysfs_backlight.c pmac/pmu.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
@@ -56,7 +56,7 @@ else
 endif
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
-		dbus.c power.c beep.c video.c \
+		evloop.c dbus.c power.c beep.c video.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/nv8600mgt_backlight.c \
 		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
@@ -67,11 +67,13 @@ OBJS = $(SOURCES:%.c=%.o)
 
 pommed: $(OBJS) $(LIBS)
 
-pommed.o: pommed.c pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h dbus.h beep.h
+pommed.o: pommed.c pommed.h evloop.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h dbus.h beep.h
 
 cd_eject.o: cd_eject.c cd_eject.h pommed.h conffile.h dbus.h
 
-evdev.o: evdev.c evdev.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h video.h beep.h
+evdev.o: evdev.c evdev.h evloop.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h video.h beep.h
+
+evloop.o: evloop.c evloop.h pommed.h
 
 conffile.o: conffile.c conffile.h pommed.h lcd_backlight.h kbd_backlight.h cd_eject.h audio.h beep.h
 
@@ -81,7 +83,7 @@ dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 
 power.o: power.c power.h pommed.h lcd_backlight.h
 
-beep.o: beep.c beep.h pommed.h audio.h
+beep.o: beep.c beep.h pommed.h evloop.h audio.h
 
 video.o: video.c video.h pommed.h dbus.h
 

@@ -100,11 +100,6 @@
 #define EVDEV_BASE              "/dev/input/event"
 #define EVDEV_MAX               32
 
-#define MAX_EPOLL_EVENTS        8
-
-
-int
-evdev_event_loop(void);
 
 int
 evdev_init(void);

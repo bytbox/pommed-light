@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -48,6 +49,7 @@
 #include "lcd_backlight.h"
 #include "cd_eject.h"
 #include "evdev.h"
+#include "evloop.h"
 #include "conffile.h"
 #include "audio.h"
 #include "dbus.h"
@@ -792,6 +794,13 @@ main (int argc, char **argv)
       exit(1);
     }
 
+  ret = evloop_init();
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Event loop initialization failed");
+      exit (1);
+    }
+
   ret = clock_gettime(CLOCK_MONOTONIC, &tp_als);
   if (ret < 0)
     {
@@ -868,7 +877,7 @@ main (int argc, char **argv)
 
   while (running)
     {
-      ret = evdev_event_loop();
+      ret = evloop_iteration();
 
       if (ret < 0) /* error */
 	{
@@ -932,6 +941,8 @@ main (int argc, char **argv)
   beep_cleanup();
 
   mbpdbus_cleanup();
+
+  evloop_cleanup();
 
   config_cleanup();
 

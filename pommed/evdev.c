@@ -45,6 +45,7 @@
 #include "pommed.h"
 #include "conffile.h"
 #include "evdev.h"
+#include "evloop.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
 #include "cd_eject.h"
@@ -66,84 +67,36 @@
 #endif
 
 
-/* Open event devices */
-static int ev_fds[EVDEV_MAX];
+void
+evdev_process_events(int fd, uint32_t events);
 
-/* epoll fd */
-static int epfd;
-
-/* inotify fd */
-static int ifd;
-
+void
+evdev_inotify_process(int fd, uint32_t events);
 
 static int
 evdev_try_add(int fd);
 
 
-static int
-evdev_add(int fd)
-{
-  int i;
-  int ret;
-
-  struct epoll_event epoll_ev;
-
-  for (i = 0; i < EVDEV_MAX; i++)
-    {
-      if (ev_fds[i] == -1)
-	{
-	  ev_fds[i] = fd;
-
-	  break;
-	}
-    }
-
-  epoll_ev.events = EPOLLIN;
-  epoll_ev.data.fd = fd;
-
-  ret = epoll_ctl(epfd, EPOLL_CTL_ADD, fd, &epoll_ev);
-
-  if (ret < 0)
-    {
-      logmsg(LOG_ERR, "Could not add device to epoll: %s", strerror(errno));
-
-      return -1;
-    }
-
-  return 0;
-}
-
-static void
-evdev_remove(int fd)
-{
-  int i;
-  int ret;
-
-  for (i = 0; i < EVDEV_MAX; i++)
-    {
-      if (ev_fds[i] == fd)
-	{
-	  ev_fds[i] = -1;
-
-	  break;
-	}
-    }
-
-  ret = epoll_ctl(epfd, EPOLL_CTL_DEL, fd, NULL);
-
-  if (ret < 0)
-    logmsg(LOG_ERR, "Could not remove device from epoll: %s", strerror(errno));
-
-  close(fd);
-}
-
-
-static void
-evdev_process_events(int fd)
+void
+evdev_process_events(int fd, uint32_t events)
 {
   int ret;
 
   struct input_event ev;
+
+  /* some of the event devices cease to exist when suspending */
+  if (events & (EPOLLERR | EPOLLHUP))
+    {
+      logmsg(LOG_INFO, "Error condition signaled on event device");
+
+      ret = evloop_remove(fd);
+      if (ret < 0)
+	logmsg(LOG_ERR, "Could not remove device from event loop");
+
+      close(fd);
+
+      return;
+    }
 
   ret = read(fd, &ev, sizeof(struct input_event));
 
@@ -257,16 +210,6 @@ evdev_process_events(int fd)
 	    break;
 	}
     }
-  else if (ev.type == EV_SND)
-    {
-      /* Beeper device */
-      if ((ev.code == SND_TONE) && (ev.value > 0))
-	{
-	  logdebug("\nBEEP: BEEP!\n");
-
-	  beep_beep(); /* Catch that, Coyote */
-	}
-    }
   else if (ev.type == EV_SW)
     {
       /* Lid switch */
@@ -289,19 +232,32 @@ evdev_process_events(int fd)
 }
 
 
-static void
-evdev_inotify_process(void)
+void
+evdev_inotify_process(int fd, uint32_t events)
 {
   int ret;
-  int fd;
+  int efd;
   int qsize;
 
   struct inotify_event *all_ie;
   struct inotify_event *ie;
   char evdev[32];
 
+  if (events & (EPOLLERR | EPOLLHUP))
+    {
+      logmsg(LOG_WARNING, "inotify fd lost; this should not happen");
+
+      ret = evloop_remove(fd);
+      if (ret < 0)
+	logmsg(LOG_ERR, "Could not remove inotify from event loop");
+
+      close(fd);
+
+      return;
+    }
+
   /* Determine the size of the inotify queue */
-  ret = ioctl(ifd, FIONREAD, &qsize);
+  ret = ioctl(fd, FIONREAD, &qsize);
   if (ret < 0)
     {
       logmsg(LOG_ERR, "Could not determine inotify queue size: %s", strerror(errno));
@@ -317,7 +273,7 @@ evdev_inotify_process(void)
       return;
     }
 
-  ret = read(ifd, all_ie, qsize);
+  ret = read(fd, all_ie, qsize);
   if (ret < 0)
     {
       logmsg(LOG_WARNING, "inotify read failed: %s", strerror(errno));
@@ -358,8 +314,8 @@ evdev_inotify_process(void)
       if ((ret <= 0) || (ret >= sizeof(evdev)))
 	continue;
 
-      fd = open(evdev, O_RDWR);
-      if (fd < 0)
+      efd = open(evdev, O_RDWR);
+      if (efd < 0)
 	{
 	  if (errno != ENOENT)
 	    logmsg(LOG_WARNING, "Could not open %s: %s", evdev, strerror(errno));
@@ -367,72 +323,10 @@ evdev_inotify_process(void)
 	  continue;
 	}
 
-      evdev_try_add(fd);
+      evdev_try_add(efd);
     }
 
   free(all_ie);
-}
-
-
-int
-evdev_event_loop(void)
-{
-  int i;
-  int nfds;
-
-  int inotify = 0;
-
-  struct epoll_event events[MAX_EPOLL_EVENTS];
-
-  nfds = epoll_wait(epfd, events, MAX_EPOLL_EVENTS, LOOP_TIMEOUT);
-
-  if (nfds < 0)
-    {
-      if (errno == EINTR)
-	return 1; /* pommed.c will go on with the events management */
-      else
-	{
-	  logmsg(LOG_ERR, "epoll_wait() error: %s", strerror(errno));
-
-	  return -1; /* pommed.c will exit */
-	}
-    }
-
-
-  for (i = 0; i < nfds; i++)
-    {
-      /* some of the event devices cease to exist when suspending */
-      if (events[i].events & (EPOLLERR | EPOLLHUP))
-	{
-	  logmsg(LOG_INFO, "Error condition signaled on event device");
-
-	  if (events[i].data.fd == beep_info.fd)
-	    logmsg(LOG_WARNING, "Beeper device lost; this should not happen");
-
-	  if (events[i].data.fd == ifd)
-	    {
-	      logmsg(LOG_WARNING, "inotify fd lost; this should not happen");
-	      ifd = -1;
-	    }
-
-	  evdev_remove(events[i].data.fd);
-
-	  continue;
-	}
-
-      if (events[i].events & EPOLLIN)
-	{
-	  if (events[i].data.fd == ifd)
-	    inotify = 1; /* defer inotify events processing */
-	  else
-	    evdev_process_events(events[i].data.fd);
-	}
-    }
-
-  if (inotify)
-    evdev_inotify_process();
-
-  return nfds;
 }
 
 
@@ -906,9 +800,15 @@ evdev_try_add(int fd)
       return -1;
     }
 
-  ret = evdev_add(fd);
+  ret = evloop_add(fd, EPOLLIN, evdev_process_events);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not add device to event loop");
 
-  return ret;
+      return -1;
+    }
+
+  return 0;
 }
 
 
@@ -916,36 +816,33 @@ static int
 evdev_inotify_init(void)
 {
   int ret;
-  struct epoll_event epoll_ev;
+  int fd;
 
-  ifd = inotify_init();
-  if (ifd < 0)
+  fd = inotify_init();
+  if (fd < 0)
     {
       logmsg(LOG_ERR, "Failed to initialize inotify: %s", strerror(errno));
 
       return -1;
     }
 
-  ret = inotify_add_watch(ifd, EVDEV_DIR, IN_CREATE | IN_ONLYDIR);
+  ret = inotify_add_watch(fd, EVDEV_DIR, IN_CREATE | IN_ONLYDIR);
   if (ret < 0)
     {
       logmsg(LOG_ERR, "Failed to add inotify watch for %s: %s", EVDEV_DIR, strerror(errno));
 
-      close(ifd);
-      ifd = -1;
+      close(fd);
+      fd = -1;
 
       return -1;
     }
 
-  epoll_ev.events = EPOLLIN;
-  epoll_ev.data.fd = ifd;
-
-  ret = epoll_ctl(epfd, EPOLL_CTL_ADD, ifd, &epoll_ev);
+  ret = evloop_add(fd, EPOLLIN, evdev_inotify_process);
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "Failed to add inotify fd to epoll: %s", strerror(errno));
+      logmsg(LOG_ERR, "Failed to add inotify fd to event loop");
 
-      close(ifd);
+      close(fd);
 
       return -1;
     }
@@ -964,19 +861,6 @@ evdev_init(void)
 
   int ndevs;
   int fd;
-
-  epfd = epoll_create(MAX_EPOLL_EVENTS);
-  if (epfd < 0)
-    {
-      logmsg(LOG_ERR, "Could not create epoll fd: %s", strerror(errno));
-
-      return -1;
-    }
-
-  for (i = 0; i < EVDEV_MAX; i++)
-    {
-      ev_fds[i] = -1;
-    }
 
   ndevs = 0;
   for (i = 0; i < EVDEV_MAX; i++)
@@ -1001,16 +885,6 @@ evdev_init(void)
 
   logdebug("\nFound %d devices\n", ndevs);
 
-  /* Add the beeper device */
-  ret = beep_open_device();
-  if (ret == 0)
-    {
-      ret = evdev_add(beep_info.fd);
-
-      if (ret == 0)
-	  ndevs++;
-    }
-
   /* Initialize inotify */
   evdev_inotify_init();
 
@@ -1020,17 +894,5 @@ evdev_init(void)
 void
 evdev_cleanup(void)
 {
-  int i;
-
-  close(epfd);
-
-  close(ifd);
-
-  for (i = 0; i < EVDEV_MAX; i++)
-    {
-      if (ev_fds[i] == beep_info.fd)
-	beep_close_device();
-      else
-	close(ev_fds[i]);
-    }
+  /* evloop_cleanup() takes care of closing the devices */
 }
