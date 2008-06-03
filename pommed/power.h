@@ -12,14 +12,14 @@
 #define AC_STATE_ONLINE   1
 #define AC_STATE_OFFLINE  0
 
-
-void
-power_check_ac_state(void);
+#define POWER_TIMEOUT 200
 
 
 void
 power_init(void);
 
+void
+power_cleanup(void);
 
 #endif /* !__POWER_H__ */
 

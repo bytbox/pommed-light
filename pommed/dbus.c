@@ -20,12 +20,15 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
+#include <stdint.h>
 
 #include <syslog.h>
 
 #include <dbus/dbus.h>
 
 #include "pommed.h"
+#include "evloop.h"
 #include "dbus.h"
 #include "lcd_backlight.h"
 #include "kbd_backlight.h"
@@ -36,6 +39,8 @@
 
 static DBusError err;
 static DBusConnection *conn;
+
+static int dbus_timer;
 
 
 void
@@ -732,12 +737,16 @@ process_cd_eject_call(DBusMessage *req)
 }
 
 
-void
-mbpdbus_process_requests(void)
+static void
+mbpdbus_process_requests(int fd, uint32_t events)
 {
   DBusMessage *msg;
-
   int nmsg;
+
+  uint64_t dummy;
+
+  /* Acknowledge timer */
+  read(fd, &dummy, sizeof(dummy));
 
   if (conn == NULL)
     {
@@ -853,6 +862,14 @@ mbpdbus_init(void)
       return -1;
     }
 
+  dbus_timer = evloop_add_timer(DBUS_TIMEOUT, mbpdbus_process_requests);
+  if (ret < 0)
+    {
+      mbpdbus_cleanup();
+
+      return -1;
+    }
+
   return 0;
 }
 
@@ -861,6 +878,9 @@ mbpdbus_cleanup(void)
 {
   if (conn == NULL)
     return;
+
+  if (dbus_timer != -1)
+    evloop_remove_timer(dbus_timer);
 
   dbus_error_free(&err);
 

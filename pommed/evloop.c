@@ -25,12 +25,15 @@
 #include <stdint.h>
 #include <fcntl.h>
 #include <string.h>
+#include <time.h>
 
 #include <syslog.h>
 
 #include <errno.h>
 
 #include <sys/epoll.h>
+
+#include "timerfd-syscalls.h"
 
 #include "pommed.h"
 #include "evloop.h"
@@ -41,6 +44,8 @@ static int epfd;
 
 /* event sources registered on the main loop */
 static struct pommed_event *sources;
+
+static int running;
 
 
 int
@@ -55,7 +60,7 @@ evloop_add(int fd, uint32_t events, pommed_event_cb cb)
 
   if (pommed_ev == NULL)
     {
-      logmsg(LOG_ERR, "Could not allocate memory for new event");
+      logmsg(LOG_ERR, "Could not allocate memory for new source");
 
       return -1;
     }
@@ -71,7 +76,7 @@ evloop_add(int fd, uint32_t events, pommed_event_cb cb)
 
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "Could not add device to epoll: %s", strerror(errno));
+      logmsg(LOG_ERR, "Could not add source to epoll: %s", strerror(errno));
 
       free(pommed_ev);
       return -1;
@@ -94,7 +99,7 @@ evloop_remove(int fd)
 
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "Could not remove device from epoll: %s", strerror(errno));
+      logmsg(LOG_ERR, "Could not remove source from epoll: %s", strerror(errno));
 
       return -1;
     }
@@ -119,6 +124,76 @@ evloop_remove(int fd)
 
 
 int
+evloop_add_timer(int timeout, pommed_event_cb cb)
+{
+  int fd;
+  int ret;
+
+  struct itimerspec timing;
+
+  fd = timerfd_create(CLOCK_MONOTONIC, 0);
+  if (fd < 0)
+    {
+      logmsg(LOG_ERR, "Could not create timer: %s", strerror(errno));
+
+      return -1;
+    }
+
+  timing.it_interval.tv_sec = (timeout >= 1000) ? timeout / 1000 : 0;
+  timing.it_interval.tv_nsec = (timeout - (timing.it_interval.tv_sec * 1000)) * 1000000;
+
+  ret = clock_gettime(CLOCK_MONOTONIC, &timing.it_value);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not get current time: %s", strerror(errno));
+
+      close(fd);
+      return -1;
+    }
+
+  timing.it_value.tv_sec += timing.it_interval.tv_sec;
+  timing.it_value.tv_nsec += timing.it_interval.tv_nsec;
+  if (timing.it_value.tv_nsec > 1000000000)
+    {
+      timing.it_value.tv_sec++;
+      timing.it_value.tv_nsec -= 1000000000;
+    }
+
+  ret = timerfd_settime(fd, TFD_TIMER_ABSTIME, &timing, NULL);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not setup timer: %s", strerror(errno));
+
+      close(fd);
+      return -1;
+    }
+
+  ret = evloop_add(fd, EPOLLIN, cb);
+  if (ret < 0)
+    {
+      close(fd);
+      return -1;
+    }
+
+  return fd;
+}
+
+int
+evloop_remove_timer(int fd)
+{
+  int ret;
+
+  ret = evloop_remove(fd);
+  if (ret < 0)
+    return ret;
+
+  close(fd);
+
+  return 0;
+}
+
+
+int
 evloop_iteration(void)
 {
   int i;
@@ -127,12 +202,15 @@ evloop_iteration(void)
   struct epoll_event epoll_ev[MAX_EPOLL_EVENTS];
   struct pommed_event *pommed_ev;
 
-  nfds = epoll_wait(epfd, epoll_ev, MAX_EPOLL_EVENTS, LOOP_TIMEOUT);
+  if (!running)
+    return -1;
+
+  nfds = epoll_wait(epfd, epoll_ev, MAX_EPOLL_EVENTS, -1);
 
   if (nfds < 0)
     {
       if (errno == EINTR)
-	return 1; /* pommed.c will go on with the events management */
+	return 0; /* pommed.c will continue */
       else
 	{
 	  logmsg(LOG_ERR, "epoll_wait() error: %s", strerror(errno));
@@ -150,11 +228,18 @@ evloop_iteration(void)
   return nfds;
 }
 
+void
+evloop_stop(void)
+{
+  running = 0;
+}
+
 
 int
 evloop_init(void)
 {
   sources = NULL;
+  running = 1;
 
   epfd = epoll_create(MAX_EPOLL_EVENTS);
   if (epfd < 0)

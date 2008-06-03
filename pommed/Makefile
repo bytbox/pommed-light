@@ -18,7 +18,7 @@ INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INO
 
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(INOTIFY_CFLAGS)
 
-LDFLAGS = -pthread $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
+LDFLAGS = -pthread -lrt $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
 ifneq (, $(findstring ppc, $(ARCH)))
 OFLIB ?=
@@ -79,9 +79,9 @@ conffile.o: conffile.c conffile.h pommed.h lcd_backlight.h kbd_backlight.h cd_ej
 
 audio.o: audio.c audio.h pommed.h conffile.h dbus.h
 
-dbus.o: dbus.c dbus.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
+dbus.o: dbus.c dbus.h evloop.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
 
-power.o: power.c power.h pommed.h lcd_backlight.h
+power.o: power.c power.h evloop.h pommed.h lcd_backlight.h
 
 beep.o: beep.c beep.h pommed.h evloop.h audio.h
 
@@ -89,7 +89,7 @@ video.o: video.c video.h pommed.h dbus.h
 
 
 # PowerMac-specific files
-pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
+pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h dbus.h
 
 pmac/sysfs_backlight.o: pmac/sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
@@ -115,7 +115,7 @@ mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h co
 
 mactel/nv8600mgt_backlight.o: mactel/nv8600mgt_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
-mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h pommed.h ambient.h conffile.h dbus.h
+mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h dbus.h
 
 mactel/ambient.o: mactel/ambient.c ambient.h pommed.h dbus.h
 

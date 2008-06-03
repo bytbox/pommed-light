@@ -25,7 +25,16 @@ int
 evloop_remove(int fd);
 
 int
+evloop_add_timer(int timeout, pommed_event_cb cb);
+
+int
+evloop_remove_timer(int fd);
+
+int
 evloop_iteration(void);
+
+void
+evloop_stop(void);
 
 int
 evloop_init(void);

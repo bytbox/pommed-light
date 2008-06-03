@@ -25,9 +25,10 @@
 
 #define KBD_MASK_AUTO           (KBD_INHIBIT_LID | KBD_INHIBIT_IDLE)
 
-
 #define KBD_USER     0
 #define KBD_AUTO     1
+
+#define KBD_TIMEOUT 200
 
 
 struct _kbd_bck_info
@@ -82,6 +83,9 @@ kbd_backlight_step(int dir);
 
 void
 kbd_backlight_init(void);
+
+void
+kbd_backlight_cleanup(void);
 
 void
 kbd_backlight_fix_config(void);

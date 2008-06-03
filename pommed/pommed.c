@@ -27,7 +27,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/time.h>
-#include <time.h>
 #include <string.h>
 #include <signal.h>
 
@@ -326,10 +325,6 @@ struct machine_ops mb_mops[] = {
 /* debug mode */
 int debug = 0;
 int console = 0;
-
-
-/* Used by signal handlers */
-static int running;
 
 
 void
@@ -687,7 +682,7 @@ usage(void)
 void
 sig_int_term_handler(int signal)
 {
-  running = 0;
+  evloop_stop();
 }
 
 int
@@ -699,10 +694,6 @@ main (int argc, char **argv)
   FILE *pidfile;
 
   machine_type machine;
-
-  struct timespec tp_now;
-  struct timespec tp_als;
-  struct timespec tp_diff;
 
   while ((c = getopt(argc, argv, "fdv")) != -1)
     {
@@ -801,13 +792,6 @@ main (int argc, char **argv)
       exit (1);
     }
 
-  ret = clock_gettime(CLOCK_MONOTONIC, &tp_als);
-  if (ret < 0)
-    {
-      logmsg(LOG_ERR, "clock_gettime() failed: %s", strerror(errno));
-      exit (1);
-    }
-
   ret = mops->lcd_backlight_probe();
   if (ret < 0)
     {
@@ -870,77 +854,25 @@ main (int argc, char **argv)
   /* Spawn the beep thread */
   beep_init();
 
-  running = 1;
   signal(SIGINT, sig_int_term_handler);
   signal(SIGTERM, sig_int_term_handler);
 
 
-  while (running)
+  do
     {
       ret = evloop_iteration();
-
-      if (ret < 0) /* error */
-	{
-	  break;
-	}
-      else if (ret != 0)
-	{
-	  clock_gettime(CLOCK_MONOTONIC, &tp_now);
-
-	  /* is it time to chek the ambient light sensors and AC state ? */
-	  tp_diff.tv_sec = tp_now.tv_sec - tp_als.tv_sec;
-
-	  if (tp_diff.tv_sec > 1)
-	    {
-	      ret = 0;
-	    }
-	  else
-	    {
-	      tp_diff.tv_nsec = tp_diff.tv_sec * 1000000000;
-
-	      if (tp_now.tv_nsec > tp_als.tv_nsec)
-		{
-		  tp_diff.tv_nsec += tp_now.tv_nsec - tp_als.tv_nsec;
-		}
-	      else
-		{
-		  tp_diff.tv_nsec -= tp_als.tv_nsec - tp_now.tv_nsec;
-		}
-
-	      if (tp_diff.tv_nsec >= (1000000 * LOOP_TIMEOUT))
-		{
-		  ret = 0; /* go and check ALS, AC state and idle time */
-		}
-	    }
-	}
-
-      if (ret == 0)
-	{
-	  /* time to check ambient light sensors, AC state and idle time */
-	  if (has_kbd_backlight())
-	    {
-	      /* Increment keyboard backlight idle timer */
-	      kbd_bck_info.idle++;
-	      if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > kbd_cfg.idle))
-		kbd_backlight_inhibit_set(KBD_INHIBIT_IDLE);
-
-	      kbd_backlight_ambient_check();
-	    }
-
-	  power_check_ac_state();
-
-	  tp_als = tp_now;
-	}
-
-      /* Process DBus requests */
-      mbpdbus_process_requests();
     }
+  while (ret >= 0);
 
   evdev_cleanup();
 
   beep_cleanup();
 
   mbpdbus_cleanup();
+
+  kbd_backlight_cleanup();
+
+  power_cleanup();
 
   evloop_cleanup();
 

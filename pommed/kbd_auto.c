@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+
+static int kbd_timer;
+
 
 /* simple backlight toggle */
 void
@@ -134,4 +138,39 @@ kbd_backlight_ambient_check(void)
 	  kbd_backlight_set(KBD_BACKLIGHT_OFF, KBD_AUTO);
 	}
     }
+}
+
+
+static void
+kbd_auto_process(int fd, uint32_t events)
+{
+  uint64_t dummy;
+
+  /* Acknowledge timer */
+  read(fd, &dummy, sizeof(dummy));
+
+  /* Increment keyboard backlight idle timer */
+  kbd_bck_info.idle++;
+  if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > kbd_cfg.idle))
+    kbd_backlight_inhibit_set(KBD_INHIBIT_IDLE);
+
+  kbd_backlight_ambient_check();
+}
+
+
+static int
+kbd_auto_init(void)
+{
+  kbd_timer = evloop_add_timer(KBD_TIMEOUT, kbd_auto_process);
+  if (kbd_timer < 0)
+    return -1;
+
+  return 0;
+}
+
+static void
+kbd_auto_cleanup(void)
+{
+  if (kbd_timer > 0)
+    evloop_remove_timer(kbd_timer);
 }

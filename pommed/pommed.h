@@ -89,6 +89,4 @@ extern struct machine_ops *mops;
 #define STEP_DOWN               -1
 
 
-#define LOOP_TIMEOUT            200
-
 #endif /* !__POMMED_H__ */

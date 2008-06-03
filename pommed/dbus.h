@@ -5,6 +5,8 @@
 #ifndef __MBPDBUS_H__
 #define __MBPDBUS_H__
 
+#define DBUS_TIMEOUT 200
+
 
 void
 mbpdbus_send_lcd_backlight(int cur, int prev, int who);
@@ -26,10 +28,6 @@ mbpdbus_send_cd_eject(void);
 
 void
 mbpdbus_send_video_switch(void);
-
-
-void
-mbpdbus_process_requests(void);
 
 
 int

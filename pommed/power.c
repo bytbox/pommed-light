@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,13 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
+#include <stdint.h>
 
 #include <syslog.h>
 
 #include "pommed.h"
+#include "evloop.h"
 #include "lcd_backlight.h"
 #include "power.h"
 
@@ -34,12 +37,18 @@ check_ac_state(void);
 
 
 static int prev_state;
+static int power_timer;
 
 
-void
-power_check_ac_state(void)
+static void
+power_check_ac_state(int fd, uint32_t events)
 {
   int ac_state;
+
+  uint64_t dummy;
+
+  /* Acknowledge timer */
+  read(fd, &dummy, sizeof(dummy));
 
   ac_state = check_ac_state();
 
@@ -75,4 +84,13 @@ void
 power_init(void)
 {
   prev_state = check_ac_state();
+
+  power_timer = evloop_add_timer(POWER_TIMEOUT, power_check_ac_state);
+}
+
+void
+power_cleanup(void)
+{
+  if (power_timer > 0)
+    evloop_remove_timer(power_timer);
 }

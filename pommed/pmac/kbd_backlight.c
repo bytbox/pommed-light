@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2006 Yves-Alexis Perez <corsac@corsac.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -41,6 +42,7 @@
 #include <ofapi/of_api.h>
 
 #include "../pommed.h"
+#include "../evloop.h"
 #include "../conffile.h"
 #include "../kbd_backlight.h"
 #include "../ambient.h"
@@ -367,6 +369,15 @@ kbd_backlight_init(void)
   kbd_bck_info.max = KBD_BACKLIGHT_MAX;
 
   ambient_init(&kbd_bck_info.r_sens, &kbd_bck_info.l_sens);
+
+  kbd_auto_init();
+}
+
+void
+kbd_backlight_cleanup(void)
+{
+  if (has_kbd_backlight())
+    kbd_auto_cleanup();
 }
 
 
@@ -383,7 +394,7 @@ kbd_backlight_fix_config(void)
     kbd_cfg.step = KBD_BACKLIGHT_MAX / 2;
 
   if (kbd_cfg.idle > 0)
-    kbd_cfg.idle = (kbd_cfg.idle * 1000) / LOOP_TIMEOUT;
+    kbd_cfg.idle = (kbd_cfg.idle * 1000) / KBD_TIMEOUT;
 }
 
 

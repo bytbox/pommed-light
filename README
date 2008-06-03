@@ -12,15 +12,8 @@ README for pommed
 Kernel version requirements:
 ----------------------------
 
- - on the MacBook, MacBook Pro and MacBook Air
-    + kernel >= 2.6.19 at least
-    + kernel >= 2.6.20 recommended
-   Newer machines may require a newer kernel and/or patches.
-
- - on the PowerBook and iBook
-    + kernel >= 2.6.19 recommended
-      Warning: kernels 2.6.20 and 2.6.20.x x < 7 are buggy; pommed will fail
-               to detect the USB keyboards when run with one of these kernels.
+ pommed requires at least a 2.6.25 kernel, due to the use of the new timerfd
+ interface that was released as stable with this version.
 
 
 Supported machines:
