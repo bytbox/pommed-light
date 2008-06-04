@@ -338,9 +338,9 @@ mbp_dbus_listen(DBusConnection *lconn, DBusMessage *msg, gpointer userdata)
     {
       printf("DBus disconnected\n");
 
-      g_timeout_add(200, mbp_dbus_reconnect, NULL);
-
       mbp_dbus_cleanup();
+
+      g_timeout_add(200, mbp_dbus_reconnect, NULL);
     }
   else
     {
@@ -380,8 +380,7 @@ mbp_dbus_connect(void)
 
   dbus_connection_setup_with_g_main(conn, NULL);
 
-  dbus_connection_add_filter (conn, mbp_dbus_listen, NULL, NULL);
-
+  dbus_connection_add_filter(conn, mbp_dbus_listen, NULL, NULL);
 
   /* Get the mute state */
   msg = dbus_message_new_method_call("org.pommed", "/org/pommed/audio",
