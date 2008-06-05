@@ -6,8 +6,9 @@ version 1.19:
 	- gpomme: integrate config file monitoring and DBus messaging into
 	the main loop. Get rid of the 10 times per second polling.
 	- pommed: new event loop.
-	- pommed: convert power, kbd and dbus to timers integrated into
-	the event loop.
+	- pommed: convert power and kbd to timers integrated into the
+	event loop.
+	- pommed: integrate DBus into the event loop.
 
 version 1.18:
 	- pommed: add more IDs for Apple external keyboards

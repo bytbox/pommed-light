@@ -21,9 +21,12 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 #include <syslog.h>
+
+#include <sys/epoll.h>
 
 #include <dbus/dbus.h>
 
@@ -738,86 +741,319 @@ process_cd_eject_call(DBusMessage *req)
 
 
 static void
-mbpdbus_process_requests(int fd, uint32_t events)
+mbpdbus_reconnect(int fd, uint32_t events)
 {
-  DBusMessage *msg;
-  int nmsg;
-
+  int ret;
   uint64_t dummy;
 
   /* Acknowledge timer */
   read(fd, &dummy, sizeof(dummy));
 
-  if (conn == NULL)
+  ret = mbpdbus_init();
+  if (ret == 0)
+    evloop_remove_timer(fd);
+}
+
+static DBusHandlerResult
+mbpdbus_process_requests(DBusConnection *lconn, DBusMessage *msg, void *data)
+{
+  // Get methods
+  if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "getLevel"))
+    process_lcd_getlevel_call(msg);
+  else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "getLevel"))
+    process_kbd_getlevel_call(msg);
+  else if (dbus_message_is_method_call(msg, "org.pommed.ambient", "getLevel"))
+    process_ambient_getlevel_call(msg);
+  else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getVolume"))
+    process_audio_getvolume_call(msg);
+  else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getMute"))
+    process_audio_getmute_call(msg);
+  // Set methods
+  else if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "levelUp"))
+    process_lcd_backlight_step_call(msg, STEP_UP);
+  else if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "levelDown"))
+    process_lcd_backlight_step_call(msg, STEP_DOWN);
+  else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "inhibit"))
+    process_kbd_backlight_inhibit_call(msg, 1);
+  else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "disinhibit"))
+    process_kbd_backlight_inhibit_call(msg, 0);
+  else if (dbus_message_is_method_call(msg, "org.pommed.audio", "volumeUp"))
+    process_audio_volume_step_call(msg, STEP_UP);
+  else if (dbus_message_is_method_call(msg, "org.pommed.audio", "volumeDown"))
+    process_audio_volume_step_call(msg, STEP_DOWN);
+  else if (dbus_message_is_method_call(msg, "org.pommed.audio", "toggleMute"))
+    process_audio_toggle_mute_call(msg);
+  else if (dbus_message_is_method_call(msg, "org.pommed.cd", "eject"))
+    process_cd_eject_call(msg);
+  else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
     {
-      if (mbpdbus_init() < 0)
-	return;
+      logmsg(LOG_INFO, "DBus disconnected");
+
+      mbpdbus_cleanup();
+
+      dbus_timer = evloop_add_timer(DBUS_TIMEOUT, mbpdbus_reconnect);
+      if (dbus_timer < 0)
+	logmsg(LOG_WARNING, "Could not set up timer for DBus reconnection");
+    }
+  else
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+
+  return DBUS_HANDLER_RESULT_HANDLED;
+}
+
+
+/* DBusWatch functions */
+struct pommed_watch
+{
+  DBusWatch *watch;
+  int fd;
+  uint32_t events;
+  int enabled;
+
+  struct pommed_watch *next;
+};
+
+
+static struct pommed_watch *watches;
+
+
+static uint32_t
+dbus_to_epoll(int flags)
+{
+  uint32_t events;
+
+  events = 0;
+
+  if (flags & DBUS_WATCH_READABLE)
+    events |= EPOLLIN;
+
+  if (flags & DBUS_WATCH_WRITABLE)
+    events |= EPOLLOUT | EPOLLET;
+
+  return events;
+}
+
+static int
+epoll_to_dbus(uint32_t events)
+{
+  int flags;
+
+  flags = 0;
+
+  if (events & EPOLLIN)
+    flags |= DBUS_WATCH_READABLE;
+
+  if (events & EPOLLOUT)
+    flags |= DBUS_WATCH_WRITABLE;
+
+  if (events & EPOLLHUP)
+    flags |= DBUS_WATCH_HANGUP;
+
+  if (events & EPOLLERR)
+    flags |= DBUS_WATCH_ERROR;
+
+  return flags;
+}
+
+static void
+mbpdbus_process_watch(int fd, uint32_t events)
+{
+  int flags;
+  uint32_t wanted;
+
+  DBusDispatchStatus ds;
+
+  struct pommed_watch *w;
+
+  logdebug("DBus process watch\n");
+
+  for (w = watches; w != NULL; w = w->next)
+    {
+      if (!w->enabled)
+	continue;
+
+      if (w->fd == fd)
+	{
+	  wanted = events & w->events;
+
+	  if (wanted != 0)
+	    {
+	      flags = epoll_to_dbus(wanted);
+
+	      dbus_watch_handle(w->watch, flags);
+
+	      /* Get out of the loop, as DBus will remove the watches
+	       * and our linked list can become invalid under our feet
+	       */
+	      if (events & (EPOLLERR | EPOLLHUP))
+		break;
+	    }
+	}
     }
 
-  logdebug("Processing DBus requests\n");
-
-  nmsg = 0;
-  while (1)
+  do
     {
-      logdebug("Checking messages\n");
+      ds = dbus_connection_dispatch(conn);
+    }
+  while (ds != DBUS_DISPATCH_COMPLETE);
+}
 
-      dbus_connection_read_write(conn, 0);
+static dbus_bool_t
+mbpdbus_add_watch(DBusWatch *watch, void *data)
+{
+  uint32_t events;
+  int fd;
+  int ret;
 
-      msg = dbus_connection_pop_message(conn);
+  struct pommed_watch *w;
 
-      if (msg == NULL)
-	{
-	  break;
-	}
+  logdebug("DBus add watch\n");
 
-      // Get methods
-      if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "getLevel"))
-	process_lcd_getlevel_call(msg);
-      else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "getLevel"))
-	process_kbd_getlevel_call(msg);
-      else if (dbus_message_is_method_call(msg, "org.pommed.ambient", "getLevel"))
-	process_ambient_getlevel_call(msg);
-      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getVolume"))
-	process_audio_getvolume_call(msg);
-      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getMute"))
-	process_audio_getmute_call(msg);
-      // Set methods
-      else if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "levelUp"))
-        process_lcd_backlight_step_call(msg, STEP_UP);
-      else if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "levelDown"))
-        process_lcd_backlight_step_call(msg, STEP_DOWN);
-      else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "inhibit"))
-        process_kbd_backlight_inhibit_call(msg, 1);
-      else if (dbus_message_is_method_call(msg, "org.pommed.kbdBacklight", "disinhibit"))
-        process_kbd_backlight_inhibit_call(msg, 0);
-      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "volumeUp"))
-        process_audio_volume_step_call(msg, STEP_UP);
-      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "volumeDown"))
-        process_audio_volume_step_call(msg, STEP_DOWN);
-      else if (dbus_message_is_method_call(msg, "org.pommed.audio", "toggleMute"))
-        process_audio_toggle_mute_call(msg);
-      else if (dbus_message_is_method_call(msg, "org.pommed.cd", "eject"))
-        process_cd_eject_call(msg);
-      else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
-	{
-	  logmsg(LOG_INFO, "DBus disconnected");
+  fd = dbus_watch_get_unix_fd(watch);
 
-	  mbpdbus_cleanup();
-
-	  dbus_message_unref(msg);
-
-	  return;
-	}
-
-      dbus_message_unref(msg);
-
-      nmsg++;
+  events = 0;
+  for (w = watches; w != NULL; w = w->next)
+    {
+      if (w->enabled && (w->fd == fd))
+	events |= w->events;
     }
 
-  if (nmsg > 0)
-    dbus_connection_flush(conn);
+  if (events != 0)
+    {
+      ret = evloop_remove(fd);
+      if (ret < 0)
+	{
+	  logmsg(LOG_ERR, "Could not remove previous watch on same fd");
 
-  logdebug("Done with DBus requests\n");
+	  return FALSE;
+	}
+    }
+
+  w = (struct pommed_watch *)malloc(sizeof(struct pommed_watch));
+  if (w == NULL)
+    {
+      logmsg(LOG_ERR, "Could not allocate memory for a new DBus watch");
+
+      return FALSE;
+    }
+
+  w->watch = watch;
+  w->fd = fd;
+  w->enabled = 1;
+
+  w->events = dbus_to_epoll(dbus_watch_get_flags(watch));
+  w->events |= EPOLLERR | EPOLLHUP;
+
+  events |= w->events;
+
+  ret = evloop_add(fd, events, mbpdbus_process_watch);
+  if (ret < 0)
+    {
+      free(w);
+
+      return FALSE;
+    }
+
+  w->next = watches;
+  watches = w;
+
+  return TRUE;
+}
+
+static void
+mbpdbus_remove_watch(DBusWatch *watch, void *data)
+{
+  uint32_t events;
+  int fd;
+  int ret;
+
+  struct pommed_watch *w;
+  struct pommed_watch *p;
+
+  logdebug("DBus remove watch %p\n", watch);
+
+  fd = dbus_watch_get_unix_fd(watch);
+  events = 0;
+
+  for (p = NULL, w = watches; w != NULL; p = w, w = w->next)
+    {
+      if (w->watch == watch)
+	{
+	  if (p != NULL)
+	    p->next = w->next;
+	  else
+	    watches = w->next;
+
+	  free(w);
+
+	  continue;
+	}
+
+      if (w->enabled && (w->fd == fd))
+	events |= w->events;
+    }
+
+  ret = evloop_remove(fd);
+  if (ret < 0)
+    return;
+
+  if (events == 0)
+    return;
+
+  ret = evloop_add(fd, events, mbpdbus_process_watch);
+  if (ret < 0)
+    logmsg(LOG_WARNING, "Could not re-add watch");
+}
+
+static void
+mbpdbus_toggle_watch(DBusWatch *watch, void *data)
+{
+  uint32_t events;
+  int fd;
+  int ret;
+
+  struct pommed_watch *w;
+
+  logdebug("DBus toggle watch\n");
+
+  fd = dbus_watch_get_unix_fd(watch);
+  events = 0;
+
+  for (w = watches; w != NULL; w = w->next)
+    {
+      if (w->watch == watch)
+	{
+	  if (!dbus_watch_get_enabled(watch))
+	    w->enabled = 0;
+	  else
+	    {
+	      w->enabled = 1;
+	      events |= w->events;
+	    }
+
+	  continue;
+	}
+
+      if (w->enabled && (w->fd == fd))
+	events |= events;
+    }
+
+  ret = evloop_remove(fd);
+  if (ret < 0)
+    return;
+
+  if (events == 0)
+    return;
+
+  ret = evloop_add(fd, events, mbpdbus_process_watch);
+  if (ret < 0)
+    logmsg(LOG_WARNING, "Could not re-add watch");
+}
+
+static void
+mbpdbus_data_free(void *data)
+{
+  /* NOTHING */
 }
 
 
@@ -825,6 +1061,9 @@ int
 mbpdbus_init(void)
 {
   int ret;
+
+  watches = NULL;
+  dbus_timer = -1;
 
   dbus_error_init(&err);
 
@@ -862,13 +1101,16 @@ mbpdbus_init(void)
       return -1;
     }
 
-  dbus_timer = evloop_add_timer(DBUS_TIMEOUT, mbpdbus_process_requests);
-  if (ret < 0)
+  ret = dbus_connection_set_watch_functions(conn, mbpdbus_add_watch, mbpdbus_remove_watch,
+					    mbpdbus_toggle_watch, NULL, mbpdbus_data_free);
+  if (!ret)
     {
       mbpdbus_cleanup();
 
       return -1;
     }
+
+  dbus_connection_add_filter(conn, mbpdbus_process_requests, NULL, NULL);
 
   return 0;
 }
@@ -876,11 +1118,11 @@ mbpdbus_init(void)
 void
 mbpdbus_cleanup(void)
 {
+  if (dbus_timer > 0)
+    evloop_remove_timer(dbus_timer);
+
   if (conn == NULL)
     return;
-
-  if (dbus_timer != -1)
-    evloop_remove_timer(dbus_timer);
 
   dbus_error_free(&err);
 
