@@ -67,12 +67,6 @@
 #endif
 
 
-void
-evdev_process_events(int fd, uint32_t events);
-
-void
-evdev_inotify_process(int fd, uint32_t events);
-
 static int
 evdev_try_add(int fd);
 
