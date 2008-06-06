@@ -41,14 +41,9 @@ static int power_timer;
 
 
 static void
-power_check_ac_state(int fd, uint32_t events)
+power_check_ac_state(int id, uint64_t ticks)
 {
   int ac_state;
-
-  uint64_t dummy;
-
-  /* Acknowledge timer */
-  read(fd, &dummy, sizeof(dummy));
 
   ac_state = check_ac_state();
 

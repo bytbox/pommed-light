@@ -142,13 +142,8 @@ kbd_backlight_ambient_check(void)
 
 
 static void
-kbd_auto_process(int fd, uint32_t events)
+kbd_auto_process(int id, uint64_t ticks)
 {
-  uint64_t dummy;
-
-  /* Acknowledge timer */
-  read(fd, &dummy, sizeof(dummy));
-
   /* Increment keyboard backlight idle timer */
   kbd_bck_info.idle++;
   if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > kbd_cfg.idle))

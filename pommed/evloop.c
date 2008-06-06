@@ -45,6 +45,10 @@ static int epfd;
 /* event sources registered on the main loop */
 static struct pommed_event *sources;
 
+/* timers */
+static struct pommed_timer *timers;
+static int timer_job_id;
+
 static int running;
 
 
@@ -123,8 +127,38 @@ evloop_remove(int fd)
 }
 
 
-int
-evloop_add_timer(int timeout, pommed_event_cb cb)
+static void
+evloop_timer_callback(int fd, uint32_t events)
+{
+  uint64_t ticks;
+
+  struct pommed_timer *t;
+  struct pommed_timer_job *j;
+
+  /* Acknowledge timer */
+  read(fd, &ticks, sizeof(ticks));
+
+  j = NULL;
+  for (t = timers; t != NULL; t = t->next)
+    {
+      if (t->fd == fd)
+	{
+	  j = t->jobs;
+
+	  break;
+	}
+    }
+
+  while (j != NULL)
+    {
+      j->cb(j->id, ticks);
+
+      j = j->next;
+    }
+}
+
+static int
+evloop_create_timer(int timeout)
 {
   int fd;
   int ret;
@@ -168,7 +202,7 @@ evloop_add_timer(int timeout, pommed_event_cb cb)
       return -1;
     }
 
-  ret = evloop_add(fd, EPOLLIN, cb);
+  ret = evloop_add(fd, EPOLLIN, evloop_timer_callback);
   if (ret < 0)
     {
       close(fd);
@@ -179,15 +213,112 @@ evloop_add_timer(int timeout, pommed_event_cb cb)
 }
 
 int
-evloop_remove_timer(int fd)
+evloop_add_timer(int timeout, pommed_timer_cb cb)
 {
+  int fd;
+
+  struct pommed_timer *t;
+  struct pommed_timer_job *j;
+
+  j = (struct pommed_timer_job *)malloc(sizeof(struct pommed_timer_job));
+  if (j == NULL)
+    {
+      logmsg(LOG_ERR, "Could not allocate memory for timer job");
+      return -1;
+    }
+
+  j->cb = cb;
+  j->id = timer_job_id;
+  timer_job_id++;
+
+  for (t = timers; t != NULL; t = t->next)
+    {
+      if (t->timeout == timeout)
+	break;
+    }
+
+  if (t == NULL)
+    {
+      t = (struct pommed_timer *)malloc(sizeof(struct pommed_timer));
+      if (t == NULL)
+	{
+	  logmsg(LOG_ERR, "Could not allocate memory for timer");
+	  return -1;
+	}
+
+      fd = evloop_create_timer(timeout);
+      if (fd < 0)
+	{
+	  free(t);
+	  return -1;
+	}
+
+      t->fd = fd;
+      t->timeout = timeout;
+      t->jobs = NULL;
+      t->next = timers;
+      timers = t;
+    }
+
+  j->next = t->jobs;
+  t->jobs = j;
+
+  return 0;
+}
+
+int
+evloop_remove_timer(int id)
+{
+  int found;
   int ret;
 
-  ret = evloop_remove(fd);
-  if (ret < 0)
-    return ret;
+  struct pommed_timer *t;
+  struct pommed_timer *pt;
+  struct pommed_timer_job *j;
+  struct pommed_timer_job *pj;
 
-  close(fd);
+  found = 0;
+  for (pt = NULL, t = timers; t != NULL; pt = t, t = t->next)
+    {
+      for (pj = NULL, j = t->jobs; j != NULL; pj = j, j = j->next)
+	{
+	  if (j->id == id)
+	    {
+	      if (pj != NULL)
+		pj->next = j->next;
+	      else
+		t->jobs = j->next;
+
+	      free(j);
+
+	      found = 1;
+
+	      break;
+	    }
+	}
+
+      if (found)
+	break;
+    }
+
+  if (t == NULL)
+    return 0;
+
+  if (t->jobs == NULL)
+    {
+      ret = evloop_remove(t->fd);
+      if (ret < 0)
+	return ret;
+
+      close(t->fd);
+
+      if (pt != NULL)
+	pt->next = t->next;
+      else
+	timers = t->next;
+
+      free(t);
+    }
 
   return 0;
 }
@@ -239,6 +370,10 @@ int
 evloop_init(void)
 {
   sources = NULL;
+
+  timers = NULL;
+  timer_job_id = 0;
+
   running = 1;
 
   epfd = epoll_create(MAX_EPOLL_EVENTS);
@@ -256,6 +391,9 @@ void
 evloop_cleanup(void)
 {
   struct pommed_event *p;
+  struct pommed_timer *t;
+  struct pommed_timer_job *j;
+  struct pommed_timer_job *jobs;
 
   close(epfd);
 
@@ -267,5 +405,22 @@ evloop_cleanup(void)
       close(p->fd);
 
       free(p);
+    }
+
+  while (timers != NULL)
+    {
+      t = timers;
+      timers = timers->next;
+
+      jobs = t->jobs;
+      while (jobs != NULL)
+	{
+	  j = jobs;
+	  jobs = jobs->next;
+
+	  free(j);
+	}
+
+      free(t);
     }
 }

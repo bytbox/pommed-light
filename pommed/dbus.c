@@ -741,17 +741,16 @@ process_cd_eject_call(DBusMessage *req)
 
 
 static void
-mbpdbus_reconnect(int fd, uint32_t events)
+mbpdbus_reconnect(int id, uint64_t ticks)
 {
   int ret;
-  uint64_t dummy;
-
-  /* Acknowledge timer */
-  read(fd, &dummy, sizeof(dummy));
 
   ret = mbpdbus_init();
   if (ret == 0)
-    evloop_remove_timer(fd);
+    {
+      evloop_remove_timer(id);
+      dbus_timer = -1;
+    }
 }
 
 static DBusHandlerResult
