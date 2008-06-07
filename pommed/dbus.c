@@ -881,6 +881,12 @@ mbpdbus_process_watch(int fd, uint32_t events)
 
 	      dbus_watch_handle(w->watch, flags);
 
+	      do
+		{
+		  ds = dbus_connection_dispatch(conn);
+		}
+	      while (ds == DBUS_DISPATCH_DATA_REMAINS);
+
 	      /* Get out of the loop, as DBus will remove the watches
 	       * and our linked list can become invalid under our feet
 	       */
@@ -889,12 +895,6 @@ mbpdbus_process_watch(int fd, uint32_t events)
 	    }
 	}
     }
-
-  do
-    {
-      ds = dbus_connection_dispatch(conn);
-    }
-  while (ds == DBUS_DISPATCH_DATA_REMAINS);
 }
 
 static dbus_bool_t
