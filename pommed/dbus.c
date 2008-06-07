@@ -894,7 +894,7 @@ mbpdbus_process_watch(int fd, uint32_t events)
     {
       ds = dbus_connection_dispatch(conn);
     }
-  while (ds != DBUS_DISPATCH_COMPLETE);
+  while (ds == DBUS_DISPATCH_DATA_REMAINS);
 }
 
 static dbus_bool_t
