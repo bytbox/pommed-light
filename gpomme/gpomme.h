@@ -9,7 +9,7 @@
 
 #define THEME_BASE    "/usr/share/gpomme/themes"
 
-#define M_VERSION     "0.6"
+#define M_VERSION     "0.7"
 
 
 struct _mbp_w
