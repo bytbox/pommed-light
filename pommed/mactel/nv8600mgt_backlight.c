@@ -24,6 +24,10 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+ *
+ * This driver triggers SMIs which cause the firmware to change the
+ * backlight brightness. This is icky in many ways, but it's impractical to
+ * get at the firmware code in order to figure out what it's actually doing.
  */
 
 #include <stdio.h>
