@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.20:
+	- pommed: fix array boundary check in check_machine_dmi().
 
 version 1.19:
 	- pommed: get rid of the libsmbios dependency on Intel machines.

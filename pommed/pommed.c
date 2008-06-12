@@ -560,7 +560,7 @@ check_machine_dmi(void)
     };
 
   /* Check vendor name */
-  for (i = 0; i < sizeof(vendor_node); i++)
+  for (i = 0; i < sizeof(vendor_node) / sizeof(vendor_node[0]); i++)
     {
       fd = open(vendor_node[i], O_RDONLY);
       if (fd > 0)
