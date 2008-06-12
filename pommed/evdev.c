@@ -685,7 +685,7 @@ evdev_is_extkbd_alu_wl(unsigned short *id)
 {
   unsigned short product = id[ID_PRODUCT];
 
-  if (id[ID_BUS] != BUS_USB)
+  if (id[ID_BUS] != BUS_BLUETOOTH)
     return 0;
 
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
