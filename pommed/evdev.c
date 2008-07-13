@@ -109,43 +109,43 @@ evdev_process_events(int fd, uint32_t events)
 
       switch (ev.code)
 	{
-	  case K_LCD_BCK_DOWN:
+	  case KEY_BRIGHTNESSDOWN:
 	    logdebug("\nKEY: LCD backlight down\n");
 
 	    mops->lcd_backlight_step(STEP_DOWN);
 	    break;
 
-	  case K_LCD_BCK_UP:
+	  case KEY_BRIGHTNESSUP:
 	    logdebug("\nKEY: LCD backlight up\n");
 
 	    mops->lcd_backlight_step(STEP_UP);
 	    break;
 
-	  case K_AUDIO_MUTE:
+	  case KEY_MUTE:
 	    logdebug("\nKEY: audio mute\n");
 
 	    audio_toggle_mute();
 	    break;
 
-	  case K_AUDIO_DOWN:
+	  case KEY_VOLUMEDOWN:
 	    logdebug("\nKEY: audio down\n");
 
 	    audio_step(STEP_DOWN);
 	    break;
 
-	  case K_AUDIO_UP:
+	  case KEY_VOLUMEUP:
 	    logdebug("\nKEY: audio up\n");
 
 	    audio_step(STEP_UP);
 	    break;
 
-	  case K_VIDEO_TOGGLE:
+	  case KEY_SWITCHVIDEOMODE:
 	    logdebug("\nKEY: video toggle\n");
 
 	    video_switch();
 	    break;
 
-	  case K_KBD_BCK_OFF:
+	  case KEY_KBDILLUMTOGGLE:
 	    logdebug("\nKEY: keyboard backlight off\n");
 
 	    if (!has_kbd_backlight())
@@ -157,7 +157,7 @@ evdev_process_events(int fd, uint32_t events)
 	      kbd_backlight_toggle();
 	    break;
 
-	  case K_KBD_BCK_DOWN:
+	  case KEY_KBDILLUMDOWN:
 	    logdebug("\nKEY: keyboard backlight down\n");
 
 	    if (!has_kbd_backlight())
@@ -166,7 +166,7 @@ evdev_process_events(int fd, uint32_t events)
 	    kbd_backlight_step(STEP_DOWN);
 	    break;
 
-	  case K_KBD_BCK_UP:
+	  case KEY_KBDILLUMUP:
 	    logdebug("\nKEY: keyboard backlight up\n");
 
 	    if (!has_kbd_backlight())
@@ -175,25 +175,25 @@ evdev_process_events(int fd, uint32_t events)
 	    kbd_backlight_step(STEP_UP);
 	    break;
 
-	  case K_CD_EJECT:
+	  case KEY_EJECTCD:
 	    logdebug("\nKEY: CD eject\n");
 
 	    cd_eject();
 	    break;
 
-	  case K_IR_FFWD:
+	  case KEY_NEXTSONG:
 	    logdebug("\nKEY: IR fast forward\n");
 	    break;
 
-	  case K_IR_REWD:
+	  case KEY_PREVIOUSSONG:
 	    logdebug("\nKEY: IR rewind\n");
 	    break;
 
-	  case K_IR_PLAY:
+	  case KEY_PLAYPAUSE:
 	    logdebug("\nKEY: IR play/pause\n");
 	    break;
 
-	  case K_IR_MENU:
+	  case KEY_MENU:
 	    logdebug("\nKEY: IR menu\n");
 	    break;
 

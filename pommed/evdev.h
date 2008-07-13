@@ -76,26 +76,6 @@
 #define USB_PRODUCT_ID_APPLEIR_2      0x8242
 
 
-/* Keyboard hotkeys */
-#define K_LCD_BCK_DOWN          0xe0
-#define K_LCD_BCK_UP            0xe1
-#define K_AUDIO_MUTE            0x71
-#define K_AUDIO_DOWN            0x72
-#define K_AUDIO_UP              0x73
-#define K_VIDEO_TOGGLE          0xe3
-#define K_KBD_BCK_OFF           0xe4
-#define K_KBD_BCK_DOWN          0xe5
-#define K_KBD_BCK_UP            0xe6
-#define K_CD_EJECT              0xa1
-
-/* Apple Remote controller keys */
-/* audio up/down use the same codes as the keyboard */
-#define K_IR_FFWD               0xa3
-#define K_IR_REWD               0xa5
-#define K_IR_PLAY               0xa4
-#define K_IR_MENU               0x8b
-
-
 #define EVDEV_DIR               "/dev/input"
 #define EVDEV_BASE              "/dev/input/event"
 #define EVDEV_MAX               32
