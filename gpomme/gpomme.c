@@ -86,6 +86,39 @@ hide_window(gpointer userdata)
   return FALSE;
 }
 
+static gboolean
+window_expose_event (GtkWidget *widget, GdkEventExpose *event)
+{
+  GdkRegion *region;
+  GtkWidget *child;
+  cairo_t *cr;
+
+  /* get our child (in this case, the event box) */ 
+  child = gtk_bin_get_child (GTK_BIN (widget));
+
+  /* create a cairo context to draw to the window */
+  cr = gdk_cairo_create (widget->window);
+
+  /* the source data is the (composited) event box */
+  gdk_cairo_set_source_pixmap (cr, child->window,
+			       child->allocation.x,
+			       child->allocation.y);
+
+  /* draw no more than our expose event intersects our child */
+  region = gdk_region_rectangle (&child->allocation);
+  gdk_region_intersect (region, event->region);
+  gdk_cairo_region (cr, region);
+  cairo_clip (cr);
+
+  /* composite, with a 50% opacity */
+  cairo_set_operator (cr, CAIRO_OPERATOR_OVER);
+  cairo_paint_with_alpha (cr, 1.0);
+
+  /* we're done */
+  cairo_destroy (cr);
+
+  return FALSE;
+}
 
 static void
 draw_window_bg(void)
@@ -116,7 +149,6 @@ draw_window_bg(void)
 
   gtk_window_move(GTK_WINDOW(window), x, y);
 
-
   /* Redraw the window background, compositing the background pixmap with
    * the portion of the root window that's beneath the window
    */
@@ -126,11 +158,16 @@ draw_window_bg(void)
 
   /* render the combined pixbuf to a pixmap with alpha control */
   pixmap = gdk_pixmap_new(GTK_WIDGET(window)->window, theme.width, theme.height, -1);
-  gdk_draw_pixbuf(pixmap, NULL, pixbuf, 0, 0, 0, 0,
-		  theme.width, theme.height, GDK_RGB_DITHER_NONE, 0, 0);
-  gdk_draw_pixbuf(pixmap, NULL, theme.background, 0, 0, 0, 0,
-		   theme.width, theme.height, GDK_RGB_DITHER_NONE, 0, 0);
+  GdkGC *gc = gdk_gc_new(pixmap);
+  gdk_draw_rectangle(pixmap, gc, TRUE, 0, 0, theme.width, theme.height);
+  if (!gdk_screen_is_composited(screen))
+  {
+    gdk_draw_pixbuf(pixmap, NULL, pixbuf, 0, 0, 0, 0,
+		    theme.width, theme.height, GDK_RGB_DITHER_NONE, 0, 0);
+  }
 
+  gdk_draw_pixbuf(pixmap, NULL, theme.background, 0, 0, 0, 0,
+		  theme.width, theme.height, GDK_RGB_DITHER_NONE, 0, 0);
   gdk_window_set_back_pixmap(GTK_WIDGET(window)->window, pixmap, FALSE);
 
   g_object_unref(pixbuf);
@@ -208,15 +245,25 @@ show_window(int img, char *label, double fraction)
 static void
 create_window(void)
 {
+  GdkScreen *screen;
+  GdkColormap *rgba;
+
   GtkWidget *window;
   GtkWidget *vbox;
   GtkWidget *align;
 
   window = gtk_window_new(GTK_WINDOW_POPUP);
+  screen = gtk_widget_get_screen (window);
+
+  if (gdk_screen_is_composited (screen))
+    {
+      rgba = gdk_screen_get_rgba_colormap (screen);
+      gtk_widget_set_colormap (window, rgba);
+    }
+
   gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
   gtk_window_set_policy(GTK_WINDOW(window), FALSE, FALSE, FALSE);
   gtk_widget_set_app_paintable(GTK_WIDGET(window), TRUE);
-  gtk_widget_realize (GTK_WIDGET(window));
 
   gtk_window_set_default_size(GTK_WINDOW(window), theme.width, theme.height);
   gtk_widget_set_size_request(GTK_WIDGET(window), theme.width, theme.height);
@@ -231,7 +278,7 @@ create_window(void)
   /* Text message */
   align = gtk_alignment_new(0.5, 0.0, 0.0, 0.0);
   gtk_box_pack_start(GTK_BOX(vbox), align, TRUE, TRUE, 0);
-	
+
   mbp_w.label = gtk_label_new("");
   gtk_container_add(GTK_CONTAINER(align), mbp_w.label);
 
@@ -250,6 +297,14 @@ create_window(void)
   mbp_w.window = window;
   mbp_w.image = NULL;
   mbp_w.timer = 0;
+
+  gtk_widget_realize(GTK_WIDGET(window));
+
+  if (gdk_screen_is_composited(screen))
+    {
+      gdk_window_set_opacity(window->window, 0.8);
+      g_signal_connect_after(window, "expose-event", G_CALLBACK(window_expose_event), NULL);
+    }
 }
 
 
