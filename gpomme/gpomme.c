@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
+ * Copyright (C) 2006, 2008 Soeren SONNENBURG <debian@nn7.de>
  * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2007 daniel g. siegel <dgsiegel@gmail.com>
  *
