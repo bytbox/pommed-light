@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.22:
+
 version 1.21:
 	- gpomme: use compositing if available, patch by Soeren Sonnenburg.
 
