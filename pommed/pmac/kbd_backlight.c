@@ -84,7 +84,7 @@ lmu_write_kbd_value(int fd, unsigned char val)
   buf[2] = val << 4;
 
   if (write (fd, buf, 3) < 0)
-    logmsg(LOG_ERR, "Could not set LMU kbd brightness: %s\n", strerror(errno));
+    logmsg(LOG_ERR, "Could not set LMU kbd brightness: %s", strerror(errno));
 }
 
 static void
@@ -117,7 +117,7 @@ kbd_lmu_backlight_set(int val, int who)
   fd = open(lmu_info.i2cdev, O_RDWR);
   if (fd < 0)
     {
-      logmsg(LOG_ERR, "Could not open %s: %s\n", lmu_info.i2cdev, strerror(errno));
+      logmsg(LOG_ERR, "Could not open %s: %s", lmu_info.i2cdev, strerror(errno));
 
       return;
     }
@@ -125,7 +125,7 @@ kbd_lmu_backlight_set(int val, int who)
   ret = ioctl(fd, I2C_SLAVE, lmu_info.lmuaddr);
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "Could not ioctl the i2c bus: %s\n", strerror(errno));
+      logmsg(LOG_ERR, "Could not ioctl the i2c bus: %s", strerror(errno));
 
       close(fd);
       return;
@@ -177,13 +177,13 @@ adb_write_kbd_value(int fd, unsigned char val)
   ret = write(fd, buf, 5);
   if (ret != 5)
     {
-      logmsg(LOG_ERR, "Could not set PMU kbd brightness: %s\n", strerror(errno));
+      logmsg(LOG_ERR, "Could not set PMU kbd brightness: %s", strerror(errno));
     }
   else
     {
       ret = read(fd, buf, ADB_BUFFER_SIZE);
       if (ret < 0)
-	logmsg(LOG_ERR, "Could not read PMU reply: %s\n", strerror(errno));
+	logmsg(LOG_ERR, "Could not read PMU reply: %s", strerror(errno));
     }
 }
 
@@ -213,7 +213,7 @@ kbd_pmu_backlight_set(int val, int who)
   fd = open(ADB_DEVICE, O_RDWR);
   if (fd < 0)
     {
-      logmsg(LOG_ERR, "Could not open %s: %s\n", ADB_DEVICE, strerror(errno));
+      logmsg(LOG_ERR, "Could not open %s: %s", ADB_DEVICE, strerror(errno));
 
       return;
     }
@@ -499,7 +499,7 @@ kbd_probe_lmu(void)
   fd = open(lmu_info.i2cdev, O_RDWR);
   if (fd < 0)
     {
-      logmsg(LOG_WARNING, "Could not open device %s: %s\n", lmu_info.i2cdev, strerror(errno));
+      logmsg(LOG_WARNING, "Could not open device %s: %s", lmu_info.i2cdev, strerror(errno));
 
       return -1;
     }
@@ -507,7 +507,7 @@ kbd_probe_lmu(void)
   ret = ioctl(fd, I2C_SLAVE, lmu_info.lmuaddr);
   if (ret < 0)
     {
-      logmsg(LOG_ERR, "ioctl failed on %s: %s\n", lmu_info.i2cdev, strerror(errno));
+      logmsg(LOG_ERR, "ioctl failed on %s: %s", lmu_info.i2cdev, strerror(errno));
 
       close(fd);
       return -1;
@@ -516,7 +516,7 @@ kbd_probe_lmu(void)
   ret = read(fd, buffer, 4);
   if (ret != 4)
     {
-      logmsg(LOG_WARNING, "Probing failed on %s: %s\n", lmu_info.i2cdev, strerror(errno));
+      logmsg(LOG_WARNING, "Probing failed on %s: %s", lmu_info.i2cdev, strerror(errno));
 
       close(fd);
       return -1;

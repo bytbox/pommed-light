@@ -63,7 +63,7 @@ lmu_ambient_get(int *r, int *l)
       ambient_info.right = 0;
       ambient_info.left = 0;
 
-      logmsg(LOG_ERR, "Could not open i2c device %s: %s\n", lmu_info.i2cdev, strerror(errno));
+      logmsg(LOG_ERR, "Could not open i2c device %s: %s", lmu_info.i2cdev, strerror(errno));
       return;
     }
 
@@ -78,7 +78,7 @@ lmu_ambient_get(int *r, int *l)
       ambient_info.right = 0;
       ambient_info.left = 0;
 
-      logmsg(LOG_ERR, "ioctl failed on %s: %s\n", lmu_info.i2cdev, strerror(errno));
+      logmsg(LOG_ERR, "ioctl failed on %s: %s", lmu_info.i2cdev, strerror(errno));
 
       return;
     }
@@ -124,7 +124,7 @@ pmu_ambient_get(int *r, int *l)
       ambient_info.right = 0;
       ambient_info.left = 0;
 
-      logmsg(LOG_ERR, "Could not open ADB device %s: %s\n", ADB_DEVICE, strerror(errno));
+      logmsg(LOG_ERR, "Could not open ADB device %s: %s", ADB_DEVICE, strerror(errno));
       return;
     }
 
@@ -141,7 +141,7 @@ pmu_ambient_get(int *r, int *l)
       ambient_info.right = 0;
       ambient_info.left = 0;
 
-      logmsg(LOG_ERR, "Could not send PMU command: %s\n", strerror(errno));
+      logmsg(LOG_ERR, "Could not send PMU command: %s", strerror(errno));
       close(fd);
       return;
     }
@@ -155,7 +155,7 @@ pmu_ambient_get(int *r, int *l)
       ambient_info.right = 0;
       ambient_info.left = 0;
 
-      logmsg(LOG_ERR, "Could not read PMU reply: %s\n", strerror(errno));
+      logmsg(LOG_ERR, "Could not read PMU reply: %s", strerror(errno));
       close(fd);
       return;
     }

@@ -725,7 +725,7 @@ main (int argc, char **argv)
 
   if (geteuid() != 0)
     {
-      logmsg(LOG_ERR, "pommed needs root privileges to operate\n");
+      logmsg(LOG_ERR, "pommed needs root privileges to operate");
 
       exit(1);
     }

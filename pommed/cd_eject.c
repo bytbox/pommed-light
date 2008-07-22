@@ -97,7 +97,7 @@ cd_eject(void)
     }
   else if (ret == -1)
     {
-      logmsg(LOG_ERR, "Could not fork: %s\n", strerror(errno));
+      logmsg(LOG_ERR, "Could not fork: %s", strerror(errno));
       return;
     }
   else
