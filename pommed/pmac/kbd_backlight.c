@@ -336,7 +336,8 @@ kbd_backlight_init(void)
 
   kbd_bck_info.auto_on = 0;
 
-  if ((mops->type == MACHINE_POWERBOOK_58)
+  if (!has_kbd_backlight()
+      || (mops->type == MACHINE_POWERBOOK_58)
       || (mops->type == MACHINE_POWERBOOK_59))
     {
       /* Nothing to probe for the PMU05 machines */
@@ -345,7 +346,7 @@ kbd_backlight_init(void)
   else
     ret = kbd_probe_lmu();
 
-  if ((!has_kbd_backlight()) || (ret < 0))
+  if (!has_kbd_backlight() || (ret < 0))
     {
       lmu_info.lmuaddr = 0;
 
