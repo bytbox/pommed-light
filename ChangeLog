@@ -4,6 +4,8 @@ ChangeLog for pommed
 version 1.22:
 	- pommed: do not probe for LMU controller on pmac machines that do
 	not have a backlit keyboard. Avoids a spurious error message.
+	- pommed: factor out ADB & LMU write routines, avoids duplicated
+	code in the kbd_{lmu,pmu}_backlight_set() routines.
 
 version 1.21:
 	- gpomme: use compositing if available, patch by Soeren Sonnenburg.

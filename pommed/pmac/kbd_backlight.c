@@ -64,6 +64,29 @@ kbd_backlight_get(void)
 }
 
 
+/* Helper for LMU-controlled keyboards */
+static void
+lmu_write_kbd_value(int fd, unsigned char val)
+{
+  unsigned char buf[3];
+
+  buf[0] = 0x01;   /* i2c register */
+
+  /* The format appears to be: (taken from pbbuttonsd)
+   *          byte 1   byte 2
+   *         |<---->| |<---->|
+   *         xxxx7654 3210xxxx
+   *             |<----->|
+   *                 ^-- brightness
+   */
+
+  buf[1] = val >> 4;
+  buf[2] = val << 4;
+
+  if (write (fd, buf, 3) < 0)
+    logmsg(LOG_ERR, "Could not set LMU kbd brightness: %s\n", strerror(errno));
+}
+
 static void
 kbd_lmu_backlight_set(int val, int who)
 {
@@ -76,7 +99,6 @@ kbd_lmu_backlight_set(int val, int who)
 
   int fd;
   int ret;
-  unsigned char buf[8];
 
   if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
     return;
@@ -109,8 +131,6 @@ kbd_lmu_backlight_set(int val, int who)
       return;
     }
 
-  buf[0] = 0x01;   /* i2c register */
-
   if (who == KBD_AUTO)
     {
       fade_step.tv_sec = 0;
@@ -123,42 +143,48 @@ kbd_lmu_backlight_set(int val, int who)
 	{
 	  fadeval += step;
 
-	  /* See below for the format */
-	  buf[1] = (unsigned char) fadeval >> 4;
-	  buf[2] = (unsigned char) fadeval << 4;
-
-	  if (write (fd, buf, 3) < 0)
-	    {
-	      logmsg(LOG_ERR, "Could not set LMU kbd brightness: %s\n", strerror(errno));
-
-	      continue;
-	    }
+	  lmu_write_kbd_value(fd, (unsigned char)fadeval);
 
 	  logdebug("KBD backlight value faded to %d\n", (int)fadeval);
 
 	  nanosleep(&fade_step, NULL);
 	}
     }
-  
-  /* The format appears to be: (taken from pbbuttonsd)
-   *          byte 1   byte 2
-   *         |<---->| |<---->|
-   *         xxxx7654 3210xxxx
-   *             |<----->|
-   *                 ^-- brightness
-   */
-  
-  buf[1] = (unsigned char) val >> 4;
-  buf[2] = (unsigned char) val << 4;
 
-  if (write (fd, buf, 3) < 0)
-    logmsg(LOG_ERR, "Could not set LMU kbd brightness: %s\n", strerror(errno));
+  lmu_write_kbd_value(fd, val);
 
   close(fd);
 
   mbpdbus_send_kbd_backlight(val, kbd_bck_info.level, who);
 
   kbd_bck_info.level = val;
+}
+
+
+/* Helper for ADB keyboards */
+static void
+adb_write_kbd_value(int fd, unsigned char val)
+{
+  int ret;
+  unsigned char buf[ADB_BUFFER_SIZE];
+
+  buf[0] = PMU_PACKET;
+  buf[1] = 0x4f; /* PMU command */
+  buf[2] = 0;
+  buf[3] = 0;
+  buf[4] = val;
+
+  ret = write(fd, buf, 5);
+  if (ret != 5)
+    {
+      logmsg(LOG_ERR, "Could not set PMU kbd brightness: %s\n", strerror(errno));
+    }
+  else
+    {
+      ret = read(fd, buf, ADB_BUFFER_SIZE);
+      if (ret < 0)
+	logmsg(LOG_ERR, "Could not read PMU reply: %s\n", strerror(errno));
+    }
 }
 
 static void
@@ -172,8 +198,6 @@ kbd_pmu_backlight_set(int val, int who)
   struct timespec fade_step;
 
   int fd;
-  int ret;
-  unsigned char buf[ADB_BUFFER_SIZE];
 
   if (kbd_bck_info.inhibit & ~KBD_INHIBIT_CFG)
     return;
@@ -206,51 +230,15 @@ kbd_pmu_backlight_set(int val, int who)
 	{
 	  fadeval += step;
 
-	  buf[0] = PMU_PACKET;
-	  buf[1] = 0x4f; /* PMU command */
-	  buf[2] = 0;
-	  buf[3] = 0;
-	  buf[4] = (unsigned char)fadeval;
-
-	  ret = write(fd, buf, 5);
-	  if (ret != 5)
-	    {
-	      logmsg(LOG_ERR, "Could not set PMU kbd brightness: %s\n", strerror(errno));
-
-	      continue;
-	    }
-
-	  ret = read(fd, buf, ADB_BUFFER_SIZE);
-	  if (ret < 0)
-	    {
-	      logmsg(LOG_ERR, "Could not read PMU reply: %s\n", strerror(errno));
-
-	      continue;
-	    }
+	  adb_write_kbd_value(fd, (unsigned char)val);
 
 	  logdebug("KBD backlight value faded to %d\n", (int)fadeval);
 
 	  nanosleep(&fade_step, NULL);
 	}
     }
-  
-  buf[0] = PMU_PACKET;
-  buf[1] = 0x4f; /* PMU command */
-  buf[2] = 0;
-  buf[3] = 0;
-  buf[4] = val;
 
-  ret = write(fd, buf, 5);
-  if (ret != 5)
-    {
-      logmsg(LOG_ERR, "Could not set PMU kbd brightness: %s\n", strerror(errno));
-    }
-  else
-    {
-      ret = read(fd, buf, ADB_BUFFER_SIZE);
-      if (ret < 0)
-	logmsg(LOG_ERR, "Could not read PMU reply: %s\n", strerror(errno));
-    }
+  adb_write_kbd_value(fd, val);
 
   close(fd);
 
