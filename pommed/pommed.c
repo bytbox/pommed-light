@@ -30,6 +30,8 @@
 #include <string.h>
 #include <signal.h>
 
+#include <sys/utsname.h>
+
 #include <syslog.h>
 #include <stdarg.h>
 
@@ -692,6 +694,7 @@ main (int argc, char **argv)
   int c;
 
   FILE *pidfile;
+  struct utsname sysinfo;
 
   machine_type machine;
 
@@ -783,6 +786,16 @@ main (int argc, char **argv)
       logmsg(LOG_ERR, "machine_ops mismatch: expected %d, found %d", machine, mops->type);
 
       exit(1);
+    }
+
+  if (debug)
+    {
+      ret = uname(&sysinfo);
+
+      if (ret < 0)
+	logmsg(LOG_ERR, "uname() failed: %s", strerror(errno));
+      else
+	logdebug("System: %s %s %s", sysinfo.sysname, sysinfo.release, sysinfo.machine);
     }
 
   ret = evloop_init();
