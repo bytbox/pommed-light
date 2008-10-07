@@ -23,7 +23,7 @@ LDFLAGS = -lpthread $(DBUS_LIBS) $(DBUSGLIB_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(
 SOURCES = gpomme.c theme.c conffile.c \
 		../client-common/dbus-client.c \
 		../client-common/video-client.c
-POFILES = po/fr.po po/de.po po/es.po po/it.po
+POFILES = po/fr.po po/de.po po/es.po po/it.po po/ja.po
 
 OBJS = $(SOURCES:%.c=%.o)
 MOFILES = $(POFILES:%.po=%.mo)

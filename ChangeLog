@@ -6,6 +6,8 @@ version 1.22:
 	not have a backlit keyboard. Avoids a spurious error message.
 	- pommed: factor out ADB & LMU write routines, avoids duplicated
 	code in the kbd_{lmu,pmu}_backlight_set() routines.
+	- gpomme: add japanese translation for gpomme, courtesy of
+	Nobuhiro Iwamatsu <iwamatsu@nigauri.org>.
 
 version 1.21:
 	- gpomme: use compositing if available, patch by Soeren Sonnenburg.
