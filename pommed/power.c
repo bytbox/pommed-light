@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <string.h>
+#include <errno.h>
 
 #include <syslog.h>
 
@@ -31,13 +33,57 @@
 #include "power.h"
 
 
-/* Internal API */
+/* Internal API - legacy procfs interface, ACPI or PMU */
 int
-check_ac_state(void);
+procfs_check_ac_state(void);
 
 
 static int prev_state;
 static int power_timer;
+
+
+/* sysfs power_supply class */
+static int
+sysfs_check_ac_state(void)
+{
+  FILE *fp;
+  char ac_state;
+  int ret;
+
+  fp = fopen(SYSFS_POWER_AC_STATE, "r");
+  if (fp == NULL)
+    return AC_STATE_ERROR;
+
+  ret = fread(&ac_state, 1, 1, fp);
+
+  if (ferror(fp) != 0)
+    {
+      logdebug("power: Error reading sysfs AC state: %s\n", strerror(errno));
+      return AC_STATE_ERROR;
+    }
+
+  fclose(fp);
+
+  if (ac_state == '1')
+    return AC_STATE_ONLINE;
+
+  if (ac_state == '0')
+    return AC_STATE_OFFLINE;
+
+  return AC_STATE_UNKNOWN;
+}
+
+static int
+check_ac_state(void)
+{
+  int ret;
+
+  ret = sysfs_check_ac_state();
+  if (ret == AC_STATE_ERROR)
+    return procfs_check_ac_state();
+
+  return ret;
+}
 
 
 static void

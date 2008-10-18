@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,22 +27,22 @@
 #include "../power.h"
 
 
-#define PMU_AC_STATE_FILE  "/proc/pmu/info"
-#define PMU_AC_STATE       "AC Power"
-#define PMU_AC_ONLINE      '1'
-#define PMU_AC_OFFLINE     '0'
+#define PROC_PMU_AC_STATE_FILE  "/proc/pmu/info"
+#define PROC_PMU_AC_STATE       "AC Power"
+#define PROC_PMU_AC_ONLINE      '1'
+#define PROC_PMU_AC_OFFLINE     '0'
 
 
-/* Internal API */
+/* Internal API - procfs PMU */
 int
-check_ac_state(void)
+procfs_check_ac_state(void)
 {
   FILE *fp;
   char buf[128];
   char *ac_state;
   int ret;
 
-  fp = fopen(PMU_AC_STATE_FILE, "r");
+  fp = fopen(PROC_PMU_AC_STATE_FILE, "r");
   if (fp == NULL)
     return AC_STATE_ERROR;
 
@@ -64,7 +64,7 @@ check_ac_state(void)
 
   buf[ret] = '\0';
 
-  ac_state = strstr(buf, PMU_AC_STATE);
+  ac_state = strstr(buf, PROC_PMU_AC_STATE);
   if (ac_state == NULL)
     return AC_STATE_ERROR;
 
@@ -72,10 +72,10 @@ check_ac_state(void)
   if ((ac_state == NULL) || (ac_state == buf))
     return AC_STATE_ERROR;
 
-  if (ac_state[-1] == PMU_AC_ONLINE)
+  if (ac_state[-1] == PROC_PMU_AC_ONLINE)
     return AC_STATE_ONLINE;
 
-  if (ac_state[-1] == PMU_AC_OFFLINE)
+  if (ac_state[-1] == PROC_PMU_AC_OFFLINE)
     return AC_STATE_OFFLINE;
 
   return AC_STATE_UNKNOWN;

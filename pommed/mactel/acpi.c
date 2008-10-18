@@ -28,66 +28,14 @@
 #include "../power.h"
 
 
-#define SYSFS_ACPI_AC_STATE  "/sys/class/power_supply/ADP1/online"
-
 #define PROC_ACPI_AC_STATE   "/proc/acpi/ac_adapter/ADP1/state"
 #define PROC_ACPI_AC_ONLINE  "on-line\n"
 #define PROC_ACPI_AC_OFFLINE "off-line\n"
 
 
-static int
-proc_check_ac_state(void);
-
-static int
-sysfs_check_ac_state(void);
-
-
-/* Internal API */
+/* Internal API - procfs ACPI */
 int
-check_ac_state(void)
-{
-  if (access(SYSFS_ACPI_AC_STATE, R_OK) == 0)
-    return sysfs_check_ac_state();
-  else
-    return proc_check_ac_state();
-}
-
-
-/* sysfs power_supply class variant */
-static int
-sysfs_check_ac_state(void)
-{
-  FILE *fp;
-  char ac_state;
-  int ret;
-
-  fp = fopen(SYSFS_ACPI_AC_STATE, "r");
-  if (fp == NULL)
-    return AC_STATE_ERROR;
-
-  ret = fread(&ac_state, 1, 1, fp);
-
-  if (ferror(fp) != 0)
-    {
-      logdebug("acpi: Error reading sysfs AC state: %s\n", strerror(errno));
-      return AC_STATE_ERROR;
-    }
-
-  fclose(fp);
-
-  if (ac_state == '1')
-    return AC_STATE_ONLINE;
-
-  if (ac_state == '0')
-    return AC_STATE_OFFLINE;
-
-  return AC_STATE_UNKNOWN;
-}
-
-
-/* procfs variant */
-static int
-proc_check_ac_state(void)
+procfs_check_ac_state(void)
 {
   FILE *fp;
   char buf[128];
