@@ -36,7 +36,8 @@ typedef struct {
  /* Global variable */
 /*******************/
 
-Display		*display;
+extern Display *display;
+extern int x_fd;
 
   /***********************/
  /* Function Prototypes */

@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
  * Based on wmwave by Carsten Schuermann <carsten@schuermann.org>
  * wmwave derived from:
@@ -33,15 +33,23 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#include <stdint.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <time.h>
+#include <poll.h>
+
 #include <signal.h>
+
+#include <errno.h>
 
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 
 #include <dbus/dbus.h>
+
+#include "timerfd-syscalls.h"
 
 #include "wmgeneral.h"
 #include "wmpomme-master.xpm"
@@ -65,20 +73,27 @@ struct {
 } mbp;
 
 
-#define DISPLAY_DBUS_NOK  0
-#define DISPLAY_NO_DATA   1
-#define DISPLAY_MACBOOK   2
-#define DISPLAY_AMBIENT   3
-int mbpdisplay = DISPLAY_DBUS_NOK;
+#define DISPLAY_TYPE_DBUS_NOK  (1 << 0)
+#define DISPLAY_TYPE_NO_DATA   (1 << 1)
+#define DISPLAY_TYPE_MACBOOK   (1 << 2)
+#define DISPLAY_TYPE_AMBIENT   (1 << 3)
+
+#define DISPLAY_MASK_TYPE      (0xffff)
+#define DISPLAY_TYPE(d)        (d & DISPLAY_MASK_TYPE)
+
+#define DISPLAY_FLAG_UPDATE    (1 << 16)
+
+#define DISPLAY_MASK_FLAGS     (0xffff0000)
+#define DISPLAY_FLAGS(d)       (d & DISPLAY_MASK_FLAGS)
+
+unsigned int mbpdisplay = DISPLAY_TYPE_DBUS_NOK;
 
 
 char wmmbp_mask_bits[64*64];
 int wmmbp_mask_width = 64;
 int wmmbp_mask_height = 64;
 
-#define WMPOMME_VERSION "0.1"
-
-int update_rate = 100;
+#define WMPOMME_VERSION "0.2"
 
 char *ProgName;
 
@@ -102,7 +117,7 @@ wmmbp_dbus_init(void)
 
   if (conn == NULL)
     {
-      mbpdisplay = DISPLAY_DBUS_NOK;
+      mbpdisplay = DISPLAY_FLAG_UPDATE | DISPLAY_TYPE_DBUS_NOK;
 
       return -1;
     }
@@ -113,26 +128,18 @@ wmmbp_dbus_init(void)
 }
 
 void
-mbp_dbus_listen(int timeout)
+mbp_dbus_listen(void)
 {
   DBusMessage *msg;
 
   int scratch;
 
-  /* Disconnected, try to reconnect */
   if (conn == NULL)
-    {
-      if (wmmbp_dbus_init() < 0)
-	usleep(timeout * 1000);
-
-      return;
-    }
+    return;
 
   while (1)
     {
-      dbus_connection_read_write(conn, timeout);
-      /* next iterations in this call, to drain the queue */
-      timeout = 0;
+      dbus_connection_read_write(conn, 0);
 
       msg = dbus_connection_pop_message(conn);
 
@@ -148,6 +155,9 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &scratch, /* previous right */
 				DBUS_TYPE_UINT32, &mbp.ambient_max,
 				DBUS_TYPE_INVALID);
+
+	  if (mbpdisplay & DISPLAY_TYPE_AMBIENT)
+	    mbpdisplay |= DISPLAY_FLAG_UPDATE;
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.lcdBacklight", "lcdBacklight"))
 	{
@@ -157,6 +167,9 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &mbp.lcd_max,
 				DBUS_TYPE_UINT32, &scratch, /* who */
 				DBUS_TYPE_INVALID);
+
+	  if (mbpdisplay & DISPLAY_TYPE_MACBOOK)
+	    mbpdisplay |= DISPLAY_FLAG_UPDATE;
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.kbdBacklight", "kbdBacklight"))
 	{
@@ -166,6 +179,9 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &mbp.kbd_max,
 				DBUS_TYPE_UINT32, &scratch, /* who */
 				DBUS_TYPE_INVALID);
+
+	  if (mbpdisplay & (DISPLAY_TYPE_MACBOOK | DISPLAY_TYPE_AMBIENT))
+	    mbpdisplay |= DISPLAY_FLAG_UPDATE;
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.audioVolume", "audioVolume"))
 	{
@@ -174,12 +190,18 @@ mbp_dbus_listen(int timeout)
 				DBUS_TYPE_UINT32, &scratch, /* previous */
 				DBUS_TYPE_UINT32, &mbp.snd_max,
 				DBUS_TYPE_INVALID);
+
+	  if (mbpdisplay & DISPLAY_TYPE_MACBOOK)
+	    mbpdisplay |= DISPLAY_FLAG_UPDATE;
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.audioMute", "audioMute"))
 	{
 	  dbus_message_get_args(msg, &dbus_err,
 				DBUS_TYPE_BOOLEAN, &mbp.snd_mute,
 				DBUS_TYPE_INVALID);
+
+	  if (mbpdisplay & DISPLAY_TYPE_MACBOOK)
+	    mbpdisplay |= DISPLAY_FLAG_UPDATE;
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
 	{
@@ -189,7 +211,7 @@ mbp_dbus_listen(int timeout)
 	{
 	  printf("DBus disconnected\n");
 
-	  mbpdisplay = DISPLAY_DBUS_NOK;
+	  mbpdisplay = DISPLAY_FLAG_UPDATE | DISPLAY_TYPE_DBUS_NOK;
 
 	  mbp_dbus_cleanup();
 	  conn = NULL;
@@ -402,11 +424,15 @@ wmmbp_get_values(void)
       goto mcall_error;
     }
 
+  if (DISPLAY_TYPE(mbpdisplay) <= DISPLAY_TYPE_NO_DATA)
+    mbpdisplay = DISPLAY_TYPE_MACBOOK;
+
+  mbpdisplay |= DISPLAY_FLAG_UPDATE;
+
+  return;
+
  mcall_error:
-  if ((ret < 0) || (cbret < 0))
-    mbpdisplay = DISPLAY_NO_DATA;
-  else if (mbpdisplay <= DISPLAY_NO_DATA)
-    mbpdisplay = DISPLAY_MACBOOK;
+  mbpdisplay = DISPLAY_FLAG_UPDATE | DISPLAY_TYPE_NO_DATA;
 }
 
 
@@ -474,9 +500,9 @@ DrawEmptyDot(void)
 void
 DisplayMBPStatus(void)
 {
-  switch (mbpdisplay)
+  switch (DISPLAY_TYPE(mbpdisplay))
     {
-      case DISPLAY_MACBOOK:
+      case DISPLAY_TYPE_MACBOOK:
 	BlitString("MacBook", 4, 4);
 	DrawGreenDot();
 
@@ -493,7 +519,7 @@ DisplayMBPStatus(void)
 	DrawGreenBar(((float)mbp.snd_lvl / (float)mbp.snd_max) * 100.0, 4, 55);
 	break;
 
-      case DISPLAY_AMBIENT:
+      case DISPLAY_TYPE_AMBIENT:
 	BlitString("Ambient", 4, 4);
 	DrawYellowDot();
 
@@ -507,7 +533,7 @@ DisplayMBPStatus(void)
 	DrawGreenBar(((float)mbp.kbd_lvl / (float)mbp.kbd_max) * 100.0, 4, 55);
 	break;
 
-      case DISPLAY_DBUS_NOK:
+      case DISPLAY_TYPE_DBUS_NOK:
 	BlitString(" Error ", 4, 4);
 	DrawRedDot();
 
@@ -521,7 +547,7 @@ DisplayMBPStatus(void)
 	DrawGreenBar(0.0, 4, 55);
 	break;
 
-      case DISPLAY_NO_DATA:
+      case DISPLAY_TYPE_NO_DATA:
 	BlitString("No Data", 4, 4);
 	DrawRedDot();
 
@@ -535,7 +561,59 @@ DisplayMBPStatus(void)
 	DrawGreenBar(0.0, 4, 55);
 	break;
     }
+
+  mbpdisplay = DISPLAY_TYPE(mbpdisplay);
 }
+
+
+static int
+mbp_create_timer(int timeout)
+{
+  int fd;
+  int ret;
+
+  struct itimerspec timing;
+
+  fd = timerfd_create(CLOCK_MONOTONIC, 0);
+  if (fd < 0)
+    {
+      fprintf(stderr, "Could not create timer: %s", strerror(errno));
+
+      return -1;
+    }
+
+  timing.it_interval.tv_sec = (timeout >= 1000) ? timeout / 1000 : 0;
+  timing.it_interval.tv_nsec = (timeout - (timing.it_interval.tv_sec * 1000)) * 1000000;
+
+  ret = clock_gettime(CLOCK_MONOTONIC, &timing.it_value);
+  if (ret < 0)
+    {
+      fprintf(stderr, "Could not get current time: %s", strerror(errno));
+
+      close(fd);
+      return -1;
+    }
+
+  timing.it_value.tv_sec += timing.it_interval.tv_sec;
+  timing.it_value.tv_nsec += timing.it_interval.tv_nsec;
+  if (timing.it_value.tv_nsec > 1000000000)
+    {
+      timing.it_value.tv_sec++;
+      timing.it_value.tv_nsec -= 1000000000;
+    }
+
+  ret = timerfd_settime(fd, TFD_TIMER_ABSTIME, &timing, NULL);
+  if (ret < 0)
+    {
+      fprintf(stderr, "Could not setup timer: %s", strerror(errno));
+
+      close(fd);
+      return -1;
+    }
+
+  return fd;
+}
+
 
 int running;
 
@@ -600,14 +678,6 @@ main(int argc, char **argv)
 		exit(0);
 		break;
 
-	      case 'r':
-		if (argc > (i+1))
-		  {
-		    update_rate = (atoi(argv[i+1]));
-		    i++;
-		  }
-		break;
-
 	      default:
 		usage();
 		exit(0);
@@ -617,6 +687,10 @@ main(int argc, char **argv)
     }
 
   wmmbp_dbus_init();
+
+  createXBMfromXPM(wmmbp_mask_bits, wmmbp_master_xpm, wmmbp_mask_width, wmmbp_mask_height);
+
+  openXwindow(argc, argv, wmmbp_master_xpm, wmmbp_mask_bits, wmmbp_mask_width, wmmbp_mask_height);
 
   wmmbp_routine(argc, argv);
 
@@ -631,59 +705,130 @@ main(int argc, char **argv)
 void
 wmmbp_routine(int argc, char **argv)
 {
+  int nfds;
+  struct pollfd fds[2];
+
+  int t_fd;
+  uint64_t ticks;
+
+  int ret;
+
   XEvent Event;
 
-  createXBMfromXPM(wmmbp_mask_bits, wmmbp_master_xpm, wmmbp_mask_width, wmmbp_mask_height);
+  /* X */
+  fds[0].fd = x_fd;
+  fds[0].events = POLLIN;
+  nfds = 1;
 
-  openXwindow(argc, argv, wmmbp_master_xpm, wmmbp_mask_bits, wmmbp_mask_width, wmmbp_mask_height);
+  /* DBus */
+  if (conn != NULL)
+    {
+      if (dbus_connection_get_unix_fd(conn, &fds[1].fd))
+	nfds = 2;
+    }
+  fds[1].events = POLLIN;
+
+  t_fd = -1;
+
+  wmmbp_get_values();
 
   RedrawWindow();
 
   running = 1;
   while (running)
     {
-      if (mbpdisplay == DISPLAY_NO_DATA)
-	wmmbp_get_values();
-
-      /*
-       * Update display
-       */
-      DisplayMBPStatus();
-
-      RedrawWindow();
-
-      /*
-       * X Events
-       */
-      while (XPending(display))
+      if ((conn == NULL) && (t_fd == -1))
 	{
-	  XNextEvent(display, &Event);
-	  switch (Event.type)
+	  /* setup reconnect timer */
+	  t_fd = mbp_create_timer(200);
+
+	  if (t_fd != -1)
 	    {
-	      case Expose:
-		RedrawWindow();
-		break;
+	      fds[1].fd = t_fd;
+	      nfds = 2;
+	    }
+	  else
+	    nfds = 1;
 
-	      case DestroyNotify:
-		XCloseDisplay(display);
-		exit(0);
-		break;
+	  fds[1].revents = 0;
+	}
 
-	      case ButtonPress:
-		if (mbpdisplay > DISPLAY_NO_DATA)
-		  {
-		    mbpdisplay++;
-		    if (mbpdisplay > DISPLAY_AMBIENT)
-		      mbpdisplay = DISPLAY_MACBOOK;
+      ret = poll(fds, nfds, -1);
 
-		    DisplayMBPStatus();
-		    RedrawWindow();
-		  }
-		break;
+      if (ret < 0)
+	continue;
+
+      /* DBus */
+      if ((nfds == 2) && (fds[1].revents != 0))
+	{
+	  /* reconnection */
+	  if (conn == NULL)
+	    {
+	      /* handle timer & reconnect, fd */
+	      read(fds[1].fd, &ticks, sizeof(ticks));
+
+	      if (wmmbp_dbus_init() == 0)
+		{
+		  close(t_fd);
+		  t_fd = -1;
+
+		  if (!dbus_connection_get_unix_fd(conn, &fds[1].fd))
+		    {
+		      fds[1].fd = -1;
+		      nfds = 1;
+		    }
+		}
+	    }
+	  else /* events */
+	    {
+	      mbp_dbus_listen();
 	    }
 	}
 
-      mbp_dbus_listen(update_rate);
+      if ((mbpdisplay & DISPLAY_TYPE_NO_DATA) && (conn != NULL))
+	wmmbp_get_values();
+
+      /* X Events */
+      if (fds[0].revents != 0)
+	{
+	  while (XPending(display))
+	    {
+	      XNextEvent(display, &Event);
+	      switch (Event.type)
+		{
+		  case Expose:
+		    mbpdisplay |= DISPLAY_FLAG_UPDATE;
+		    break;
+
+		  case DestroyNotify:
+		    XCloseDisplay(display);
+		    return;
+
+		  case ButtonPress:
+		    if (DISPLAY_TYPE(mbpdisplay) > DISPLAY_TYPE_NO_DATA)
+		      {
+			switch (DISPLAY_TYPE(mbpdisplay))
+			  {
+			    case DISPLAY_TYPE_MACBOOK:
+			      mbpdisplay = DISPLAY_FLAG_UPDATE | DISPLAY_TYPE_AMBIENT;
+			      break;
+
+			    case DISPLAY_TYPE_AMBIENT:
+			      mbpdisplay = DISPLAY_FLAG_UPDATE | DISPLAY_TYPE_MACBOOK;
+			      break;
+			  }
+		      }
+		    break;
+		}
+	    }
+	}
+
+      /* Update display */
+      if (mbpdisplay & DISPLAY_FLAG_UPDATE)
+	{
+	  DisplayMBPStatus();
+	  RedrawWindow();
+	}
     }
 }
 
@@ -742,7 +887,6 @@ usage(void)
   fprintf(stderr, "Based on wmwave by Carsten Schuermann <carsten@schuermann.org>\n\n");
   fprintf(stderr, "Usage:\n");
   fprintf(stderr, "\t-display <display name>\n");
-  fprintf(stderr, "\t-r\t\tupdate rate in milliseconds (default:100)\n");
 }
 
 void

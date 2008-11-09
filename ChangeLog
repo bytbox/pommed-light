@@ -12,6 +12,9 @@ version 1.22:
 	sysfs power class support for pmac machines.
 	- pommed: added partial support for the October 2008 laptops
 	(MacBook5,1, MacBookPro5,1, MacBookAir2,1), LCD backlight missing.
+	- wmpomme: turn wmpomme into an event-driven dockapp, eliminating
+	the fixed update rate (and, thus, wakeups). Thanks to Kalle
+	A. Sandström for the prodding.
 
 version 1.21:
 	- gpomme: use compositing if available, patch by Soeren Sonnenburg.

@@ -4,7 +4,7 @@ DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
 DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS)
-LDFLAGS = -lXpm -lXext -lX11 $(DBUS_LIBS)
+LDFLAGS = -lrt -lXpm -lXext -lX11 $(DBUS_LIBS)
 
 SOURCES = wmgeneral.c wmpomme.c \
 	../client-common/dbus-client.c \
