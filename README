@@ -15,6 +15,8 @@ Kernel version requirements:
  pommed requires at least a 2.6.25 kernel, due to the use of the new timerfd
  interface that was released as stable with this version.
 
+ February and October 2008 machines require a 2.6.28 kernel for full support.
+
 
 Supported machines:
 -------------------
@@ -22,13 +24,13 @@ Supported machines:
  - Intel machines
    * MacBook Pro Core Duo 15" (January 2006)
    * MacBook Pro Core Duo 17" (April 2006)
-   * MacBook Pro Core2 Duo 15" (October 2006, June 2007, February 2008)
-   * MacBook Pro Core2 Duo 17" (October 2006, June 2007, February 2008)
+   * MacBook Pro Core2 Duo 15" (October 2006, June 2007, February 2008, October 2008)
+   * MacBook Pro Core2 Duo 17" (October 2006, June 2007, February 2008, October 2008)
    * MacBook Core Duo (May 2006)
    * MacBook Core2 Duo (November 2006 & May 2007)
    * MacBook Core2 Duo Santa Rosa (November 2007)
-   * MacBook Core2 Duo (February 2008)
-   * MacBook Air Core2 Duo (January 2008)
+   * MacBook Core2 Duo (February 2008, October 2008)
+   * MacBook Air Core2 Duo (January 2008, October 2008)
 
 
  - PowerMac machines

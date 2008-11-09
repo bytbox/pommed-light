@@ -57,6 +57,11 @@
 #define USB_PRODUCT_ID_WELLSPRING2_ISO    0x0231
 #define USB_PRODUCT_ID_WELLSPRING2_JIS    0x0232
 
+/* Apple WellSpring III keyboard + trackpad */
+#define USB_PRODUCT_ID_WELLSPRING3_ANSI   0x0236
+#define USB_PRODUCT_ID_WELLSPRING3_ISO    0x0237
+#define USB_PRODUCT_ID_WELLSPRING3_JIS    0x0238
+
 
 /* Apple external USB keyboard, white */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c

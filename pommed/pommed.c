@@ -242,6 +242,25 @@ struct machine_ops pb_mops[] = {
 
 #else
 
+int
+dummy_backlight_probe(void)
+{
+  return 0;
+}
+
+void
+dummy_backlight_step(int dir)
+{
+  return;
+}
+
+void
+dummy_backlight_toggle(int lvl)
+{
+  return;
+}
+
+
 struct machine_ops mb_mops[] = {
   /* MacBook Pro machines */
 
@@ -275,6 +294,14 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = nv8600mgt_backlight_step,
     .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
     /* .evdev_identify = evdev_is_wellspring2, */
+  },
+
+  {  /* MacBookPro5,1 (15" & 17", Core2 Duo, October 2008) */
+    .type = MACHINE_MACBOOKPRO_5,
+    .lcd_backlight_probe = dummy_backlight_probe,
+    .lcd_backlight_step = dummy_backlight_step,
+    .lcd_backlight_toggle = dummy_backlight_toggle,
+    /* .evdev_identify = evdev_is_wellspring3, */
   },
 
   /* MacBook machines */
@@ -311,6 +338,14 @@ struct machine_ops mb_mops[] = {
     /* .evdev_identify = evdev_is_geyser4hf, */
   },
 
+  {  /* MacBook5,1 (Core2 Duo, October 2008) */
+    .type = MACHINE_MACBOOK_5,
+    .lcd_backlight_probe = dummy_backlight_probe,
+    .lcd_backlight_step = dummy_backlight_step,
+    .lcd_backlight_toggle = dummy_backlight_toggle,
+    /* .evdev_identify = evdev_is_wellspring3, */
+  },
+
   /* MacBook Air machines */
 
   {  /* MacBookAir1,1 (January 2008) */
@@ -319,6 +354,14 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = gma950_backlight_step,
     .lcd_backlight_toggle = gma950_backlight_toggle,
     /* .evdev_identify = evdev_is_wellspring, */
+  },
+
+  {  /* MacBookAir2,1 (October 2008) */
+    .type = MACHINE_MACBOOKAIR_2,
+    .lcd_backlight_probe = dummy_backlight_probe,
+    .lcd_backlight_step = dummy_backlight_step,
+    .lcd_backlight_toggle = dummy_backlight_toggle,
+    /* .evdev_identify = evdev_is_wellspring3, */
   }
 };
 #endif /* __powerpc__ */
@@ -641,6 +684,9 @@ check_machine_dmi(void)
   /* Core2 Duo MacBook Pro 15" & 17" (February 2008) */
   else if (strcmp(buf, "MacBookPro4,1") == 0)
     ret = MACHINE_MACBOOKPRO_4;
+  /* Core2 Duo MacBook Pro 15" & 17" (October 2008) */
+  else if (strcmp(buf, "MacBookPro5,1") == 0)
+    ret = MACHINE_MACBOOKPRO_5;
   /* Core Duo MacBook (May 2006) */
   else if (strcmp(buf, "MacBook1,1") == 0)
     ret = MACHINE_MACBOOK_1;
@@ -653,9 +699,15 @@ check_machine_dmi(void)
   /* Core2 Duo MacBook (February 2008) */
   else if (strcmp(buf, "MacBook4,1") == 0)
     ret = MACHINE_MACBOOK_4;
+  /* Core2 Duo MacBook (October 2008) */
+  else if (strcmp(buf, "MacBook5,1") == 0)
+    ret = MACHINE_MACBOOK_5;
   /* MacBook Air (January 2008) */
   else if (strcmp(buf, "MacBookAir1,1") == 0)
     ret = MACHINE_MACBOOKAIR_1;
+  /* MacBook Air (October 2008) */
+  else if (strcmp(buf, "MacBookAir2,1") == 0)
+    ret = MACHINE_MACBOOKAIR_2;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buf);
 
