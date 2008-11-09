@@ -883,7 +883,7 @@ void
 usage(void)
 {
   fprintf(stderr, "wmpomme v" WMPOMME_VERSION "\n");
-  fprintf(stderr, "Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>\n");
+  fprintf(stderr, "Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>\n");
   fprintf(stderr, "Based on wmwave by Carsten Schuermann <carsten@schuermann.org>\n\n");
   fprintf(stderr, "Usage:\n");
   fprintf(stderr, "\t-display <display name>\n");
@@ -893,5 +893,5 @@ void
 printversion(void)
 {
   fprintf(stderr, "wmpomme v%s\n", WMPOMME_VERSION);
-  fprintf(stderr, "Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>\n");
+  fprintf(stderr, "Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>\n");
 }
