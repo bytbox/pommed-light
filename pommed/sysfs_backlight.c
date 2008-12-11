@@ -30,10 +30,10 @@
 #include <string.h>
 #include <errno.h>
 
-#include "../pommed.h"
-#include "../conffile.h"
-#include "../lcd_backlight.h"
-#include "../dbus.h"
+#include "pommed.h"
+#include "conffile.h"
+#include "lcd_backlight.h"
+#include "dbus.h"
 
 
 #define SYSFS_DRIVER_NONE      0

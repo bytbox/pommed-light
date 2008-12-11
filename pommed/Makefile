@@ -1,4 +1,4 @@
-ARCH ?= $(shell uname -m)
+#ARCH ?= $(shell uname -m)
 
 CC = gcc
 
@@ -21,11 +21,13 @@ CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUS
 LDFLAGS = -pthread -lrt $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
 ifneq (, $(findstring ppc, $(ARCH)))
+CFLAGS += -D__powerpc__
+
 OFLIB ?=
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		evloop.c dbus.c power.c beep.c video.c \
-		pmac/sysfs_backlight.c pmac/pmu.c \
+		sysfs_backlight.c pmac/pmu.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
 OF_SOURCES = pmac/ofapi/of_externals.c pmac/ofapi/of_internals.c \
@@ -91,7 +93,7 @@ video.o: video.c video.h pommed.h dbus.h
 # PowerMac-specific files
 pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h dbus.h
 
-pmac/sysfs_backlight.o: pmac/sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+sysfs_backlight.o: sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 pmac/ambient.o: pmac/ambient.c ambient.h pommed.h dbus.h
 
