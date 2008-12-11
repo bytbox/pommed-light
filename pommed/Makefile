@@ -1,4 +1,4 @@
-#ARCH ?= $(shell uname -m)
+ARCH ?= $(shell uname -m)
 
 CC = gcc
 
@@ -21,8 +21,6 @@ CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUS
 LDFLAGS = -pthread -lrt $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
 ifneq (, $(findstring ppc, $(ARCH)))
-CFLAGS += -D__powerpc__
-
 OFLIB ?=
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
