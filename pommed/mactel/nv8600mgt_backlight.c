@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2006 Nicolas Boichat <nicolas @boichat.ch>
  * Copyright (C) 2006 Felipe Alfaro Solana <felipe_alfaro @linuxmail.org>
- * Copyright (C) 2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2007-2008 Julien BLACHE <jb@jblache.org>
  *  + Adapted for pommed
  *
  * This program is free software; you can redistribute it and/or modify
@@ -56,6 +56,7 @@ struct _lcd_bck_info lcd_bck_info;
 
 
 static int nv8600mgt_inited = 0;
+static unsigned int bl_port;
 
 
 static unsigned char
@@ -66,10 +67,10 @@ nv8600mgt_backlight_get()
   if (nv8600mgt_inited == 0)
     return 0;
 
-  outb(0x03, 0xB3);
-  outb(0xBF, 0xB2);
+  outb(0x03, bl_port + 1);
+  outb(0xbf, bl_port);
 
-  value = inb(0xB3) >> 4;
+  value = inb(bl_port + 1) >> 4;
 
   return value;
 }
@@ -80,8 +81,8 @@ nv8600mgt_backlight_set(unsigned char value)
   if (nv8600mgt_inited == 0)
     return;
 
-  outb(0x04 | (value << 4), 0xB3);
-  outb(0xBF, 0xB2);
+  outb(0x04 | (value << 4), bl_port + 1);
+  outb(0xbf, bl_port);
 }
 
 
@@ -164,14 +165,17 @@ nv8600mgt_backlight_toggle(int lvl)
 
 #define PCI_ID_VENDOR_NVIDIA     0x10de
 #define PCI_ID_PRODUCT_8600MGT   0x0407
+#define PCI_ID_PRODUCT_9400M     0x0863
+#define PCI_ID_PRODUCT_9600MGT   0x0647
 
-/* Look for an nVidia GeForce 8600M GT */
+/* Look for an nVidia GeForce 8600M GT, 9400M or 9600M GT */
 int
 nv8600mgt_backlight_probe(void)
 {
   struct pci_access *pacc;
   struct pci_dev *dev;
   int nv_found = 0;
+  int ret;
 
   pacc = pci_alloc();
   if (pacc == NULL)
@@ -184,12 +188,14 @@ nv8600mgt_backlight_probe(void)
   pci_scan_bus(pacc);
 
   /* Iterate over all devices */
-  for(dev = pacc->devices; dev; dev = dev->next)
+  for (dev = pacc->devices; dev; dev = dev->next)
     {
       pci_fill_info(dev, PCI_FILL_IDENT);
       /* nVidia GeForce 8600M GT */
       if ((dev->vendor_id == PCI_ID_VENDOR_NVIDIA)
-	  && (dev->device_id == PCI_ID_PRODUCT_8600MGT))
+	  && ((dev->device_id == PCI_ID_PRODUCT_8600MGT)
+	      || (dev->device_id == PCI_ID_PRODUCT_9400M)
+	      || (dev->device_id == PCI_ID_PRODUCT_9600MGT)))
 	{
 	  nv_found = 1;
 
@@ -201,15 +207,35 @@ nv8600mgt_backlight_probe(void)
 
   if (!nv_found)
     {
-      logdebug("Failed to detect nVidia GeForce 8600M GT, aborting...\n");
+      logdebug("Failed to detect nVidia GeForce 8600M GT/9400M/9600M GT, aborting...\n");
       return -1;
+    }
+
+  /* Determine backlight I/O port */
+  switch (mops->type)
+    {
+      case MACHINE_MACBOOKPRO_3:
+      case MACHINE_MACBOOKPRO_4:
+	bl_port = 0xb2; /* 0xb2 - 0xb3 */
+	break;
+
+      case MACHINE_MACBOOKPRO_5:
+      case MACHINE_MACBOOK_5:
+      case MACHINE_MACBOOKAIR_2:
+	bl_port = 0x52e; /* 0x52e - 0x52f */
+	break;
+
+      default:
+	logmsg(LOG_ERR, "nv8600mgt LCD backlight support not supported on this hardware\n");
+	return -1;
     }
 
   lcd_bck_info.max = NV8600MGT_BACKLIGHT_MAX;
 
-  if (ioperm(0xB2, 0xB3, 1) < 0)
+  ret = iopl(3);
+  if (ret < 0)
     {
-      logmsg(LOG_ERR, "ioperm() failed: %s", strerror(errno));
+      logmsg(LOG_ERR, "iopl() failed: %s", strerror(errno));
 
       lcd_bck_info.level = 0;
 

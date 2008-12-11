@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.23:
+	- pommed: add backlight support for late 2008 laptops.
 
 version 1.22:
 	- pommed: do not probe for LMU controller on pmac machines that do
