@@ -242,25 +242,6 @@ struct machine_ops pb_mops[] = {
 
 #else
 
-int
-dummy_backlight_probe(void)
-{
-  return 0;
-}
-
-void
-dummy_backlight_step(int dir)
-{
-  return;
-}
-
-void
-dummy_backlight_toggle(int lvl)
-{
-  return;
-}
-
-
 struct machine_ops mb_mops[] = {
   /* MacBook Pro machines */
 
@@ -298,9 +279,9 @@ struct machine_ops mb_mops[] = {
 
   {  /* MacBookPro5,1 (15" & 17", Core2 Duo, October 2008) */
     .type = MACHINE_MACBOOKPRO_5,
-    .lcd_backlight_probe = dummy_backlight_probe,
-    .lcd_backlight_step = dummy_backlight_step,
-    .lcd_backlight_toggle = dummy_backlight_toggle,
+    .lcd_backlight_probe = nv8600mgt_backlight_probe,
+    .lcd_backlight_step = nv8600mgt_backlight_step,
+    .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
     /* .evdev_identify = evdev_is_wellspring3, */
   },
 
@@ -340,9 +321,9 @@ struct machine_ops mb_mops[] = {
 
   {  /* MacBook5,1 (Core2 Duo, October 2008) */
     .type = MACHINE_MACBOOK_5,
-    .lcd_backlight_probe = dummy_backlight_probe,
-    .lcd_backlight_step = dummy_backlight_step,
-    .lcd_backlight_toggle = dummy_backlight_toggle,
+    .lcd_backlight_probe = nv8600mgt_backlight_probe,
+    .lcd_backlight_step = nv8600mgt_backlight_step,
+    .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
     /* .evdev_identify = evdev_is_wellspring3, */
   },
 
@@ -358,9 +339,9 @@ struct machine_ops mb_mops[] = {
 
   {  /* MacBookAir2,1 (October 2008) */
     .type = MACHINE_MACBOOKAIR_2,
-    .lcd_backlight_probe = dummy_backlight_probe,
-    .lcd_backlight_step = dummy_backlight_step,
-    .lcd_backlight_toggle = dummy_backlight_toggle,
+    .lcd_backlight_probe = nv8600mgt_backlight_probe,
+    .lcd_backlight_step = nv8600mgt_backlight_step,
+    .lcd_backlight_toggle = nv8600mgt_backlight_toggle,
     /* .evdev_identify = evdev_is_wellspring3, */
   }
 };

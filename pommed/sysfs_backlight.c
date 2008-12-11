@@ -36,10 +36,16 @@
 #include "dbus.h"
 
 
-#define SYSFS_DRIVER_NONE      0
-#define SYSFS_DRIVER_ATY128    1
-#define SYSFS_DRIVER_RADEON    2
-#define SYSFS_DRIVER_NVIDIA    3
+enum {
+  SYSFS_DRIVER_NONE,
+#ifdef __powerpc__
+  SYSFS_DRIVER_ATY128,
+  SYSFS_DRIVER_RADEON,
+  SYSFS_DRIVER_NVIDIA,
+#else
+  SYSFS_DRIVER_MBP,
+#endif
+};
 
 
 /* sysfs backlight driver in use */
@@ -49,27 +55,39 @@ static int bck_driver = SYSFS_DRIVER_NONE;
 static char *actual_brightness[] =
   {
     "/dev/null",
+#ifdef __powerpc__
     "/sys/class/backlight/aty128bl0/actual_brightness",
     "/sys/class/backlight/radeonbl0/actual_brightness",
-    "/sys/class/backlight/nvidiabl0/actual_brightness"
+    "/sys/class/backlight/nvidiabl0/actual_brightness",
+#else
+    "/sys/class/backlight/mbp_backlight/actual_brightness",
+#endif
   };
 
 /* sysfs brightness node path */
 static char *brightness[] =
   {
     "/dev/null",
+#ifdef __powerpc__
     "/sys/class/backlight/aty128bl0/brightness",
     "/sys/class/backlight/radeonbl0/brightness",
-    "/sys/class/backlight/nvidiabl0/brightness"
+    "/sys/class/backlight/nvidiabl0/brightness",
+#else
+    "/sys/class/backlight/mbp_backlight/brightness",
+#endif
   };
 
 /* sysfs max_brightness node path */
 static char *max_brightness[] =
   {
     "/dev/null",
+#ifdef __powerpc__
     "/sys/class/backlight/aty128bl0/max_brightness",
     "/sys/class/backlight/radeonbl0/max_brightness",
-    "/sys/class/backlight/nvidiabl0/max_brightness"
+    "/sys/class/backlight/nvidiabl0/max_brightness",
+#else
+    "/sys/class/backlight/mbp_backlight/max_brightness",
+#endif
   };
 
 
@@ -232,6 +250,7 @@ sysfs_backlight_toggle(int lvl)
 }
 
 
+#ifdef __powerpc__
 /* When brightness keys are handled by the kernel itself,
  * we're only updating our internal buffers
  */
@@ -254,6 +273,7 @@ sysfs_backlight_toggle_kernel(int lvl)
 {
   return;
 }
+#endif /* __powerpc__ */
 
 
 /* We can't fix the config until we know the max backlight value,
@@ -324,6 +344,8 @@ sysfs_backlight_probe(int driver)
   return 0;
 }
 
+
+#ifdef __powerpc__
 int
 aty128_sysfs_backlight_probe(void)
 {
@@ -341,3 +363,32 @@ nvidia_sysfs_backlight_probe(void)
 {
   return sysfs_backlight_probe(SYSFS_DRIVER_NVIDIA);
 }
+#else
+int
+mbp_sysfs_backlight_probe(void)
+{
+  int ret;
+
+  ret = sysfs_backlight_probe(SYSFS_DRIVER_MBP);
+
+  if (ret < 0)
+    {
+      switch (mops->type)
+	{
+	  case MACHINE_MACBOOKPRO_3:
+	  case MACHINE_MACBOOKPRO_4:
+	  case MACHINE_MACBOOKPRO_5:
+	  case MACHINE_MACBOOK_5:
+	  case MACHINE_MACBOOKAIR_2:
+	    logmsg(LOG_INFO, "sysfs backlight probe failed, falling back to native");
+	    return zobe;
+
+	default:
+	  logmsg(LOG_ERR, "sysfs backlight probe failed, no fallback for this machine");
+	  return -1;
+	}
+    }
+
+  return 0;
+}
+#endif
