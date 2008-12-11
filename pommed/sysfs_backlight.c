@@ -363,7 +363,9 @@ nvidia_sysfs_backlight_probe(void)
 {
   return sysfs_backlight_probe(SYSFS_DRIVER_NVIDIA);
 }
+
 #else
+
 int
 mbp_sysfs_backlight_probe(void)
 {
@@ -371,32 +373,33 @@ mbp_sysfs_backlight_probe(void)
 
   ret = sysfs_backlight_probe(SYSFS_DRIVER_MBP);
 
-  if (ret < 0)
+  if (ret == 0)
+    return 0;
+
+  /* Probe failed, wire up native driver instead */
+  switch (mops->type)
     {
-      switch (mops->type)
-	{
-	  case MACHINE_MACBOOKPRO_3:
-	  case MACHINE_MACBOOKPRO_4:
-	  case MACHINE_MACBOOKPRO_5:
-	  case MACHINE_MACBOOK_5:
-	  case MACHINE_MACBOOKAIR_2:
-	    logmsg(LOG_INFO, "sysfs backlight probe failed, falling back to nv8600mgt");
+      case MACHINE_MACBOOKPRO_3:
+      case MACHINE_MACBOOKPRO_4:
+      case MACHINE_MACBOOKPRO_5:
+      case MACHINE_MACBOOK_5:
+      case MACHINE_MACBOOKAIR_2:
+	logmsg(LOG_INFO, "sysfs backlight probe failed, falling back to nv8600mgt");
 
-	    ret = nv8600mgt_backlight_probe();
-	    if (ret == 0)
-	      {
-		/* Wire up fallback native driver */
-		mops->lcd_backlight_step = nv8600mgt_backlight_step;
-		mops->lcd_backlight_toggle = nv8600mgt_backlight_toggle;
-	      }
-	    return ret;
+	ret = nv8600mgt_backlight_probe();
+	if (ret == 0)
+	  {
+	    /* Wire up fallback native driver */
+	    mops->lcd_backlight_step = nv8600mgt_backlight_step;
+	    mops->lcd_backlight_toggle = nv8600mgt_backlight_toggle;
+	  }
+	return ret;
 
-	default:
-	  logmsg(LOG_ERR, "sysfs backlight probe failed, no fallback for this machine");
-	  return -1;
-	}
+      default:
+	logmsg(LOG_ERR, "sysfs backlight probe failed, no fallback for this machine");
+	return -1;
     }
 
-  return 0;
+  return -1;
 }
 #endif
