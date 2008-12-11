@@ -57,6 +57,7 @@ endif
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		evloop.c dbus.c power.c beep.c video.c \
+		sysfs_backlight.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/nv8600mgt_backlight.c \
 		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
@@ -87,11 +88,10 @@ beep.o: beep.c beep.h pommed.h evloop.h audio.h
 
 video.o: video.c video.h pommed.h dbus.h
 
+sysfs_backlight.o: sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 # PowerMac-specific files
 pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h dbus.h
-
-sysfs_backlight.o: sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
 
 pmac/ambient.o: pmac/ambient.c ambient.h pommed.h dbus.h
 

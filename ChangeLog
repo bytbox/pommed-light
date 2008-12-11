@@ -3,6 +3,9 @@ ChangeLog for pommed
 
 version 1.23:
 	- pommed: add backlight support for late 2008 laptops.
+	- pommed: default to sysfs backlight driver for nVidia machines,
+	with the mbp_nvidia_bl kernel driver; fall back to native
+	nv8600mgt if not supported.
 
 version 1.22:
 	- pommed: do not probe for LMU controller on pmac machines that do

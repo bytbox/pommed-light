@@ -70,10 +70,7 @@ nv8600mgt_backlight_probe(void);
 
 void
 nv8600mgt_backlight_fix_config(void);
-
-
-
-#else
+#endif /* !__powerpc__ */
 
 
 /* sysfs_backlight.c */
@@ -85,6 +82,7 @@ sysfs_backlight_step(int dir);
 void
 sysfs_backlight_toggle(int lvl);
 
+#ifdef __powerpc__
 void
 sysfs_backlight_step_kernel(int dir);
 
@@ -99,7 +97,10 @@ r9x00_sysfs_backlight_probe(void);
 
 int
 nvidia_sysfs_backlight_probe(void);
+#else
+int
+mbp_sysfs_backlight_probe(void);
+#endif
 
-#endif /* !__powerpc__ */
 
 #endif /* !__LCD_BACKLIGHT_H__ */

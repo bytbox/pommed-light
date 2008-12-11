@@ -37,9 +37,8 @@
 
 
 struct _general_cfg general_cfg;
-#ifdef __powerpc__
 struct _lcd_sysfs_cfg lcd_sysfs_cfg;
-#else
+#ifndef __powerpc__
 struct _lcd_x1600_cfg lcd_x1600_cfg;
 struct _lcd_gma950_cfg lcd_gma950_cfg;
 struct _lcd_nv8600mgt_cfg lcd_nv8600mgt_cfg;
@@ -60,7 +59,6 @@ static cfg_opt_t general_opts[] =
     CFG_END()
   };
 
-#ifdef __powerpc__
 static cfg_opt_t lcd_sysfs_opts[] =
   {
     CFG_INT("init", -1, CFGF_NONE),
@@ -69,8 +67,8 @@ static cfg_opt_t lcd_sysfs_opts[] =
     CFG_END()
   };
 
-#else
 
+#ifndef __powerpc__
 static cfg_opt_t lcd_x1600_opts[] =
   {
     CFG_INT("init", -1, CFGF_NONE),
@@ -94,7 +92,7 @@ static cfg_opt_t lcd_nv8600mgt_opts[] =
     CFG_INT("on_batt", 0, CFGF_NONE),
     CFG_END()
   };
-#endif /* __powerpc__ */
+#endif /* !__powerpc__ */
 
 
 static cfg_opt_t audio_opts[] =
@@ -145,9 +143,8 @@ static cfg_opt_t appleir_opts[] =
 static cfg_opt_t opts[] =
   {
     CFG_SEC("general", general_opts, CFGF_NONE),
-#ifdef __powerpc__ 
     CFG_SEC("lcd_sysfs", lcd_sysfs_opts, CFGF_NONE),
-#else
+#ifndef __powerpc__
     CFG_SEC("lcd_x1600", lcd_x1600_opts, CFGF_NONE),
     CFG_SEC("lcd_gma950", lcd_gma950_opts, CFGF_NONE),
     CFG_SEC("lcd_nv8600mgt", lcd_nv8600mgt_opts, CFGF_NONE),
@@ -198,12 +195,11 @@ config_print(void)
   printf("pommed configuration:\n");
   printf(" + General settings:\n");
   printf("    fnmode: %d\n", general_cfg.fnmode);
-#ifdef __powerpc__
   printf(" + sysfs backlight control:\n");
   printf("    initial level: %d\n", lcd_sysfs_cfg.init);
   printf("    step: %d\n", lcd_sysfs_cfg.step);
   printf("    on_batt: %d\n", lcd_sysfs_cfg.on_batt);
-#else
+#ifndef __powerpc__
   printf(" + ATI X1600 backlight control:\n");
   printf("    initial level: %d\n", lcd_x1600_cfg.init);
   printf("    step: %d\n", lcd_x1600_cfg.step);
@@ -216,7 +212,7 @@ config_print(void)
   printf("    initial level: %d\n", lcd_nv8600mgt_cfg.init);
   printf("    step: %d\n", lcd_nv8600mgt_cfg.step);
   printf("    on_batt: %d\n", lcd_nv8600mgt_cfg.on_batt);
-#endif /* __powerpc__ */
+#endif /* !__powerpc__ */
   printf(" + Audio volume control:\n");
   printf("    card: %s\n", audio_cfg.card);
   printf("    initial volume: %d%s\n", audio_cfg.init, (audio_cfg.init > -1) ? "%" : "");
@@ -265,11 +261,10 @@ config_load(void)
   /* Set up config values validation */
   /* general */
   cfg_set_validate_func(cfg, "general|fnmode", config_validate_positive_integer);
-#ifdef __powerpc__
   /* lcd_sysfs */
   cfg_set_validate_func(cfg, "lcd_sysfs|step", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_sysfs|on_batt", config_validate_positive_integer);
-#else
+#ifndef __powerpc__
   /* lcd_x1600 */
   cfg_set_validate_func(cfg, "lcd_x1600|step", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_x1600|on_batt", config_validate_positive_integer);
@@ -279,7 +274,7 @@ config_load(void)
   /* lcd_nv8600mgt */
   cfg_set_validate_func(cfg, "lcd_nv8600mgt|step", config_validate_positive_integer);
   cfg_set_validate_func(cfg, "lcd_nv8600mgt|on_batt", config_validate_positive_integer);
-#endif /* __powerpc__ */
+#endif /* !__powerpc__ */
   /* audio */
   cfg_set_validate_func(cfg, "audio|card", config_validate_string);
   cfg_set_validate_func(cfg, "audio|step", config_validate_positive_integer);
@@ -322,13 +317,12 @@ config_load(void)
   sec = cfg_getsec(cfg, "general");
   general_cfg.fnmode = cfg_getint(sec, "fnmode");
 
-#ifdef __powerpc__
   sec = cfg_getsec(cfg, "lcd_sysfs");
   lcd_sysfs_cfg.init = cfg_getint(sec, "init");
   lcd_sysfs_cfg.step = cfg_getint(sec, "step");
   lcd_sysfs_cfg.on_batt = cfg_getint(sec, "on_batt");
   /* No _fix_config() call here, it's done at probe time */
-#else
+#ifndef __powerpc__
   sec = cfg_getsec(cfg, "lcd_x1600");
   lcd_x1600_cfg.init = cfg_getint(sec, "init");
   lcd_x1600_cfg.step = cfg_getint(sec, "step");
@@ -347,7 +341,7 @@ config_load(void)
   lcd_nv8600mgt_cfg.step = cfg_getint(sec, "step");
   lcd_nv8600mgt_cfg.on_batt = cfg_getint(sec, "on_batt");
   nv8600mgt_backlight_fix_config();
-#endif /* __powerpc__ */
+#endif /* !__powerpc__ */
 
   sec = cfg_getsec(cfg, "audio");
   audio_cfg.card = strdup(cfg_getstr(sec, "card"));

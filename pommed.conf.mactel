@@ -9,6 +9,21 @@ general {
 	fnmode = 1
 }
 
+# sysfs backlight control
+# nVidia machines, will fall back to nv8600gmt if not supported by the kernel
+lcd_sysfs {
+	# The sysfs backlight control is a generic interface provided
+	# by the Linux kernel for backlight control on most graphic cards.
+	# The brightness range can differ depending on the hardware.
+
+	# initial backlight level [12] (0 - 15, -1 to disable)
+	init = -1
+	# step value (1 - 2)
+	step = 1
+	# backlight level when on battery [6] (1 - 15, 0 to disable)
+	on_batt = 6
+}
+
 # ATI X1600 backlight control (MacBook Pro v1 & v2)
 lcd_x1600 {
 	# initial backlight level [200] (0 - 255, -1 to disable)
@@ -29,7 +44,8 @@ lcd_gma950 {
 	on_batt = 0x40
 }
 
-# nVidia GeForce 8600M GT/9400M/9600M GT backlight control (MacBook Pro v3-v5, MacBook v5, MacBook v2)
+# nVidia GeForce 8600M GT/9400M/9600M GT backlight control
+# (MacBook Pro v3-v5, MacBook v5, MacBook v2)
 lcd_nv8600mgt {
 	# initial backlight level [12] (0 - 15, -1 to disable)
 	init = -1

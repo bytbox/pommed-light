@@ -380,8 +380,16 @@ mbp_sysfs_backlight_probe(void)
 	  case MACHINE_MACBOOKPRO_5:
 	  case MACHINE_MACBOOK_5:
 	  case MACHINE_MACBOOKAIR_2:
-	    logmsg(LOG_INFO, "sysfs backlight probe failed, falling back to native");
-	    return zobe;
+	    logmsg(LOG_INFO, "sysfs backlight probe failed, falling back to nv8600mgt");
+
+	    ret = nv8600mgt_backlight_probe();
+	    if (ret == 0)
+	      {
+		/* Wire up fallback native driver */
+		mops->lcd_backlight_step = nv8600mgt_backlight_step;
+		mops->lcd_backlight_toggle = nv8600mgt_backlight_toggle;
+	      }
+	    return ret;
 
 	default:
 	  logmsg(LOG_ERR, "sysfs backlight probe failed, no fallback for this machine");
