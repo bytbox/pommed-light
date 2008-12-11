@@ -226,7 +226,7 @@ nv8600mgt_backlight_probe(void)
 	break;
 
       default:
-	logmsg(LOG_ERR, "nv8600mgt LCD backlight support not supported on this hardware\n");
+	logmsg(LOG_ERR, "nv8600mgt LCD backlight support not supported on this hardware");
 	return -1;
     }
 
