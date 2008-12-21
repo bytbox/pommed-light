@@ -5,12 +5,6 @@
 #ifndef __KBD_BACKLIGHT_H__
 #define __KBD_BACKLIGHT_H__
 
-#ifndef __powerpc__
-#define KBD_BACKLIGHT           "/sys/class/leds/smc:kbd_backlight/brightness"
-#define KBD_BACKLIGHT_2625      "/sys/class/leds/smc::kbd_backlight/brightness"
-#endif /* !__powerpc__ */
-
-
 #define KBD_BACKLIGHT_OFF       0
 #define KBD_BACKLIGHT_MAX       255
 

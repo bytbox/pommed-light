@@ -47,24 +47,30 @@ struct _kbd_bck_info kbd_bck_info;
 static int
 kbd_backlight_open(int flags)
 {
-  int errno1;
-  int fd;
-
-  fd = open(KBD_BACKLIGHT, flags);
-  if (fd < 0)
+  char *kbdbck_node[] =
     {
-      errno1 = errno;
+      "/sys/class/leds/smc::kbd_backlight/brightness", /* 2.6.25 & up */
+      "/sys/class/leds/smc:kbd_backlight/brightness"
+    };
+  int fd;
+  int i;
 
-      fd = open(KBD_BACKLIGHT_2625, flags);
-      if (fd < 0)
-	{
-	  logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT, strerror(errno1));
-	  logmsg(LOG_WARNING, "Could not open %s: %s", KBD_BACKLIGHT_2625, strerror(errno));
-	  return -1;
-	}
+  for (i = 0; i < sizeof(kbdbck_node) / sizeof(*kbdbck_node); i++)
+    {
+      logdebug("Trying %s\n", kbdbck_node[i]);
+
+      fd = open(kbdbck_node[i], flags);
+      if (fd >= 0)
+	return fd;
+
+      if (errno == ENOENT)
+	continue;
+
+      logmsg(LOG_WARNING, "Could not open %s: %s", kbdbck_node[i], strerror(errno));
+      return -1;
     }
 
-  return fd;
+  return -1;
 }
 
 
