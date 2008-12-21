@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.24:
+	- pommed: add new path for fnmode setting for 2.6.28.
 
 version 1.23:
 	- pommed: add backlight support for late 2008 laptops.
