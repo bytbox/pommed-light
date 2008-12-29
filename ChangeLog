@@ -2,6 +2,8 @@ ChangeLog for pommed
 --------------------
 
 version 1.25:
+	- pommed: check current hardware backlight level before setting AC
+	or battery level.
 
 version 1.24:
 	- pommed: add new path for fnmode setting for 2.6.28.
