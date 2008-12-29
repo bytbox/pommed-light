@@ -195,7 +195,10 @@ x1600_backlight_toggle(int lvl)
     }
 
   if (lcd_bck_info.level == 0)
-    return;
+    {
+      x1600_backlight_unmap();
+      return;
+    }
 
   switch (lvl)
     {

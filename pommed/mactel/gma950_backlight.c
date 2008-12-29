@@ -230,7 +230,10 @@ gma950_backlight_toggle(int lvl)
     }
 
   if (lcd_bck_info.level == 0)
-    return;
+    {
+      gma950_backlight_unmap();
+      return;
+    }
 
   switch (lvl)
     {
