@@ -236,6 +236,9 @@ sysfs_backlight_toggle(int lvl)
       lcd_bck_info.level = val;
     }
 
+  if (lcd_bck_info.level == 0)
+    return;
+
   switch (lvl)
     {
       case LCD_ON_AC_LEVEL:
