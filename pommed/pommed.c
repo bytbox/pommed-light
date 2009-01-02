@@ -711,7 +711,7 @@ static void
 usage(void)
 {
   printf("pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler\n");
-  printf("Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>\n");
+  printf("Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>\n");
 
   printf("Usage:\n");
   printf("\tpommed\t-- start pommed as a daemon\n");
@@ -753,7 +753,7 @@ main (int argc, char **argv)
 
 	  case 'v':
 	    printf("pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler\n");
-	    printf("Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>\n");
+	    printf("Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>\n");
 
 	    exit(0);
 	    break;
@@ -779,7 +779,7 @@ main (int argc, char **argv)
     }
 
   logmsg(LOG_INFO, "pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler");
-  logmsg(LOG_INFO, "Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>");
+  logmsg(LOG_INFO, "Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>");
 
   /* Load our configuration */
   ret = config_load();
