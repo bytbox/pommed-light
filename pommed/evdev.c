@@ -3,7 +3,7 @@
  *
  * $Id$
  *
- * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -814,7 +814,8 @@ evdev_try_add(int fd)
 	  return -1;
 	}
     }
-  else if (test_bit(EV_ABS, bit[0]))
+  /* Wireless keyboards advertise EV_ABS events, single them out */
+  else if (test_bit(EV_ABS, bit[0]) && !(evdev_is_extkbd(id)))
     {
       logdebug("Discarding evdev with EV_ABS event type (mouse/trackpad)\n");
 
