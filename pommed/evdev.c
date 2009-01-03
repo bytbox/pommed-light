@@ -815,7 +815,7 @@ evdev_try_add(int fd)
 	}
     }
   /* Wireless keyboards advertise EV_ABS events, single them out */
-  else if (test_bit(EV_ABS, bit[0]) && !(evdev_is_extkbd(id)))
+  else if (test_bit(EV_ABS, bit[0]) && !(evdev_is_extkbd_alu_wl(id)))
     {
       logdebug("Discarding evdev with EV_ABS event type (mouse/trackpad)\n");
 
