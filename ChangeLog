@@ -6,6 +6,8 @@ version 1.25:
 	or battery level. Do not act if the backlight is off.
 	- pommed: do not reject the Apple Bluetooth keyboard because of
 	advertised EV_ABS events.
+	- pommed: fix DBus configuration snippet for newer, stricter
+	version of DBus (allow clients to send messages).
 
 version 1.24:
 	- pommed: add new path for fnmode setting for 2.6.28.
