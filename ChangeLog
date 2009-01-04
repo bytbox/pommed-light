@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.26:
+
 version 1.25:
 	- pommed: check current hardware backlight level before setting AC
 	or battery level. Do not act if the backlight is off.
