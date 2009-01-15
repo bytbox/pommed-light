@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - video.h
  */
 
 #ifndef __VIDEO_H__

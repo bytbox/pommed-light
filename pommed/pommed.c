@@ -1,8 +1,6 @@
 /*
  * pommed - Apple laptops hotkeys handler daemon
  *
- * $Id$
- *
  * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -710,7 +708,7 @@ check_machine_dmi(void)
 static void
 usage(void)
 {
-  printf("pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler\n");
+  printf("pommed v" M_VERSION " Apple laptops hotkeys handler\n");
   printf("Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>\n");
 
   printf("Usage:\n");
@@ -752,7 +750,7 @@ main (int argc, char **argv)
 	    break;
 
 	  case 'v':
-	    printf("pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler\n");
+	    printf("pommed v" M_VERSION " Apple laptops hotkeys handler\n");
 	    printf("Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>\n");
 
 	    exit(0);
@@ -778,7 +776,7 @@ main (int argc, char **argv)
       openlog("pommed", LOG_PID, LOG_DAEMON);
     }
 
-  logmsg(LOG_INFO, "pommed v" M_VERSION " ($Rev$) Apple laptops hotkeys handler");
+  logmsg(LOG_INFO, "pommed v" M_VERSION " Apple laptops hotkeys handler");
   logmsg(LOG_INFO, "Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>");
 
   /* Load our configuration */

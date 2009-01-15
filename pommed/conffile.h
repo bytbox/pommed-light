@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - conffile.h
  */
 
 #ifndef __CONFFILE_H__

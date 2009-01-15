@@ -1,8 +1,6 @@
 /*
  * pommed - Apple laptops hotkeys handler daemon
  *
- * $Id$
- *
  * Copyright (C) 2007 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify

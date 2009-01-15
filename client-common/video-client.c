@@ -1,8 +1,6 @@
 /*
  * video-client.c -- shared video switch routines for pommed clients
  *
- * $Id$
- *
  * Copyright (C) 2007 Julien BLACHE <jb@jblache.org>
  *
  * Some code below taken from GDM where noted.

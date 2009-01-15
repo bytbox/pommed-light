@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * gpomme - gpomme.h
  */
 
 #ifndef __GPOMME_H__

@@ -1,7 +1,5 @@
 #! /bin/sh
 #
-# $Id$
-#
 ### BEGIN INIT INFO
 # Provides:          pommed
 # Required-Start:    $syslog $local_fs

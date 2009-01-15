@@ -3,8 +3,6 @@
  *
  * Apple Macbook Pro LCD backlight control
  *
- * $Id$
- *
  * Copyright (C) 2006 Nicolas Boichat <nicolas@boichat.ch>
  * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *  + Adapted for pommed

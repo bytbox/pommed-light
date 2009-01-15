@@ -1,8 +1,6 @@
 /*
  * gpomme - GTK application for use with pommed
  *
- * $Id$
- *
  * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
  * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *

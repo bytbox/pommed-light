@@ -1,8 +1,6 @@
 /*
  * wmpomme -- WindowMaker dockapp for use with pommed
  *
- * $Id$
- *
  * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
  * Based on wmwave by Carsten Schuermann <carsten@schuermann.org>

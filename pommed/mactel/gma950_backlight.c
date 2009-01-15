@@ -3,8 +3,6 @@
  *
  * MacBook Backlight Control (Intel GMA950 & GMA965)
  *
- * $Id$
- *
  * Copyright (C) 2006-2007 Ryan Lortie <desrt@desrt.ca>
  * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *  + Adapted for pommed

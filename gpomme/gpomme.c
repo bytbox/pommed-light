@@ -1,8 +1,6 @@
 /*
  * gpomme - GTK application for use with pommed
  *
- * $Id$
- *
  * Copyright (C) 2006, 2008 Soeren SONNENBURG <debian@nn7.de>
  * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2007 daniel g. siegel <dgsiegel@gmail.com>
@@ -512,7 +510,7 @@ mbp_check_config(GIOChannel *ch, GIOCondition condition, gpointer userdata)
 static void
 usage(void)
 {
-  printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
+  printf("gpomme v" M_VERSION " graphical client for pommed\n");
   printf("Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org> and others\n");
 
   printf("Usage:\n");
@@ -573,7 +571,7 @@ main(int argc, char **argv)
 	    break;
 
 	  case 'v':
-	    printf("gpomme v" M_VERSION " ($Rev$) graphical client for pommed\n");
+	    printf("gpomme v" M_VERSION " graphical client for pommed\n");
 	    printf("Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org> and others\n");
 
 	    exit(0);

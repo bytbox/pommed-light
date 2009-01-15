@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - dbus.h
  */
 
 #ifndef __MBPDBUS_H__

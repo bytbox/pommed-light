@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - kbd_backlight.h
  */
 
 #ifndef __KBD_BACKLIGHT_H__

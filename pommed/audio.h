@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - audio.h
  */
 
 #ifndef __AUDIO_H__

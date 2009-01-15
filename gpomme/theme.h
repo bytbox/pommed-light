@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * gpomme - theme.h
  */
 #ifndef __THEME_H__
 #define __THEME_H__

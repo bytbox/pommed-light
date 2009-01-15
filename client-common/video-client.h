@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - video-client.h
  */
 #ifndef __MBP_VIDEO_CLIENT_H__
 #define __MBP_VIDEO_CLIENT_H__

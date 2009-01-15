@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - evloop.h
  */
 
 #ifndef __EVLOOP_H__

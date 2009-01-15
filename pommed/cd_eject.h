@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - cd_eject.h
  */
 
 #ifndef __CD_EJECT_H__

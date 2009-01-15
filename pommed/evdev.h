@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - evdev.h
  */
 
 #ifndef __EVDEV_H__

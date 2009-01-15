@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - power.h
  */
 
 #ifndef __POWER_H__

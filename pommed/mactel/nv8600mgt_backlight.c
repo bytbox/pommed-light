@@ -3,8 +3,6 @@
  *
  * Apple Macbook Pro LCD backlight control, nVidia 8600M GT
  *
- * $Id$
- *
  * Copyright (C) 2006 Nicolas Boichat <nicolas @boichat.ch>
  * Copyright (C) 2006 Felipe Alfaro Solana <felipe_alfaro @linuxmail.org>
  * Copyright (C) 2007-2008 Julien BLACHE <jb@jblache.org>

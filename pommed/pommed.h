@@ -1,12 +1,12 @@
 /*
- * $Id$
+ * pommed - pommed.h
  */
 
 #ifndef __POMMED_H__
 #define __POMMED_H__
 
 
-#define M_VERSION "1.26svn"
+#define M_VERSION "1.26git"
 
 
 extern int debug;

@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - dbus-client.h
  */
 #ifndef __MBP_DBUS_CLIENT_H__
 #define __MBP_DBUS_CLIENT_H__

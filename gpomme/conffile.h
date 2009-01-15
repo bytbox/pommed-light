@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * gpomme - conffile.h
  */
 
 #ifndef __CONFFILE_H__

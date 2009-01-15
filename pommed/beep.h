@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - beep.h
  */
 
 #ifndef __BEEP_H__

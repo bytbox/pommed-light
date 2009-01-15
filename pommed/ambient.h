@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - ambient.h
  */
 
 #ifndef __AMBIENT_H__

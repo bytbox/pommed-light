@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * pommed - lcd_backlight.h
  */
 
 #ifndef __LCD_BACKLIGHT_H__

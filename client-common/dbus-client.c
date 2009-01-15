@@ -1,8 +1,6 @@
 /*
  * dbus-client.c -- shared DBus client routines for pommed clients
  *
- * $Id$
- *
  * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
