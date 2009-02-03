@@ -69,6 +69,8 @@ static int
 evdev_try_add(int fd);
 
 
+static int internal_kbd_fd;
+
 void
 evdev_process_events(int fd, uint32_t events)
 {
@@ -84,6 +86,9 @@ evdev_process_events(int fd, uint32_t events)
       ret = evloop_remove(fd);
       if (ret < 0)
 	logmsg(LOG_ERR, "Could not remove device from event loop");
+
+      if (fd == internal_kbd_fd)
+	internal_kbd_fd = -1;
 
       close(fd);
 
@@ -102,8 +107,11 @@ evdev_process_events(int fd, uint32_t events)
 	return;
 
       /* Reset keyboard backlight idle timer */
-      kbd_bck_info.idle = 0;
-      kbd_backlight_inhibit_clear(KBD_INHIBIT_IDLE);
+      if (fd == internal_kbd_fd)
+	{
+	  kbd_bck_info.idle = 0;
+	  kbd_backlight_inhibit_clear(KBD_INHIBIT_IDLE);
+	}
 
       switch (ev.code)
 	{
@@ -822,10 +830,26 @@ evdev_try_add(int fd)
       return -1;
     }
 
+  /* There are 2 keyboards, but one of them only has the eject key;
+     the real keyboard has all the keys and the LEDs. Checking for
+     the LEDs is a quick way of identifying the keyboard we want.
+  */
+  if (test_bit(EV_LED, bit[0]) && evdev_is_internal(id))
+    {
+      logdebug(" -> Internal keyboard\n");
+
+      internal_kbd_fd = fd;
+    }
+
   ret = evloop_add(fd, EPOLLIN, evdev_process_events);
   if (ret < 0)
     {
       logmsg(LOG_ERR, "Could not add device to event loop");
+
+      if (fd == internal_kbd_fd)
+	internal_kbd_fd = -1;
+
+      close(fd);
 
       return -1;
     }
@@ -883,6 +907,8 @@ evdev_init(void)
 
   int ndevs;
   int fd;
+
+  internal_kbd_fd = -1;
 
   ndevs = 0;
   for (i = 0; i < EVDEV_MAX; i++)

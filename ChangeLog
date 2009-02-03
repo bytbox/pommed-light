@@ -2,6 +2,8 @@ ChangeLog for pommed
 --------------------
 
 version 1.26:
+	- pommed: only keystrokes on the built-in keyboard should reset
+	the keyboard idle timer.
 
 version 1.25:
 	- pommed: check current hardware backlight level before setting AC
