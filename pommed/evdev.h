@@ -66,6 +66,11 @@
 /* Apple external USB keyboard, white */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c
 
+/* Apple external USB mini keyboard, aluminium */
+#define USB_PRODUCT_ID_APPLE_EXTKBD_MINI_ALU_ANSI 0x021d
+#define USB_PRODUCT_ID_APPLE_EXTKBD_MINI_ALU_ISO  0x021e
+#define USB_PRODUCT_ID_APPLE_EXTKBD_MINI_ALU_JIS  0x021f
+
 /* Apple external USB keyboard, aluminium */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_ANSI 0x0220
 #define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_ISO  0x0221

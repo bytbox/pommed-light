@@ -4,6 +4,7 @@ ChangeLog for pommed
 version 1.26:
 	- pommed: only keystrokes on the built-in keyboard should reset
 	the keyboard idle timer.
+	- pommed: add USB IDs for the Apple external aluminium mini keyboard.
 
 version 1.25:
 	- pommed: check current hardware backlight level before setting AC
