@@ -31,7 +31,11 @@
 
 #include <sys/epoll.h>
 
-#include "timerfd-syscalls.h"
+#ifndef NO_SYS_TIMERFD_H
+# include <sys/timerfd.h>
+#else
+# include "timerfd-syscalls.h"
+#endif
 
 #include "pommed.h"
 #include "evloop.h"
