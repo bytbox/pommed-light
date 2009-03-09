@@ -98,6 +98,10 @@ x1600_backlight_map(void)
   if (fd < 0)
     {
       logmsg(LOG_WARNING, "Cannot open /dev/mem: %s", strerror(errno));
+
+      close(fd);
+      fd = -1;
+
       return -1;
     }
 

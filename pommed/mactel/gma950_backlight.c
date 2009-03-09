@@ -140,6 +140,10 @@ gma950_backlight_map(void)
   if (memory == MAP_FAILED)
     {
       logmsg(LOG_ERR, "mmap failed: %s", strerror(errno));
+
+      close(fd);
+      fd = -1;
+
       return -1;
     }
 
