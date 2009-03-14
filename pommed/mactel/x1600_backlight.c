@@ -47,10 +47,9 @@
 
 struct _lcd_bck_info lcd_bck_info;
 
-
 static int fd = -1;
 static char *memory = NULL;
-static long address = 0;
+static char sysfs_resource[64];
 static long length = 0;
 
 static inline unsigned int
@@ -87,17 +86,17 @@ x1600_backlight_map(void)
 {
   unsigned int state;
 
-  if ((address == 0) || (length == 0))
+  if (length == 0)
     {
-      logdebug("No probing done !\n");
+      logdebug("No probing done!\n");
       return -1;
     }
 
-  fd = open("/dev/mem", O_RDWR);
+  fd = open(sysfs_resource, O_RDWR);
 	
   if (fd < 0)
     {
-      logmsg(LOG_WARNING, "Cannot open /dev/mem: %s", strerror(errno));
+      logmsg(LOG_WARNING, "Cannot open %s: %s", sysfs_resource, strerror(errno));
 
       close(fd);
       fd = -1;
@@ -105,7 +104,7 @@ x1600_backlight_map(void)
       return -1;
     }
 
-  memory = mmap(NULL, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, address);
+  memory = mmap(NULL, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 
   if (memory == MAP_FAILED)
     {
@@ -246,6 +245,7 @@ x1600_backlight_probe(void)
 {
   struct pci_access *pacc;
   struct pci_dev *dev;
+  struct stat stbuf;
 
   int ret;
 
@@ -262,13 +262,14 @@ x1600_backlight_probe(void)
   /* Iterate over all devices */
   for(dev = pacc->devices; dev; dev = dev->next)
     {
-      pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES);
+      pci_fill_info(dev, PCI_FILL_IDENT);
       /* ATI X1600 */
       if ((dev->vendor_id == PCI_ID_VENDOR_ATI)
 	  && (dev->device_id == PCI_ID_PRODUCT_X1600))
 	{
-	  address = dev->base_addr[2];
-	  length = dev->size[2];
+	  ret = snprintf(sysfs_resource, sizeof(sysfs_resource),
+			 "/sys/bus/pci/devices/%04x:%02x:%02x.%1x/resource2",
+			 dev->domain, dev->bus, dev->dev, dev->func);
 
 	  break;
 	}
@@ -276,11 +277,29 @@ x1600_backlight_probe(void)
 
   pci_cleanup(pacc);
 
-  if (!address)
+  if (!dev)
     {
       logdebug("Failed to detect ATI X1600, aborting...\n");
       return -1;
     }
+
+  /* Check snprintf() return value */
+  if (ret >= sizeof(sysfs_resource))
+    {
+      logmsg(LOG_ERR, "Could not build sysfs PCI resource path");
+      return -1;
+    }
+
+  ret = stat(sysfs_resource, &stbuf);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not determine PCI resource length: %s", strerror(errno));
+      return -1;
+    }
+
+  length = stbuf.st_size;
+
+  logdebug("ATI X1600 PCI resource: [%s], length %ldK\n", sysfs_resource, (length / 1024));
 
   lcd_bck_info.max = X1600_BACKLIGHT_MAX;
 

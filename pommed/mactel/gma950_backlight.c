@@ -72,7 +72,7 @@ static unsigned int GMA950_BACKLIGHT_MAX;
 
 static int fd = -1;
 static char *memory = NULL;
-static long address = 0;
+static char sysfs_resource[64];
 static long length = 0;
 
 #define REGISTER_OFFSET           0x00061254
@@ -121,21 +121,21 @@ gma950_backlight_set(unsigned int value)
 static int
 gma950_backlight_map(void)
 {
-  if ((address == 0) || (length == 0))
+  if (length == 0)
     {
       logdebug("No probing done !\n");
       return -1;
     }
 
-  fd = open("/dev/mem", O_RDWR);
+  fd = open(sysfs_resource, O_RDWR);
 	
   if (fd < 0)
     {
-      logmsg(LOG_WARNING, "Cannot open /dev/mem: %s", strerror(errno));
+      logmsg(LOG_WARNING, "Cannot open %s: %s", sysfs_resource, strerror(errno));
       return -1;
     }
 
-  memory = mmap(NULL, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, address);
+  memory = mmap(NULL, length, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 
   if (memory == MAP_FAILED)
     {
@@ -311,6 +311,7 @@ gma950_backlight_probe(void)
 {
   struct pci_access *pacc;
   struct pci_dev *dev;
+  struct stat stbuf;
 
   int card;
   int ret;
@@ -329,7 +330,7 @@ gma950_backlight_probe(void)
   /* Iterate over all devices */
   for(dev = pacc->devices; dev; dev = dev->next)
     {
-      pci_fill_info(dev, PCI_FILL_IDENT | PCI_FILL_BASES);
+      pci_fill_info(dev, PCI_FILL_IDENT);
       /* GMA950 or GMA965 */
       if ((dev->vendor_id == PCI_ID_VENDOR_INTEL)
 	  && ((dev->device_id == PCI_ID_PRODUCT_GMA950)
@@ -337,8 +338,9 @@ gma950_backlight_probe(void)
 	{
 	  card = dev->device_id;
 
-	  address = dev->base_addr[0];
-	  length = dev->size[0];
+	  ret = snprintf(sysfs_resource, sizeof(sysfs_resource),
+			 "/sys/bus/pci/devices/%04x:%02x:%02x.%1x/resource0",
+			 dev->domain, dev->bus, dev->dev, dev->func);
 
 	  break;
 	}
@@ -346,11 +348,29 @@ gma950_backlight_probe(void)
 
   pci_cleanup(pacc);
 
-  if (!address)
+  if (!dev)
     {
       logdebug("Failed to detect Intel GMA950 or GMA965, aborting...\n");
       return -1;
     }
+
+  /* Check snprintf() return value */
+  if (ret >= sizeof(sysfs_resource))
+    {
+      logmsg(LOG_ERR, "Could not build sysfs PCI resource path");
+      return -1;
+    }
+
+  ret = stat(sysfs_resource, &stbuf);
+  if (ret < 0)
+    {
+      logmsg(LOG_ERR, "Could not determine PCI resource length: %s", strerror(errno));
+      return -1;
+    }
+
+  length = stbuf.st_size;
+
+  logdebug("GMA950/GMA965 PCI resource: [%s], length %ldK\n", sysfs_resource, (length / 1024));
 
   ret = gma950_backlight_map();
   if (ret < 0)
