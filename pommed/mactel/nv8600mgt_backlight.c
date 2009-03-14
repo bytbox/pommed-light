@@ -188,7 +188,6 @@ nv8600mgt_backlight_probe(void)
 {
   struct pci_access *pacc;
   struct pci_dev *dev;
-  int nv_found = 0;
   int ret;
 
   pacc = pci_alloc();
@@ -211,15 +210,13 @@ nv8600mgt_backlight_probe(void)
 	      || (dev->device_id == PCI_ID_PRODUCT_9400M)
 	      || (dev->device_id == PCI_ID_PRODUCT_9600MGT)))
 	{
-	  nv_found = 1;
-
 	  break;
 	}
     }
 
   pci_cleanup(pacc);
 
-  if (!nv_found)
+  if (!dev)
     {
       logdebug("Failed to detect nVidia GeForce 8600M GT/9400M/9600M GT, aborting...\n");
       return -1;
