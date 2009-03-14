@@ -833,7 +833,7 @@ main (int argc, char **argv)
       if (ret < 0)
 	logmsg(LOG_ERR, "uname() failed: %s", strerror(errno));
       else
-	logdebug("System: %s %s %s", sysinfo.sysname, sysinfo.release, sysinfo.machine);
+	logdebug("System: %s %s %s\n", sysinfo.sysname, sysinfo.release, sysinfo.machine);
     }
 
   ret = evloop_init();
