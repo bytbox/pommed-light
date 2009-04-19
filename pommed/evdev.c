@@ -268,7 +268,7 @@ evdev_inotify_process(int fd, uint32_t events)
   all_ie = (struct inotify_event *) malloc(qsize);
   if (all_ie == NULL)
     {
-      logmsg(LOG_ERR, "Could not allocate %d bytes for inotify events");
+      logmsg(LOG_ERR, "Could not allocate %d bytes for inotify events", qsize);
 
       return;
     }
