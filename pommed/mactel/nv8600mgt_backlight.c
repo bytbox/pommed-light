@@ -180,6 +180,7 @@ nv8600mgt_backlight_toggle(int lvl)
 #define PCI_ID_VENDOR_NVIDIA     0x10de
 #define PCI_ID_PRODUCT_8600MGT   0x0407
 #define PCI_ID_PRODUCT_9400M     0x0863
+#define PCI_ID_PRODUCT_9400M_G   0x0866
 #define PCI_ID_PRODUCT_9600MGT   0x0647
 
 /* Look for an nVidia GeForce 8600M GT, 9400M or 9600M GT */
@@ -208,6 +209,7 @@ nv8600mgt_backlight_probe(void)
       if ((dev->vendor_id == PCI_ID_VENDOR_NVIDIA)
 	  && ((dev->device_id == PCI_ID_PRODUCT_8600MGT)
 	      || (dev->device_id == PCI_ID_PRODUCT_9400M)
+	      || (dev->device_id == PCI_ID_PRODUCT_9400M_G)
 	      || (dev->device_id == PCI_ID_PRODUCT_9600MGT)))
 	{
 	  break;

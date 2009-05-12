@@ -685,8 +685,8 @@ check_machine_dmi(void)
   /* Core2 Duo MacBook (February 2008) */
   else if (strcmp(buf, "MacBook4,1") == 0)
     ret = MACHINE_MACBOOK_4;
-  /* Core2 Duo MacBook (October 2008) */
-  else if (strcmp(buf, "MacBook5,1") == 0)
+  /* Core2 Duo MacBook (October 2008) (5,2 white MacBook) */
+  else if ((strcmp(buf, "MacBook5,1") == 0) || (strcmp(buf, "MacBook5,2") == 0))
     ret = MACHINE_MACBOOK_5;
   /* MacBook Air (January 2008) */
   else if (strcmp(buf, "MacBookAir1,1") == 0)

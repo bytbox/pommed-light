@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.27:
+	- pommed: added support for the MacBook5,2 (white MacBook).
 
 version 1.26:
 	- pommed: only keystrokes on the built-in keyboard should reset
