@@ -143,8 +143,8 @@ static void
 kbd_auto_process(int id, uint64_t ticks)
 {
   /* Increment keyboard backlight idle timer */
-  kbd_bck_info.idle++;
-  if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > kbd_cfg.idle))
+  kbd_bck_info.idle += KBD_TIMEOUT;
+  if ((kbd_cfg.idle > 0) && (kbd_bck_info.idle > 1000 * kbd_cfg.idle))
     kbd_backlight_inhibit_set(KBD_INHIBIT_IDLE);
 
   kbd_backlight_ambient_check();

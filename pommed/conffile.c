@@ -225,7 +225,7 @@ config_print(void)
   printf("    auto on threshold: %d\n", kbd_cfg.on_thresh);
   printf("    auto off threshold: %d\n", kbd_cfg.off_thresh);
   printf("    auto enable: %s\n", (kbd_cfg.auto_on) ? "yes" : "no");
-  printf("    idle timer: %d%s\n", (kbd_cfg.idle * KBD_TIMEOUT) / 1000, (kbd_cfg.idle > 0) ? "s" : "");
+  printf("    idle timer: %d%s\n", kbd_cfg.idle, (kbd_cfg.idle > 0) ? "s" : "");
   printf(" + CD eject:\n");
   printf("    enabled: %s\n", (eject_cfg.enabled) ? "yes" : "no");
   printf("    device: %s\n", eject_cfg.device);

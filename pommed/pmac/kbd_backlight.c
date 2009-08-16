@@ -379,9 +379,6 @@ kbd_backlight_fix_config(void)
 
   if (kbd_cfg.step > (KBD_BACKLIGHT_MAX / 2))
     kbd_cfg.step = KBD_BACKLIGHT_MAX / 2;
-
-  if (kbd_cfg.idle > 0)
-    kbd_cfg.idle = (kbd_cfg.idle * 1000) / KBD_TIMEOUT;
 }
 
 
