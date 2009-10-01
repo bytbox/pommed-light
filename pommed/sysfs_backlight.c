@@ -42,6 +42,7 @@ enum {
   SYSFS_DRIVER_NVIDIA,
 #else
   SYSFS_DRIVER_MBP,
+  SYSFS_DRIVER_NVIDIA,
 #endif
 };
 
@@ -59,6 +60,7 @@ static char *actual_brightness[] =
     "/sys/class/backlight/nvidiabl0/actual_brightness",
 #else
     "/sys/class/backlight/mbp_backlight/actual_brightness",
+    "/sys/class/backlight/nvidia_backlight/actual_brightness",
 #endif
   };
 
@@ -72,6 +74,7 @@ static char *brightness[] =
     "/sys/class/backlight/nvidiabl0/brightness",
 #else
     "/sys/class/backlight/mbp_backlight/brightness",
+    "/sys/class/backlight/nvidia_backlight/brightness",
 #endif
   };
 
@@ -85,6 +88,7 @@ static char *max_brightness[] =
     "/sys/class/backlight/nvidiabl0/max_brightness",
 #else
     "/sys/class/backlight/mbp_backlight/max_brightness",
+    "/sys/class/backlight/nvidia_backlight/max_brightness",
 #endif
   };
 
@@ -392,6 +396,11 @@ mbp_sysfs_backlight_probe(void)
   int ret;
 
   ret = sysfs_backlight_probe(SYSFS_DRIVER_MBP);
+
+  if (ret == 0)
+    return 0;
+
+  ret = sysfs_backlight_probe(SYSFS_DRIVER_NVIDIA);
 
   if (ret == 0)
     return 0;
