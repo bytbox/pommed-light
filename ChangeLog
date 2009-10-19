@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.30:
+
 version 1.29:
 	- pommed: add support for newer nvidia backlight driver which
 	changed the sysfs layout.
