@@ -2,7 +2,7 @@
  * gpomme - GTK application for use with pommed
  *
  * Copyright (C) 2006, 2008 Soeren SONNENBURG <debian@nn7.de>
- * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2007 daniel g. siegel <dgsiegel@gmail.com>
  *
  * Portions of the GTK code below were shamelessly
@@ -306,6 +306,36 @@ create_window(void)
 }
 
 
+static void
+mbp_video_getvtstate_cb(DBusPendingCall *pending, void *status)
+{
+  DBusMessage *msg;
+
+  msg = dbus_pending_call_steal_reply(pending);
+
+  if (msg == NULL)
+    {
+      fprintf(stderr, "Could not steal reply\n");
+
+      dbus_pending_call_unref(pending);
+
+      return;
+    }
+
+  dbus_pending_call_unref(pending);
+
+  if (!mbp_dbus_check_error(msg))
+    {
+      dbus_message_get_args(msg, &dbus_err,
+			    DBUS_TYPE_BOOLEAN, (int *)status,
+			    DBUS_TYPE_INVALID);
+    }
+  else
+    *(int *)status = -1;
+
+  dbus_message_unref(msg);
+}
+
 static gboolean
 mbp_dbus_reconnect(gpointer userdata);
 
@@ -384,8 +414,19 @@ mbp_dbus_listen(DBusConnection *lconn, DBusMessage *msg, gpointer userdata)
     }
   else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
     {
+      int vtnum;
+      int vtstate;
+      int ret;
+
       dpy = GDK_WINDOW_XDISPLAY(GTK_WIDGET(mbp_w.window)->window);
-      mbp_video_switch(dpy);
+
+      vtnum = mbp_get_x_vtnum(dpy);
+
+      ret = mbp_call_video_getvtstate(vtnum, mbp_video_getvtstate_cb, &vtstate);
+      if ((ret < 0) || (vtstate < 0))
+	fprintf(stderr, "video getVTState call failed !\n");
+      else if (vtstate == 1)
+	mbp_video_switch();
     }
   else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
     {

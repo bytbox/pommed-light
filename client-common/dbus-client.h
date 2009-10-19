@@ -38,6 +38,9 @@ mbp_call_audio_getvolume(DBusPendingCallNotifyFunction cb, void *userdata);
 int
 mbp_call_audio_getmute(DBusPendingCallNotifyFunction cb, void *userdata);
 
+int
+mbp_call_video_getvtstate(int vtnum, DBusPendingCallNotifyFunction cb, void *userdata);
+
 
 /* Error checking */
 int

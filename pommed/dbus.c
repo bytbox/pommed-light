@@ -1,7 +1,7 @@
 /*
  * pommed - Apple laptops hotkeys handler daemon
  *
- * Copyright (C) 2006-2007 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2007, 2009 Julien BLACHE <jb@jblache.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@
 #include "kbd_backlight.h"
 #include "ambient.h"
 #include "audio.h"
+#include "video.h"
 #include "cd_eject.h"
 
 
@@ -603,6 +604,55 @@ process_audio_getmute_call(DBusMessage *req)
   dbus_message_unref(msg);
 }
 
+static void
+process_video_getvtstate_call(DBusMessage *req)
+{
+  DBusMessage *msg;
+
+  int vtnum;
+  int vtstate;
+  int ret;
+
+  logdebug("Got video getVTState call\n");
+
+  ret = dbus_message_get_args(req, &err, DBUS_TYPE_UINT32, &vtnum, DBUS_TYPE_INVALID);
+  if (ret == FALSE)
+    {
+      logdebug("video getVTState call with no/inappropriate arguments ?!\n");
+
+      return;
+    }
+
+  /* Check VT state */
+  vtstate = video_vt_active(vtnum);
+
+  msg = dbus_message_new_method_return(req);
+
+  ret = dbus_message_append_args(msg,
+				 DBUS_TYPE_BOOLEAN, &vtstate,
+				 DBUS_TYPE_INVALID);
+  if (ret == FALSE)
+    {
+      logdebug("Failed to add arguments\n");
+
+      dbus_message_unref(msg);
+
+      return;
+    }
+
+  ret = dbus_connection_send(conn, msg, NULL);
+  if (ret == FALSE)
+    {
+      logdebug("Could not send video getVTState reply\n");
+
+      dbus_message_unref(msg);
+
+      return;
+    }
+
+  dbus_message_unref(msg);
+}
+
 
 static void
 process_lcd_backlight_step_call(DBusMessage *req, int dir)
@@ -765,6 +815,8 @@ mbpdbus_process_requests(DBusConnection *lconn, DBusMessage *msg, void *data)
     process_audio_getvolume_call(msg);
   else if (dbus_message_is_method_call(msg, "org.pommed.audio", "getMute"))
     process_audio_getmute_call(msg);
+  else if (dbus_message_is_method_call(msg, "org.pommed.video", "getVTState"))
+    process_video_getvtstate_call(msg);
   // Set methods
   else if (dbus_message_is_method_call(msg, "org.pommed.lcdBacklight", "levelUp"))
     process_lcd_backlight_step_call(msg, STEP_UP);

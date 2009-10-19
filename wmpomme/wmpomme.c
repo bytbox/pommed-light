@@ -1,7 +1,7 @@
 /*
  * wmpomme -- WindowMaker dockapp for use with pommed
  *
- * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2009 Julien BLACHE <jb@jblache.org>
  *
  * Based on wmwave by Carsten Schuermann <carsten@schuermann.org>
  * wmwave derived from:
@@ -129,6 +129,10 @@ wmmbp_dbus_init(void)
   return 0;
 }
 
+/* Forward */
+void
+wmmbp_video_getvtstate_cb(DBusPendingCall *pending, void *status);
+
 void
 mbp_dbus_listen(void)
 {
@@ -207,7 +211,17 @@ mbp_dbus_listen(void)
 	}
       else if (dbus_message_is_signal(msg, "org.pommed.signal.videoSwitch", "videoSwitch"))
 	{
-	  mbp_video_switch(display);
+	  int vtnum;
+	  int vtstate;
+	  int ret;
+
+	  vtnum = mbp_get_x_vtnum(display);
+
+	  ret = mbp_call_video_getvtstate(vtnum, wmmbp_video_getvtstate_cb, &vtstate);
+	  if ((ret < 0) || (vtstate < 0))
+	    fprintf(stderr, "video getVTState call failed !\n");
+	  else if (vtstate == 1)
+	    mbp_video_switch();
 	}
       else if (dbus_message_is_signal(msg, DBUS_INTERFACE_LOCAL, "Disconnected"))
 	{
@@ -376,6 +390,36 @@ wmmbp_audio_getmute_cb(DBusPendingCall *pending, void *status)
     {
       dbus_message_get_args(msg, &dbus_err,
 			    DBUS_TYPE_BOOLEAN, &mbp.snd_mute,
+			    DBUS_TYPE_INVALID);
+    }
+  else
+    *(int *)status = -1;
+
+  dbus_message_unref(msg);
+}
+
+void
+wmmbp_video_getvtstate_cb(DBusPendingCall *pending, void *status)
+{
+  DBusMessage *msg;
+
+  msg = dbus_pending_call_steal_reply(pending);
+
+  if (msg == NULL)
+    {
+      fprintf(stderr, "Could not steal reply\n");
+
+      dbus_pending_call_unref(pending);
+
+      return;
+    }
+
+  dbus_pending_call_unref(pending);
+
+  if (!mbp_dbus_check_error(msg))
+    {
+      dbus_message_get_args(msg, &dbus_err,
+			    DBUS_TYPE_BOOLEAN, (int *)status,
 			    DBUS_TYPE_INVALID);
     }
   else

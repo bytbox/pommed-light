@@ -9,6 +9,9 @@
 void
 video_switch(void);
 
+int
+video_vt_active(int vt);
+
 
 #endif /* !__VIDEO_H__ */
 

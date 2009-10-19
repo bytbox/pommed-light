@@ -4,6 +4,9 @@ ChangeLog for pommed
 version 1.29:
 	- pommed: add support for newer nvidia backlight driver which
 	changed the sysfs layout.
+	- pommed: move VT state checking to pommed, exposed over DBus.
+	- gpomme: switch to asking pommed for the state of the VT.
+	- wmpomme: switch to asking pommed for the state of the VT.
 
 version 1.28:
 	- pommed: added support for the MacBookPro5,3 (15" MacBookPro
