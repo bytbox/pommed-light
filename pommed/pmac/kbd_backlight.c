@@ -404,10 +404,20 @@ kbd_get_i2cdev(void)
 	}
 
       fp = fopen(buf, "r");
-      if ((fp == NULL) && (errno != ENOENT))
+      if (fp == NULL)
 	{
-	  logmsg(LOG_ERR, "Error: i2c device probe: cannot open %s: %s", buf, strerror(errno));
-	  continue;
+	  if (errno != ENOENT)
+	    {
+	      logmsg(LOG_ERR, "Error: i2c device probe: cannot open %s: %s", buf, strerror(errno));
+	      continue;
+	    }
+	  else
+	    {
+	      logmsg(LOG_ERR, "Error: i2c device probe: i2c device not found, is i2c-dev loaded?");
+
+	      i2c_bus = 256;
+	      break;
+	    }
 	}
 
       ret = fread(buf, 1, PATH_MAX - 1, fp);
