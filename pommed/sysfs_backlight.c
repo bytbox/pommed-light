@@ -101,7 +101,7 @@ sysfs_backlight_get(void)
 {
   int fd;
   int n;
-  char buffer[4];
+  char buffer[8];
 
   if (bck_driver == SYSFS_DRIVER_NONE)
     return 0;
@@ -114,7 +114,8 @@ sysfs_backlight_get(void)
       return 0;
     }
 
-  n = read(fd, buffer, sizeof(buffer) -1);
+  memset(buffer, 0, sizeof(buffer));
+  n = read(fd, buffer, sizeof(buffer) - 1);
   if (n < 1)
     {
       logmsg(LOG_WARNING, "Could not read sysfs actual_brightness node");
@@ -132,7 +133,7 @@ sysfs_backlight_get_max(void)
 {
   int fd;
   int n;
-  char buffer[4];
+  char buffer[8];
 
   if (bck_driver == SYSFS_DRIVER_NONE)
     return 0;
@@ -145,7 +146,8 @@ sysfs_backlight_get_max(void)
       return 0;
     }
 
-  n = read(fd, buffer, sizeof(buffer) -1);
+  memset(buffer, 0, sizeof(buffer));
+  n = read(fd, buffer, sizeof(buffer) - 1);
   if (n < 1)
     {
       logmsg(LOG_WARNING, "Could not read sysfs max_brightness node");

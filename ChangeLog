@@ -3,6 +3,7 @@ ChangeLog for pommed
 
 version 1.30:
 	- pommed: fix a crasher in the i2c probe routine on pmac.
+	- pommed: fix sysfs backlight driver to handle > 3-digit values.
 
 version 1.29:
 	- pommed: add support for newer nvidia backlight driver which
