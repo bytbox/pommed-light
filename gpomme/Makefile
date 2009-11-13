@@ -18,7 +18,7 @@ CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INOTIFY_H)
 
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(DBUSGLIB_CFLAGS) $(GTK_CFLAGS) $(CONFUSE_CFLAGS) $(GLADE_CFLAGS) $(INOTIFY_CFLAGS)
-LDFLAGS = -lpthread $(DBUS_LIBS) $(DBUSGLIB_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
+LDFLAGS = -lpthread -lX11 $(DBUS_LIBS) $(DBUSGLIB_LIBS) $(GTK_LIBS) $(CONFUSE_LIBS) $(GLADE_LIBS)
 
 SOURCES = gpomme.c theme.c conffile.c \
 		../client-common/dbus-client.c \
