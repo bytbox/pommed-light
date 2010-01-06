@@ -81,6 +81,11 @@
 #define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_ISO  0x022d
 #define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_JIS  0x022e
 
+/* Apple external wireless keyboard, aluminium, newer model */
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_2_ANSI 0x0239
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_2_ISO  0x023a
+#define USB_PRODUCT_ID_APPLE_EXTKBD_ALU_WL_2_JIS  0x023b
+
 /* Apple Remote IR Receiver */
 #define USB_PRODUCT_ID_APPLEIR        0x8240
 #define USB_PRODUCT_ID_APPLEIR_2      0x8242

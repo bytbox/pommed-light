@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.31:
+	- pommed: add IDs for newer wireless keyboard.
 
 version 1.30:
 	- pommed: fix a crasher in the i2c probe routine on pmac.
