@@ -6,7 +6,7 @@
 #define __POMMED_H__
 
 
-#define M_VERSION "1.31"
+#define M_VERSION "1.32git"
 
 
 extern int debug;

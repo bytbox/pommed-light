@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.32:
+
 version 1.31:
 	- pommed: add IDs for newer wireless keyboard.
 	- pommed: add the MacBookPro5,4 (15" June 2009).
