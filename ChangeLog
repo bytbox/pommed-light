@@ -2,6 +2,8 @@ ChangeLog for pommed
 --------------------
 
 version 1.32:
+	- pommed: add the rivabl sysfs backlight driver for older 12"
+	PowerBook G4 laptops. Reported by Nic Boet.
 
 version 1.31:
 	- pommed: add IDs for newer wireless keyboard.

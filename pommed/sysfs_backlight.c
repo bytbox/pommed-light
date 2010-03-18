@@ -1,7 +1,7 @@
 /*
  * pommed - Apple laptops hotkeys handler daemon
  *
- * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
+ * Copyright (C) 2006-2008,2010 Julien BLACHE <jb@jblache.org>
  * Copyright (C) 2006 Yves-Alexis Perez <corsac@corsac.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,7 @@ enum {
   SYSFS_DRIVER_ATY128,
   SYSFS_DRIVER_RADEON,
   SYSFS_DRIVER_NVIDIA,
+  SYSFS_DRIVER_RIVA,
 #else
   SYSFS_DRIVER_MBP,
   SYSFS_DRIVER_NVIDIA,
@@ -58,6 +59,7 @@ static char *actual_brightness[] =
     "/sys/class/backlight/aty128bl0/actual_brightness",
     "/sys/class/backlight/radeonbl0/actual_brightness",
     "/sys/class/backlight/nvidiabl0/actual_brightness",
+    "/sys/class/backlight/rivabl0/actual_brightness",
 #else
     "/sys/class/backlight/mbp_backlight/actual_brightness",
     "/sys/class/backlight/nvidia_backlight/actual_brightness",
@@ -72,6 +74,7 @@ static char *brightness[] =
     "/sys/class/backlight/aty128bl0/brightness",
     "/sys/class/backlight/radeonbl0/brightness",
     "/sys/class/backlight/nvidiabl0/brightness",
+    "/sys/class/backlight/rivabl0/brightness",
 #else
     "/sys/class/backlight/mbp_backlight/brightness",
     "/sys/class/backlight/nvidia_backlight/brightness",
@@ -86,6 +89,7 @@ static char *max_brightness[] =
     "/sys/class/backlight/aty128bl0/max_brightness",
     "/sys/class/backlight/radeonbl0/max_brightness",
     "/sys/class/backlight/nvidiabl0/max_brightness",
+    "/sys/class/backlight/rivabl0/max_brightness",
 #else
     "/sys/class/backlight/mbp_backlight/max_brightness",
     "/sys/class/backlight/nvidia_backlight/max_brightness",
