@@ -417,6 +417,7 @@ mbp_sysfs_backlight_probe(void)
       case MACHINE_MACBOOKPRO_3:
       case MACHINE_MACBOOKPRO_4:
       case MACHINE_MACBOOKPRO_5:
+      case MACHINE_MACBOOKPRO_6:
       case MACHINE_MACBOOK_5:
       case MACHINE_MACBOOK_6:
       case MACHINE_MACBOOKAIR_2:
