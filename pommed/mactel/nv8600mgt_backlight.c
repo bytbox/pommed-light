@@ -42,8 +42,6 @@
 
 #include <errno.h>
 
-#include <pci/pci.h>
-
 #include "../pommed.h"
 #include "../conffile.h"
 #include "../lcd_backlight.h"
@@ -177,52 +175,10 @@ nv8600mgt_backlight_toggle(int lvl)
 }
 
 
-#define PCI_ID_VENDOR_NVIDIA     0x10de
-#define PCI_ID_PRODUCT_8600MGT   0x0407
-#define PCI_ID_PRODUCT_9400M     0x0863
-#define PCI_ID_PRODUCT_9400M_G   0x0866
-#define PCI_ID_PRODUCT_9600MGT   0x0647
-
-/* Look for an nVidia GeForce 8600M GT, 9400M or 9600M GT */
 int
 nv8600mgt_backlight_probe(void)
 {
-  struct pci_access *pacc;
-  struct pci_dev *dev;
   int ret;
-
-  pacc = pci_alloc();
-  if (pacc == NULL)
-    {
-      logmsg(LOG_ERR, "Could not allocate PCI structs");
-      return -1;
-    }
-
-  pci_init(pacc);
-  pci_scan_bus(pacc);
-
-  /* Iterate over all devices */
-  for (dev = pacc->devices; dev; dev = dev->next)
-    {
-      pci_fill_info(dev, PCI_FILL_IDENT);
-      /* nVidia GeForce 8600M GT */
-      if ((dev->vendor_id == PCI_ID_VENDOR_NVIDIA)
-	  && ((dev->device_id == PCI_ID_PRODUCT_8600MGT)
-	      || (dev->device_id == PCI_ID_PRODUCT_9400M)
-	      || (dev->device_id == PCI_ID_PRODUCT_9400M_G)
-	      || (dev->device_id == PCI_ID_PRODUCT_9600MGT)))
-	{
-	  break;
-	}
-    }
-
-  pci_cleanup(pacc);
-
-  if (!dev)
-    {
-      logdebug("Failed to detect nVidia GeForce 8600M GT/9400M/9600M GT, aborting...\n");
-      return -1;
-    }
 
   /* Determine backlight I/O port */
   switch (mops->type)
