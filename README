@@ -34,6 +34,8 @@ Supported machines:
    * MacBook Core2 Duo (February 2008, October 2008, October 2009)
    * MacBook Air Core2 Duo (January 2008, October 2008)
 
+   If your MacBook Pro/MacBook Air/MacBook is not listed here, please contact us
+   and include the content of /sys/class/dmi/id/product_name in your mail. Thanks.
 
  - PowerMac machines
    * PowerBook G4 Titanium 15" (December 2000)
