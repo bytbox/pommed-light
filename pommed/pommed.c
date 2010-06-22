@@ -296,6 +296,14 @@ struct machine_ops mb_mops[] = {
     /* .evdev_identify = evdev_is_wellspring3, */
   },
 
+  {  /* MacBookPro7,1 (13", Core2 Duo, April 2010) */
+    .type = MACHINE_MACBOOKPRO_7,
+    .lcd_backlight_probe = mbp_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
+    /* .evdev_identify = evdev_is_wellspring3, */
+  },
+
   /* MacBook machines */
 
   {  /* MacBook1,1 (Core Duo) */
@@ -704,6 +712,9 @@ check_machine_dmi(void)
   else if ((strcmp(buf, "MacBookPro6,1") == 0)
 	   || (strcmp(buf, "MacBookPro6,2") == 0))
     ret = MACHINE_MACBOOKPRO_6;
+  /* Core2 Duo MacBook Pro 13" (April 2010) */
+  else if (strcmp(buf, "MacBookPro7,1") == 0)
+    ret = MACHINE_MACBOOKPRO_7;
   /* Core Duo MacBook (May 2006) */
   else if (strcmp(buf, "MacBook1,1") == 0)
     ret = MACHINE_MACBOOK_1;

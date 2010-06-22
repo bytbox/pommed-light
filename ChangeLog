@@ -6,6 +6,9 @@ version 1.33:
 	- pommed: added support for the MacBookPro6,1 & 6,2 (Core i5/i7,
 	April 2010).
 	- pommed: kill PCI device check in nv8600mgt.
+	- pommed: added support for the MacBookPro7,1 (13", Core2 Duo,
+	April 2010). Requires a patched nvidia-bl module for backlight
+	support at the moment.
 
 version 1.32:
 	- pommed: add the rivabl sysfs backlight driver for older 12"
