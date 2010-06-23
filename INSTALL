@@ -23,7 +23,6 @@ gpomme requires:
  - libdbus
  - libdbus-glib
  - GTK+ 2.0
- - glade 2.0
 
 wmpomme requires:
  - X11 libs
@@ -64,7 +63,6 @@ To install gpomme:
  - install gpomme/themes as /usr/share/gpomme/themes
  - install gpomme/po/$lang.mo as /usr/share/locale/$lang/LC_MESSAGES/gpomme.mo
  - copy gpomme/gpomme*.desktop to /usr/share/applications
- - copy gpomme/gpomme.glade to /usr/share/gpomme
 
 Icons for gpomme are available in the icons/ directory. For the .desktop files
 provided with gpomme to work, the icons should be installed under
