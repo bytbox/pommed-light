@@ -9,6 +9,7 @@ version 1.33:
 	- pommed: added support for the MacBookPro7,1 (13", Core2 Duo,
 	April 2010). Requires a patched nvidia-bl module for backlight
 	support at the moment.
+	- gpomme: replaced Glade with hardcoded GTK+ code.
 
 version 1.32:
 	- pommed: add the rivabl sysfs backlight driver for older 12"
