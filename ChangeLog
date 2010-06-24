@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.34:
+
 version 1.33:
 	- pommed: added support for the MacBook6,1 (October 2009).
 	- pommed: added support for the MacBookPro6,1 & 6,2 (Core i5/i7,
