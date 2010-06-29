@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <limits.h>
 
 #include <errno.h>
 
@@ -42,6 +43,9 @@
 void
 cd_eject(void)
 {
+  char *eject_argv[3] = { "eject", eject_cfg.device, NULL };
+  char *eject_envp[1] = { NULL };
+  long max_fd;
   int fd;
   int ret;
 
@@ -88,7 +92,15 @@ cd_eject(void)
   ret = fork();
   if (ret == 0) /* exec eject */
     {
-      execl("/usr/bin/eject", "eject", eject_cfg.device, NULL);
+      max_fd = sysconf(_SC_OPEN_MAX);
+
+      if (max_fd > INT_MAX)
+	max_fd = INT_MAX;
+
+      for (fd = 3; fd < max_fd; fd++)
+	close(fd);
+
+      execve("/usr/bin/eject", eject_argv, eject_envp);
 
       logmsg(LOG_ERR, "Could not execute eject: %s", strerror(errno));
       exit(1);

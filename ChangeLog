@@ -2,6 +2,7 @@ ChangeLog for pommed
 --------------------
 
 version 1.34:
+	- pommed: be more careful when invoking eject (Alioth #312213).
 
 version 1.33:
 	- pommed: added support for the MacBook6,1 (October 2009).
