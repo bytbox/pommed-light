@@ -463,6 +463,12 @@ kbd_set_fnmode(void)
       return;
     }
 
+  if (!fp)
+    {
+      logmsg(LOG_INFO, "Could not set fnmode: no sysfs node found!");
+      return;
+    }
+
   fprintf(fp, "%d", general_cfg.fnmode);
 
   fclose(fp);
