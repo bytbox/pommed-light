@@ -193,6 +193,7 @@ nv8600mgt_backlight_probe(void)
       case MACHINE_MACBOOK_5:
       case MACHINE_MACBOOK_6:
       case MACHINE_MACBOOKAIR_2:
+      case MACHINE_MACBOOKAIR_3:
 	bl_port = 0x52e; /* 0x52e - 0x52f */
 	break;
 

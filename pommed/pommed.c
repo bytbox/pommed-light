@@ -370,6 +370,14 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
     /* .evdev_identify = evdev_is_wellspring3, */
+  },
+
+  {  /* MacBookAir3,1 & 3,2 (October 2010) */
+    .type = MACHINE_MACBOOKAIR_3,
+    .lcd_backlight_probe = mbp_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
+    /* .evdev_identify = evdev_is_wellspring4a / evdev_is_wellspring4, */
   }
 };
 #endif /* __powerpc__ */
@@ -745,6 +753,9 @@ check_machine_dmi(void)
   /* MacBook Air (October 2008) */
   else if (strcmp(buf, "MacBookAir2,1") == 0)
     ret = MACHINE_MACBOOKAIR_2;
+  /* MacBook Air 11" & 13" (October 2010) */
+  else if ((strcmp(buf, "MacBookAir3,1") == 0) || (strcmp(buf, "MacBookAir3,2") == 0))
+    ret = MACHINE_MACBOOKAIR_3;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buf);
 
