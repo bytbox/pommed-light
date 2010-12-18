@@ -25,6 +25,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <string.h>
+#include <errno.h>
 
 #include <syslog.h>
 
@@ -32,8 +33,8 @@
 #include "../ambient.h"
 
 
-#define APPLESMC_SYSFS_BASE    "/sys/devices/platform"
-static char smcpath[64];
+#define HWMON_SYSFS_BASE    "/sys/class/hwmon"
+static char *smcpath;
 
 
 struct _ambient_info ambient_info;
@@ -47,32 +48,19 @@ ambient_get(int *r, int *l)
   char buf[16];
   char *p;
 
+  if (!smcpath)
+    goto out_error;
+
   fd = open(smcpath, O_RDONLY);
   if (fd < 0)
-    {
-      *r = -1;
-      *l = -1;
-
-      ambient_info.right = 0;
-      ambient_info.left = 0;
-
-      return;
-    }
+    goto out_error;
 
   ret = read(fd, buf, 16);
 
   close(fd);
 
   if ((ret <= 0) || (ret > 15))
-    {
-      *r = -1;
-      *l = -1;
-
-      ambient_info.right = 0;
-      ambient_info.left = 0;
-
-      return;
-    }
+    goto out_error;
 
   buf[strlen(buf)] = '\0';
 
@@ -87,35 +75,76 @@ ambient_get(int *r, int *l)
 
   ambient_info.right = *r;
   ambient_info.left = *l;
+
+  return;
+
+ out_error:
+  *r = -1;
+  *l = -1;
+
+  ambient_info.right = 0;
+  ambient_info.left = 0;
 }
 
 
 void
 ambient_init(int *r, int *l)
 {
+  char devpath[PATH_MAX];
+  char devname[9];
+  char *p;
   DIR *pdev;
   struct dirent *pdevent;
-
+  int fd;
   int ret;
 
+  smcpath = NULL;
+
   /* Probe for the applesmc sysfs path */
-  pdev = opendir(APPLESMC_SYSFS_BASE);
+  pdev = opendir(HWMON_SYSFS_BASE);
   if (pdev != NULL)
     {
       while ((pdevent = readdir(pdev)))
 	{
-	  if (pdevent->d_type != DT_DIR)
+	  if (pdevent->d_name[0] == '.')
 	    continue;
 
-	  if (strstr(pdevent->d_name, "applesmc") == pdevent->d_name)
+	  ret = snprintf(devpath, sizeof(devpath), HWMON_SYSFS_BASE "/%s/device/name", pdevent->d_name);
+	  if ((ret < 0) || (ret >= sizeof(devpath)))
 	    {
-	      ret = snprintf(smcpath, sizeof(smcpath), "%s/%s/light",
-			    APPLESMC_SYSFS_BASE, pdevent->d_name);
+	      logmsg(LOG_WARNING, "Failed to build hwmon probe path");
+	      continue;
+	    }
 
-	      if ((ret < 0) || (ret >= sizeof(smcpath)))
-		logmsg(LOG_ERR, "Failed to build applesmc sysfs path");
-	      else
-		logmsg(LOG_INFO, "Found applesmc at %s", smcpath);
+	  fd = open(devpath, O_RDONLY);
+	  if (fd < 0)
+	    {
+	      logmsg(LOG_ERR, "Could not open %s: %s", devpath, strerror(errno));
+	      continue;
+	    }
+
+	  memset(devname, 0, sizeof(devname));
+	  ret = read(fd, devname, sizeof(devname) - 1);
+	  close(fd);
+
+	  if (ret != (sizeof(devname) - 1))
+	    continue;
+
+	  if (strcmp(devname, "applesmc") == 0)
+	    {
+	      p = strrchr(devpath, '/');
+	      *p = '\0';
+
+	      logmsg(LOG_INFO, "Found applesmc at %s", devpath);
+
+	      smcpath = realpath(devpath, NULL);
+	      if (!smcpath)
+		{
+		  logmsg(LOG_ERR, "Could not dereference applesmc device path: %s\n", strerror(errno));
+		  break;
+		}
+
+	      logmsg(LOG_INFO, "Dereferenced applesmc to %s", smcpath);
 
 	      break;
 	    }
