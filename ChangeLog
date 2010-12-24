@@ -3,6 +3,7 @@ ChangeLog for pommed
 
 version 1.36:
 	- pommed: probe for applesmc through /sys/class/hwmon.
+	- pommed: add support for the MacBook7,1 (April 2010).
 
 version 1.35:
 	- pommed: fix crash if no fnmode sysfs node found.
