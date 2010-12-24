@@ -6,7 +6,7 @@ DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
 TIMERFD_CFLAGS = $(shell test -e /usr/include/sys/timerfd.h || echo -DNO_SYS_TIMERFD_H)
 
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(TIMERFD_CFLAGS)
-LDFLAGS = -lrt -lXpm -lXext -lX11 $(DBUS_LIBS)
+LDLIBS = -lrt -lXpm -lXext -lX11 $(DBUS_LIBS)
 
 SOURCES = wmgeneral.c wmpomme.c \
 	../client-common/dbus-client.c \

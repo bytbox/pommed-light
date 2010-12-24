@@ -20,7 +20,9 @@ TIMERFD_CFLAGS = $(shell test -e /usr/include/sys/timerfd.h || echo -DNO_SYS_TIM
 
 CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(INOTIFY_CFLAGS) $(TIMERFD_CFLAGS)
 
-LDFLAGS = -pthread -lrt $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
+LDLIBS = -pthread -lrt $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
+
+LIB_OBJS =
 
 ifneq (, $(findstring ppc, $(ARCH)))
 OFLIB ?=
@@ -37,9 +39,9 @@ OF_OBJS = $(OF_SOURCES:%.c=%.o)
 
 ifneq ($(OFLIB),)
 CFLAGS += -Ipmac
-LIBS = pmac/ofapi/oflib.a
+LIB_OBJS += pmac/ofapi/oflib.a
 else
-LDFLAGS += -lofapi
+LDLIBS += -lofapi
 endif
 
 else
@@ -51,11 +53,13 @@ ifeq ($(LIBPCI_SHARED), true)
 	LIBPCI_LIBS = $(shell pkg-config libpci --libs)
 
 	CFLAGS += $(LIBPCI_CFLAGS)
-	LDFLAGS += $(LIBPCI_LIBS)
+	LDLIBS += $(LIBPCI_LIBS)
 else
-	LIBS = /usr/lib/libpci.a
-	LDFLAGS += -lz	
+	LIB_OBJS += /usr/lib/libpci.a
+	LDLIBS += -lz
 endif
+
+LDLIBS += $(LIB_OBJS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		evloop.c dbus.c power.c beep.c video.c \
@@ -68,7 +72,7 @@ endif
 OBJS = $(SOURCES:%.c=%.o)
 
 
-pommed: $(OBJS) $(LIBS)
+pommed: $(OBJS) $(LIB_OBJS)
 
 pommed.o: pommed.c pommed.h evloop.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h dbus.h beep.h
 
