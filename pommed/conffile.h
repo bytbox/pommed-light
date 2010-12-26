@@ -53,6 +53,7 @@ struct _kbd_cfg {
   int off_thresh;
   int auto_on;
   int idle;
+  int idle_lvl;
 };
 
 struct _eject_cfg {

@@ -4,6 +4,8 @@ ChangeLog for pommed
 version 1.37:
 	- pommed: fix oversight in applesmc probing change.
 	- pommed: prefer nvidia_bl over Nouveau.
+	- pommed: add new option to fade keyboard backlight instead of
+	switching off when idle. From Alex Launi <alex.launi@canonical.com>.
 
 version 1.36:
 	- pommed: probe for applesmc through /sys/class/hwmon.

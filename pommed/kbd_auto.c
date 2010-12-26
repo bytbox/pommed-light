@@ -48,11 +48,17 @@ kbd_backlight_toggle(void)
 void
 kbd_backlight_inhibit_set(int mask)
 {
+  int lvl;
+
   if (!kbd_bck_info.inhibit)
     kbd_bck_info.inhibit_lvl = kbd_bck_info.level;
 
-  kbd_backlight_set(KBD_BACKLIGHT_OFF,
-		    (mask & KBD_MASK_AUTO) ? (KBD_AUTO) : (KBD_USER));
+  if (mask & KBD_INHIBIT_IDLE)
+    lvl = (kbd_cfg.idle_lvl < kbd_bck_info.level) ? kbd_cfg.idle_lvl : kbd_bck_info.level;
+  else
+    lvl = KBD_BACKLIGHT_OFF;
+
+  kbd_backlight_set(lvl, (mask & KBD_MASK_AUTO) ? (KBD_AUTO) : (KBD_USER));
 
   kbd_bck_info.inhibit |= mask;
 
