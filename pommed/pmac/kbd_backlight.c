@@ -228,7 +228,7 @@ kbd_pmu_backlight_set(int val, int who)
 	{
 	  fadeval += step;
 
-	  adb_write_kbd_value(fd, (unsigned char)val);
+	  adb_write_kbd_value(fd, (unsigned char)fadeval);
 
 	  logdebug("KBD backlight value faded to %d\n", (int)fadeval);
 
