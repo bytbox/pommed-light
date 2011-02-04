@@ -8,9 +8,10 @@
 
 /****** ADB Devices ******/
 
-/* Keyboard as found on the PowerBook3,2 */
-#define ADB_PRODUCT_ID_KEYBOARD       0x22c4
-/* Special PowerBook buttons as found on the PowerBook3,2 */
+#define ADB_PRODUCT_ID_KEYBOARD_ANSI  0x22c3
+#define ADB_PRODUCT_ID_KEYBOARD_ISO   0x22c4
+#define ADB_PRODUCT_ID_KEYBOARD_JIS   0x22c5
+/* Special PowerBook buttons */
 #define ADB_PRODUCT_ID_PBBUTTONS      0x771f
 
 

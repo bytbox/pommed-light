@@ -346,7 +346,9 @@ evdev_is_adb(unsigned short *id)
   if (id[ID_VENDOR] != 0x0001)
     return 0;
 
-  if (product == ADB_PRODUCT_ID_KEYBOARD)
+  if ((product == ADB_PRODUCT_ID_KEYBOARD_ANSI)
+      || (product == ADB_PRODUCT_ID_KEYBOARD_ISO)
+      || (product == ADB_PRODUCT_ID_KEYBOARD_JIS))
     {
       logdebug(" -> ADB keyboard\n");
 
