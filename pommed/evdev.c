@@ -170,6 +170,8 @@ evdev_process_events(int fd, uint32_t events)
 	      break;
 
 	    kbd_backlight_step(STEP_DOWN);
+	    if (kbd_bck_info.level == KBD_BACKLIGHT_OFF)
+	      kbd_backlight_inhibit_set(KBD_INHIBIT_USER);
 	    break;
 
 	  case KEY_KBDILLUMUP:
@@ -178,6 +180,7 @@ evdev_process_events(int fd, uint32_t events)
 	    if (!has_kbd_backlight())
 	      break;
 
+	    kbd_backlight_inhibit_clear(KBD_INHIBIT_USER);
 	    kbd_backlight_step(STEP_UP);
 	    break;
 
