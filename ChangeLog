@@ -3,6 +3,7 @@ ChangeLog for pommed
 
 version 1.37:
 	- pommed: fix oversight in applesmc probing change.
+	- pommed: prefer nvidia_bl over Nouveau.
 
 version 1.36:
 	- pommed: probe for applesmc through /sys/class/hwmon.
