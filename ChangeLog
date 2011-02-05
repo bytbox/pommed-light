@@ -1,6 +1,8 @@
 ChangeLog for pommed
 --------------------
 
+version 1.38:
+
 version 1.37:
 	- pommed: fix oversight in applesmc probing change.
 	- pommed: prefer nvidia_bl over Nouveau.
