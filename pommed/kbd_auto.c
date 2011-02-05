@@ -79,14 +79,14 @@ kbd_backlight_inhibit_clear(int mask)
   if (kbd_bck_info.inhibit || !flag)
     return;
 
+  kbd_backlight_set(kbd_bck_info.inhibit_lvl,
+		    (mask & KBD_MASK_AUTO) ? (KBD_AUTO) : (KBD_USER));
+
   if (kbd_bck_info.auto_on)
     {
       kbd_bck_info.auto_on = 0;
       kbd_bck_info.inhibit_lvl = 0;
     }
-
-  kbd_backlight_set(kbd_bck_info.inhibit_lvl,
-		    (mask & KBD_MASK_AUTO) ? (KBD_AUTO) : (KBD_USER));
 }
 
 void
