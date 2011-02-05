@@ -146,6 +146,12 @@ ambient_init(int *r, int *l)
 
 	      logmsg(LOG_INFO, "Dereferenced applesmc to %s", smcpath);
 
+	      smcpath = realloc(smcpath, strlen(smcpath) + 1 + 6);
+	      if (!smcpath)
+		break;
+
+	      strcat(smcpath, "/light");
+
 	      break;
 	    }
 	}

@@ -1,6 +1,9 @@
 ChangeLog for pommed
 --------------------
 
+version 1.37:
+	- pommed: fix oversight in applesmc probing change.
+
 version 1.36:
 	- pommed: probe for applesmc through /sys/class/hwmon.
 	- pommed: add support for the MacBook7,1 (April 2010).
