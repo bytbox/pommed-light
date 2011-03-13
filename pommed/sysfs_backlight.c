@@ -43,8 +43,8 @@ enum {
   SYSFS_DRIVER_RIVA,
 #else
   SYSFS_DRIVER_MBP,
-  SYSFS_DRIVER_NOUVEAU,
   SYSFS_DRIVER_NVIDIA,
+  SYSFS_DRIVER_NOUVEAU,
   SYSFS_DRIVER_ACPI,
 #endif
 };
@@ -414,12 +414,12 @@ mbp_sysfs_backlight_probe(void)
   if (ret == 0)
     return 0;
 
-  ret = sysfs_backlight_probe(SYSFS_DRIVER_NOUVEAU);
+  ret = sysfs_backlight_probe(SYSFS_DRIVER_NVIDIA);
 
   if (ret == 0)
     return 0;
 
-  ret = sysfs_backlight_probe(SYSFS_DRIVER_NVIDIA);
+  ret = sysfs_backlight_probe(SYSFS_DRIVER_NOUVEAU);
 
   if (ret == 0)
     return 0;
