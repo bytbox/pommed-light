@@ -424,6 +424,11 @@ mbp_sysfs_backlight_probe(void)
   if (ret == 0)
     return 0;
 
+  ret = sysfs_backlight_probe(SYSFS_DRIVER_ACPI);
+
+  if (ret == 0)
+    return 0;
+
   /* Probe failed, wire up native driver instead */
   switch (mops->type)
     {
