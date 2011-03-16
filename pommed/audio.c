@@ -150,6 +150,15 @@ audio_init(void)
   spkr_elem = NULL;
   head_elem = NULL;
 
+  if (audio_cfg.disabled)
+    {
+      audio_info.level = 0;
+      audio_info.max = 0;
+      audio_info.muted = 1;
+
+      return 0;
+    }
+
   play = 1;
 
   ret = snd_mixer_open(&mixer_hdl, 0);

@@ -31,6 +31,9 @@ lcd_sysfs {
 
 # Audio support
 audio {
+	# disable audio support entirely
+	disabled = no
+
 	# Use amixer or alsamixer/alsamixergui to determine the sound card
 	# and the mixer elements to use here.
 
@@ -78,6 +81,7 @@ eject {
 # Beeper
 beep {
 	# enable/disable beeper
+	# automatically disabled if audio support disabled above
 	enabled = no
 	# WAV file to use (from pommed: goutte.wav or click.wav in /usr/share/pommed)
 	beepfile = "/usr/share/pommed/goutte.wav"

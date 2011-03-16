@@ -95,6 +95,7 @@ static cfg_opt_t lcd_nv8600mgt_opts[] =
 
 static cfg_opt_t audio_opts[] =
   {
+    CFG_BOOL("disabled", 0, CFGF_NONE),
     CFG_STR("card", "default", CFGF_NONE),
     CFG_INT("init", -1, CFGF_NONE),
     CFG_INT("step", 10, CFGF_NONE),
@@ -213,13 +214,18 @@ config_print(void)
   printf("    on_batt: %d\n", lcd_nv8600mgt_cfg.on_batt);
 #endif /* !__powerpc__ */
   printf(" + Audio volume control:\n");
-  printf("    card: %s\n", audio_cfg.card);
-  printf("    initial volume: %d%s\n", audio_cfg.init, (audio_cfg.init > -1) ? "%" : "");
-  printf("    step: %d%%\n", audio_cfg.step);
-  printf("    beep: %s\n", (audio_cfg.beep) ? "yes" : "no");
-  printf("    volume element: %s\n", audio_cfg.vol);
-  printf("    speaker element: %s\n", audio_cfg.spkr);
-  printf("    headphones element: %s\n", audio_cfg.head);
+  if (audio_cfg.disabled)
+    printf("    disabled: yes\n");
+  else
+    {
+      printf("    card: %s\n", audio_cfg.card);
+      printf("    initial volume: %d%s\n", audio_cfg.init, (audio_cfg.init > -1) ? "%" : "");
+      printf("    step: %d%%\n", audio_cfg.step);
+      printf("    beep: %s\n", (audio_cfg.beep) ? "yes" : "no");
+      printf("    volume element: %s\n", audio_cfg.vol);
+      printf("    speaker element: %s\n", audio_cfg.spkr);
+      printf("    headphones element: %s\n", audio_cfg.head);
+    }
   printf(" + Keyboard backlight control:\n");
   printf("    default level: %d\n", kbd_cfg.auto_lvl);
   printf("    step: %d\n", kbd_cfg.step);
@@ -344,6 +350,7 @@ config_load(void)
 #endif /* !__powerpc__ */
 
   sec = cfg_getsec(cfg, "audio");
+  audio_cfg.disabled = cfg_getbool(sec, "disabled");
   audio_cfg.card = strdup(cfg_getstr(sec, "card"));
   audio_cfg.init = cfg_getint(sec, "init");
   audio_cfg.step = cfg_getint(sec, "step");
@@ -369,7 +376,10 @@ config_load(void)
   cd_eject_fix_config();
 
   sec = cfg_getsec(cfg, "beep");
-  beep_cfg.enabled = cfg_getbool(sec, "enabled");
+  if (audio_cfg.disabled)
+    beep_cfg.enabled = 0;
+  else
+    beep_cfg.enabled = cfg_getbool(sec, "enabled");
   beep_cfg.beepfile = strdup(cfg_getstr(sec, "beepfile"));
   beep_fix_config();
 

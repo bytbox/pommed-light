@@ -37,6 +37,7 @@ struct _lcd_nv8600mgt_cfg {
 #endif /* !__powerpc__ */
 
 struct _audio_cfg {
+  int disabled;
   char *card;
   int init;
   int step;
