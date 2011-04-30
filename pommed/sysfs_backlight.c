@@ -43,6 +43,7 @@ enum {
   SYSFS_DRIVER_RIVA,
 #else
   SYSFS_DRIVER_MBP,
+  SYSFS_DRIVER_APPLE,
   SYSFS_DRIVER_NVIDIA,
   SYSFS_DRIVER_NOUVEAU,
   SYSFS_DRIVER_ACPI,
@@ -65,6 +66,7 @@ static char *actual_brightness[] =
     "/sys/class/backlight/rivabl0/actual_brightness",
 #else
     "/sys/class/backlight/mbp_backlight/actual_brightness",
+    "/sys/class/backlight/apple_backlight/actual_brightness",
     "/sys/class/backlight/nvidia_backlight/actual_brightness",
     "/sys/class/backlight/nv_backlight/actual_brightness",
     "/sys/class/backlight/acpi_video0/actual_brightness",
@@ -82,6 +84,7 @@ static char *brightness[] =
     "/sys/class/backlight/rivabl0/brightness",
 #else
     "/sys/class/backlight/mbp_backlight/brightness",
+    "/sys/class/backlight/apple_backlight/brightness",
     "/sys/class/backlight/nvidia_backlight/brightness",
     "/sys/class/backlight/nv_backlight/brightness",
     "/sys/class/backlight/acpi_video0/brightness",
@@ -99,6 +102,7 @@ static char *max_brightness[] =
     "/sys/class/backlight/rivabl0/max_brightness",
 #else
     "/sys/class/backlight/mbp_backlight/max_brightness",
+    "/sys/class/backlight/apple_backlight/max_brightness",
     "/sys/class/backlight/nvidia_backlight/max_brightness",
     "/sys/class/backlight/nv_backlight/max_brightness",
     "/sys/class/backlight/acpi_video0/max_brightness",
