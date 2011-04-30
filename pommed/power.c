@@ -46,13 +46,12 @@ sysfs_check_ac_state(void)
 {
   FILE *fp;
   char ac_state;
-  int ret;
 
   fp = fopen(SYSFS_POWER_AC_STATE, "r");
   if (fp == NULL)
     return AC_STATE_ERROR;
 
-  ret = fread(&ac_state, 1, 1, fp);
+  fread(&ac_state, 1, 1, fp);
 
   if (ferror(fp) != 0)
     {
