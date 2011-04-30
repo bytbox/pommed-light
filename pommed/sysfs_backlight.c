@@ -47,6 +47,7 @@ enum {
   SYSFS_DRIVER_NOUVEAU,
   SYSFS_DRIVER_ACPI,
 #endif
+  SYSFS_DRIVER_MAX
 };
 
 
@@ -407,27 +408,15 @@ nvidia_sysfs_backlight_probe(void)
 int
 mbp_sysfs_backlight_probe(void)
 {
+  int drv;
   int ret;
 
-  ret = sysfs_backlight_probe(SYSFS_DRIVER_MBP);
-
-  if (ret == 0)
-    return 0;
-
-  ret = sysfs_backlight_probe(SYSFS_DRIVER_NVIDIA);
-
-  if (ret == 0)
-    return 0;
-
-  ret = sysfs_backlight_probe(SYSFS_DRIVER_NOUVEAU);
-
-  if (ret == 0)
-    return 0;
-
-  ret = sysfs_backlight_probe(SYSFS_DRIVER_ACPI);
-
-  if (ret == 0)
-    return 0;
+  for (drv = SYSFS_DRIVER_NONE + 1; drv < SYSFS_DRIVER_MAX; drv++)
+    {
+      ret = sysfs_backlight_probe(drv);
+      if (ret == 0)
+	return 0;
+    }
 
   /* Probe failed, wire up native driver instead */
   switch (mops->type)
