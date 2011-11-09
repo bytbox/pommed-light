@@ -2,7 +2,7 @@
  * pommed - Apple laptops hotkeys handler daemon
  *
  * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
- * Copyright (C) 2006 Soeren SONNENBURG <debian@nn7.de>
+ * Copyright (C) 2006,2011 Soeren SONNENBURG <debian@nn7.de>
  *
  * Portions of the code below dealing with the audio thread were shamelessly
  * stolen from pbbuttonsd. Thanks ! ;-)
@@ -483,7 +483,10 @@ beep_play_sample(struct dspdata *dsp, int cmd)
   /* Returns the number of frames actually written. */
   while ((pcmreturn = snd_pcm_writei(pcm_handle, s->audiodata, s->framecount)) < 0)
     {
-      snd_pcm_prepare(pcm_handle);
+      if (pcmreturn < 0)
+          pcmreturn = snd_pcm_recover(pcm_handle, pcmreturn, 0);
+      if (pcmreturn < 0)
+          break;
     }
 
   /* Stop PCM device and drop pending frames */
