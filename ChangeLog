@@ -1,7 +1,10 @@
 ChangeLog for pommed
 --------------------
 
-version 1.40:
+version 1.40lw:
+	- pommed: remove dbus support
+	- gpomme: remove
+	- wmpomme: remove
 
 version 1.39:
 	- pommed: add new sysfs backlight driver apple_backlight.
