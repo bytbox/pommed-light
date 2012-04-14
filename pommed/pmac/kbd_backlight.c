@@ -43,7 +43,6 @@
 #include "../evloop.h"
 #include "../conffile.h"
 #include "../kbd_backlight.h"
-#include "../ambient.h"
 
 
 #define SYSFS_I2C_BASE      "/sys/class/i2c-dev"
@@ -336,10 +335,6 @@ kbd_backlight_init(void)
 
       kbd_bck_info.level = 0;
 
-      ambient_info.left = 0;
-      ambient_info.right = 0;
-      ambient_info.max = 0;
-
       return;
     }
 
@@ -349,8 +344,6 @@ kbd_backlight_init(void)
     kbd_bck_info.level = 0;
 
   kbd_bck_info.max = KBD_BACKLIGHT_MAX;
-
-  ambient_init(&kbd_bck_info.r_sens, &kbd_bck_info.l_sens);
 
   kbd_auto_init();
 }

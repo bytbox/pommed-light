@@ -27,7 +27,7 @@ OFLIB ?=
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		evloop.c power.c beep.c video.c \
 		sysfs_backlight.c pmac/pmu.c \
-		pmac/kbd_backlight.c pmac/ambient.c
+		pmac/kbd_backlight.c
 
 OF_SOURCES = pmac/ofapi/of_externals.c pmac/ofapi/of_internals.c \
 		pmac/ofapi/of_standard.c
@@ -63,7 +63,7 @@ SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
 		sysfs_backlight.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/nv8600mgt_backlight.c \
-		mactel/kbd_backlight.c mactel/ambient.c mactel/acpi.c
+		mactel/kbd_backlight.c mactel/acpi.c
 endif
 
 OBJS = $(SOURCES:%.c=%.o)
@@ -92,9 +92,7 @@ video.o: video.c video.h pommed.h
 sysfs_backlight.o: sysfs_backlight.c pommed.h lcd_backlight.h conffile.h
 
 # PowerMac-specific files
-pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h
-
-pmac/ambient.o: pmac/ambient.c ambient.h pommed.h
+pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h conffile.h
 
 pmac/pmu.o: pmac/pmu.c power.h
 
@@ -116,9 +114,7 @@ mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h co
 
 mactel/nv8600mgt_backlight.o: mactel/nv8600mgt_backlight.c pommed.h lcd_backlight.h conffile.h
 
-mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h
-
-mactel/ambient.o: mactel/ambient.c ambient.h pommed.h
+mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h conffile.h
 
 mactel/acpi.o: mactel/acpi.c power.h
 

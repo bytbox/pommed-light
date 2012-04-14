@@ -104,8 +104,5 @@ kbd_backlight_inhibit_clear(int mask);
 void
 kbd_backlight_inhibit_toggle(int mask);
 
-void
-kbd_backlight_ambient_check(void);
-
 
 #endif /* !__KBD_BACKLIGHT_H__ */

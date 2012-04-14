@@ -1,6 +1,9 @@
 ChangeLog for pommed
 --------------------
 
+Version 1.41lw:
+	- pommed: remove ambient sensor support
+
 version 1.40lw:
 	- pommed: remove dbus support
 	- gpomme: remove

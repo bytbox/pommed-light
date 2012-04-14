@@ -1,8 +1,8 @@
 About pommed-light
 ------------------
 
-This is a stripped-down version of pommed with client and dbus support removed,
-optimized for use with dwm and the like.
+This is a stripped-down version of pommed with client, dbus, and ambient light
+sensor support removed, optimized for use with dwm and the like.
 
 README for pommed
 -----------------
