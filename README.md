@@ -6,7 +6,6 @@ README for pommed
  - Using pommed
  - Beeper feature
  - When things go wrong
- - Using gpomme and wmpomme
 
 
 Kernel version requirements:
@@ -38,7 +37,7 @@ Supported machines:
    * MacBook Air Core2 Duo 11" & 13" (October 2010)
 
    If your MacBook Pro/MacBook Air/MacBook is not listed here, please contact us
-   and include the content of /sys/class/dmi/id/product_name in your mail. Thanks.
+   and include the content of /sys/class/dmi/id/product\_name in your mail. Thanks.
 
  - PowerMac machines
    * PowerBook G4 Titanium 15" (December 2000)
@@ -137,34 +136,3 @@ If the debug mode doesn't offer any hint as to what's going on, then contact
 me with the details of your problem and I'll be able to help.
 
 
-Using gpomme and wmpomme
-------------------------
-
- - gpomme: launch gpomme at session startup, using whatever interface your
-   desktop environment provides for that.
-
- - wmpomme: run wmpomme and add it to your dock.
-
-Both gpomme and wmpomme are responsible for running a user-provided helper
-when the video switch button is pressed. This helper is responsible for
-activating/deactivating the external video output.
-
-The helper can be set system-wide and overriden on a per-user basis:
- - if $HOME/.videoswitch exists, is readable and executable by the running
-   user, it is executed;
- - otherwise, if /etc/pommed/videoswitch exists, is readable and executable
-   by the running user, it is executed.
-
-The program is invoked without arguments, and argv[0] is "videoswitch".
-
-The videoswitch helper can be anything you want: shell script, perl/python
-script or a plain binary; anything executable. It is up to the script or
-program to perform any housekeeping/statekeeping that is necessary.
-
-If you want to run urandr or grandr, you can just symlink it as
-/etc/pommed/videoswitch or $HOME/.videoswitch.
-
-As different machines require different scripts, pommed can't ship a default
-script (there's no one-size-fits-all, unfortunately). If you write a nice
-script for your machine and would like to have it shipped with pommed as an
-example, mail it to me with a proper license and the machine model.
