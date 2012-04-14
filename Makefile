@@ -2,21 +2,17 @@
 
 OFLIB ?=
 
-all: pommed gpomme wmpomme
+all: pommed wmpomme
 
 pommed:
 	$(MAKE) -C pommed OFLIB=$(OFLIB)
-
-gpomme:
-	$(MAKE) -C gpomme
 
 wmpomme:
 	$(MAKE) -C wmpomme
 
 clean:
 	$(MAKE) -C pommed clean
-	$(MAKE) -C gpomme clean
 	$(MAKE) -C wmpomme clean
 	rm -f *~
 
-.PHONY: pommed gpomme wmpomme
+.PHONY: pommed wmpomme
