@@ -45,7 +45,6 @@
 #include "../pommed.h"
 #include "../conffile.h"
 #include "../lcd_backlight.h"
-#include "../dbus.h"
 
 
 struct _lcd_bck_info lcd_bck_info;
@@ -116,8 +115,6 @@ nv8600mgt_backlight_step(int dir)
 
   nv8600mgt_backlight_set((unsigned char)newval);
 
-  mbpdbus_send_lcd_backlight(newval, val, LCD_USER);
-
   lcd_bck_info.level = newval;
 }
 
@@ -135,7 +132,6 @@ nv8600mgt_backlight_toggle(int lvl)
   val = nv8600mgt_backlight_get();
   if (val != lcd_bck_info.level)
     {
-      mbpdbus_send_lcd_backlight(val, lcd_bck_info.level, LCD_AUTO);
       lcd_bck_info.level = val;
     }
 
@@ -152,8 +148,6 @@ nv8600mgt_backlight_toggle(int lvl)
 
 	nv8600mgt_backlight_set(lcd_bck_info.ac_lvl);
 
-	mbpdbus_send_lcd_backlight(lcd_bck_info.ac_lvl, lcd_bck_info.level, LCD_AUTO);
-
 	lcd_bck_info.level = lcd_bck_info.ac_lvl;
 	break;
 
@@ -166,8 +160,6 @@ nv8600mgt_backlight_toggle(int lvl)
 	lcd_bck_info.ac_lvl = lcd_bck_info.level;
 
 	nv8600mgt_backlight_set(lcd_nv8600mgt_cfg.on_batt);
-
-	mbpdbus_send_lcd_backlight(lcd_nv8600mgt_cfg.on_batt, lcd_bck_info.level, LCD_AUTO);
 
 	lcd_bck_info.level = lcd_nv8600mgt_cfg.on_batt;
 	break;

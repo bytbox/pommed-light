@@ -44,7 +44,6 @@
 #include "../conffile.h"
 #include "../kbd_backlight.h"
 #include "../ambient.h"
-#include "../dbus.h"
 
 
 #define SYSFS_I2C_BASE      "/sys/class/i2c-dev"
@@ -153,8 +152,6 @@ kbd_lmu_backlight_set(int val, int who)
 
   close(fd);
 
-  mbpdbus_send_kbd_backlight(val, kbd_bck_info.level, who);
-
   kbd_bck_info.level = val;
 }
 
@@ -239,8 +236,6 @@ kbd_pmu_backlight_set(int val, int who)
   adb_write_kbd_value(fd, val);
 
   close(fd);
-
-  mbpdbus_send_kbd_backlight(val, kbd_bck_info.level, who);
 
   kbd_bck_info.level = val;
 }

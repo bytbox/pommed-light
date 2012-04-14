@@ -2,9 +2,6 @@ ARCH ?= $(shell uname -m)
 
 CC = gcc
 
-DBUS_CFLAGS = $(shell pkg-config dbus-1 --cflags) -DDBUS_API_SUBJECT_TO_CHANGE
-DBUS_LIBS = $(shell pkg-config dbus-1 --libs)
-
 ALSA_CFLAGS = $(shell pkg-config alsa --cflags)
 ALSA_LIBS = $(shell pkg-config alsa --libs)
 
@@ -28,7 +25,7 @@ ifneq (, $(findstring ppc, $(ARCH)))
 OFLIB ?=
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
-		evloop.c dbus.c power.c beep.c video.c \
+		evloop.c power.c beep.c video.c \
 		sysfs_backlight.c pmac/pmu.c \
 		pmac/kbd_backlight.c pmac/ambient.c
 
@@ -62,7 +59,7 @@ endif
 LDLIBS += $(LIB_OBJS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
-		evloop.c dbus.c power.c beep.c video.c \
+		evloop.c power.c beep.c video.c \
 		sysfs_backlight.c \
 		mactel/x1600_backlight.c mactel/gma950_backlight.c \
 		mactel/nv8600mgt_backlight.c \
@@ -74,9 +71,9 @@ OBJS = $(SOURCES:%.c=%.o)
 
 pommed: $(OBJS) $(LIB_OBJS)
 
-pommed.o: pommed.c pommed.h evloop.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h dbus.h beep.h
+pommed.o: pommed.c pommed.h evloop.h kbd_backlight.h lcd_backlight.h cd_eject.h evdev.h conffile.h audio.h beep.h
 
-cd_eject.o: cd_eject.c cd_eject.h pommed.h conffile.h dbus.h
+cd_eject.o: cd_eject.c cd_eject.h pommed.h conffile.h
 
 evdev.o: evdev.c evdev.h evloop.h pommed.h kbd_backlight.h lcd_backlight.h cd_eject.h conffile.h audio.h video.h beep.h
 
@@ -84,22 +81,20 @@ evloop.o: evloop.c evloop.h pommed.h
 
 conffile.o: conffile.c conffile.h pommed.h lcd_backlight.h kbd_backlight.h cd_eject.h audio.h beep.h
 
-audio.o: audio.c audio.h pommed.h conffile.h dbus.h
-
-dbus.o: dbus.c dbus.h evloop.h pommed.h lcd_backlight.h kbd_backlight.h ambient.h audio.h
+audio.o: audio.c audio.h pommed.h conffile.h
 
 power.o: power.c power.h evloop.h pommed.h lcd_backlight.h
 
 beep.o: beep.c beep.h pommed.h evloop.h audio.h
 
-video.o: video.c video.h pommed.h dbus.h
+video.o: video.c video.h pommed.h
 
-sysfs_backlight.o: sysfs_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+sysfs_backlight.o: sysfs_backlight.c pommed.h lcd_backlight.h conffile.h
 
 # PowerMac-specific files
-pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h dbus.h
+pmac/kbd_backlight.o: pmac/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h
 
-pmac/ambient.o: pmac/ambient.c ambient.h pommed.h dbus.h
+pmac/ambient.o: pmac/ambient.c ambient.h pommed.h
 
 pmac/pmu.o: pmac/pmu.c power.h
 
@@ -115,15 +110,15 @@ pmac/ofapi/of_standard.o: pmac/ofapi/of_standard.c pmac/ofapi/of_api.h
 
 
 # Mactel-specific files
-mactel/x1600_backlight.o: mactel/x1600_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+mactel/x1600_backlight.o: mactel/x1600_backlight.c pommed.h lcd_backlight.h conffile.h
 
-mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+mactel/gma950_backlight.o: mactel/gma950_backlight.c pommed.h lcd_backlight.h conffile.h
 
-mactel/nv8600mgt_backlight.o: mactel/nv8600mgt_backlight.c pommed.h lcd_backlight.h conffile.h dbus.h
+mactel/nv8600mgt_backlight.o: mactel/nv8600mgt_backlight.c pommed.h lcd_backlight.h conffile.h
 
-mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h dbus.h
+mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop.h pommed.h ambient.h conffile.h
 
-mactel/ambient.o: mactel/ambient.c ambient.h pommed.h dbus.h
+mactel/ambient.o: mactel/ambient.c ambient.h pommed.h
 
 mactel/acpi.o: mactel/acpi.c power.h
 

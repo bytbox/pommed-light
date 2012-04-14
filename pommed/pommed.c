@@ -51,7 +51,6 @@
 #include "evloop.h"
 #include "conffile.h"
 #include "audio.h"
-#include "dbus.h"
 #include "power.h"
 #include "beep.h"
 
@@ -959,12 +958,6 @@ main (int argc, char **argv)
       logmsg(LOG_WARNING, "Audio initialization failed, audio support disabled");
     }
 
-  ret = mbpdbus_init();
-  if (ret < 0)
-    {
-      logmsg(LOG_WARNING, "Could not connect to DBus system bus");
-    }
-
   power_init();
 
   if (!console)
@@ -1010,8 +1003,6 @@ main (int argc, char **argv)
   evdev_cleanup();
 
   beep_cleanup();
-
-  mbpdbus_cleanup();
 
   kbd_backlight_cleanup();
 

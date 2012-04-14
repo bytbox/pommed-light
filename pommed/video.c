@@ -34,14 +34,13 @@
 #include <syslog.h>
 
 #include "pommed.h"
-#include "dbus.h"
 #include "video.h"
 
 
 void
 video_switch(void)
 {
-  mbpdbus_send_video_switch();
+  // TODO
 }
 
 int

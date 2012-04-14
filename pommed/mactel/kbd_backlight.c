@@ -36,8 +36,6 @@
 #include "../conffile.h"
 #include "../kbd_backlight.h"
 #include "../ambient.h"
-#include "../dbus.h"
-
 
 struct _kbd_bck_info kbd_bck_info;
 
@@ -177,8 +175,6 @@ kbd_backlight_set(int val, int who)
   fclose(fp);
 
   logdebug("KBD backlight value set to %d\n", val);
-
-  mbpdbus_send_kbd_backlight(val, curval, who);
 
   kbd_bck_info.level = val;
 }

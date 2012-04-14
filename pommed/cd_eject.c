@@ -37,7 +37,6 @@
 #include "pommed.h"
 #include "conffile.h"
 #include "cd_eject.h"
-#include "dbus.h"
 
 
 void
@@ -112,8 +111,6 @@ cd_eject(void)
     }
   else
     {
-      mbpdbus_send_cd_eject();
-
       waitpid(ret, &ret, 0);
       if ((WIFEXITED(ret) == 0) || (WEXITSTATUS(ret) != 0))
 	{

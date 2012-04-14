@@ -42,7 +42,6 @@
 #include "../pommed.h"
 #include "../conffile.h"
 #include "../lcd_backlight.h"
-#include "../dbus.h"
 
 
 struct _lcd_bck_info lcd_bck_info;
@@ -170,8 +169,6 @@ x1600_backlight_step(int dir)
 
   x1600_backlight_unmap();
 
-  mbpdbus_send_lcd_backlight(newval, val, LCD_USER);
-
   lcd_bck_info.level = newval;
 }
 
@@ -191,7 +188,6 @@ x1600_backlight_toggle(int lvl)
   val = x1600_backlight_get();
   if (val != lcd_bck_info.level)
     {
-      mbpdbus_send_lcd_backlight(val, lcd_bck_info.level, LCD_AUTO);
       lcd_bck_info.level = val;
     }
 
@@ -211,8 +207,6 @@ x1600_backlight_toggle(int lvl)
 
 	x1600_backlight_set(lcd_bck_info.ac_lvl);
 
-	mbpdbus_send_lcd_backlight(lcd_bck_info.ac_lvl, lcd_bck_info.level, LCD_AUTO);
-
 	lcd_bck_info.level = lcd_bck_info.ac_lvl;
 	break;
 
@@ -225,8 +219,6 @@ x1600_backlight_toggle(int lvl)
 	lcd_bck_info.ac_lvl = lcd_bck_info.level;
 
 	x1600_backlight_set(lcd_x1600_cfg.on_batt);
-
-	mbpdbus_send_lcd_backlight(lcd_x1600_cfg.on_batt, lcd_bck_info.level, LCD_AUTO);
 
 	lcd_bck_info.level = lcd_x1600_cfg.on_batt;
 	break;

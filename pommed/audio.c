@@ -28,7 +28,6 @@
 #include "conffile.h"
 #include "audio.h"
 #include "beep.h"
-#include "dbus.h"
 
 
 struct _audio_info audio_info;
@@ -94,8 +93,6 @@ audio_step(int dir)
   if (audio_cfg.beep)
     beep_audio();
 
-  mbpdbus_send_audio_volume(newvol, vol);
-
   audio_info.level = newvol;
 }
 
@@ -128,8 +125,6 @@ audio_toggle_mute(void)
 
   if (head_elem != NULL)
     audio_set_mute_elem(head_elem);
-
-  mbpdbus_send_audio_mute(!play);
 
   audio_info.muted = !play;
 }

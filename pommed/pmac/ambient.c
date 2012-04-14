@@ -34,7 +34,6 @@
 
 #include "../pommed.h"
 #include "../ambient.h"
-#include "../dbus.h"
 
 
 struct _ambient_info ambient_info;

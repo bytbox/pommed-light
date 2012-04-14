@@ -65,7 +65,6 @@
 #include "../pommed.h"
 #include "../conffile.h"
 #include "../lcd_backlight.h"
-#include "../dbus.h"
 
 
 static unsigned int GMA950_BACKLIGHT_MAX;
@@ -205,8 +204,6 @@ gma950_backlight_step(int dir)
 
   gma950_backlight_unmap();
 
-  mbpdbus_send_lcd_backlight(newval, val, LCD_USER);
-
   lcd_bck_info.level = newval;
 }
 
@@ -227,7 +224,6 @@ gma950_backlight_toggle(int lvl)
   val = gma950_backlight_get();
   if (val != lcd_bck_info.level)
     {
-      mbpdbus_send_lcd_backlight(val, lcd_bck_info.level, LCD_AUTO);
       lcd_bck_info.level = val;
     }
 
@@ -247,8 +243,6 @@ gma950_backlight_toggle(int lvl)
 
 	gma950_backlight_set(lcd_bck_info.ac_lvl);
 
-	mbpdbus_send_lcd_backlight(lcd_bck_info.ac_lvl, lcd_bck_info.level, LCD_AUTO);
-
 	lcd_bck_info.level = lcd_bck_info.ac_lvl;
 	break;
 
@@ -261,8 +255,6 @@ gma950_backlight_toggle(int lvl)
 	lcd_bck_info.ac_lvl = lcd_bck_info.level;
 
 	gma950_backlight_set(lcd_gma950_cfg.on_batt);
-
-	mbpdbus_send_lcd_backlight(lcd_gma950_cfg.on_batt, lcd_bck_info.level, LCD_AUTO);
 
 	lcd_bck_info.level = lcd_gma950_cfg.on_batt;
 	break;

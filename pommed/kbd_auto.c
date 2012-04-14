@@ -109,8 +109,6 @@ kbd_backlight_ambient_check(void)
   if ((amb_r < 0) || (amb_l < 0))
     return;
 
-  mbpdbus_send_ambient_light(amb_l, kbd_bck_info.l_sens, amb_r, kbd_bck_info.r_sens);
-
   kbd_bck_info.r_sens = amb_r;
   kbd_bck_info.l_sens = amb_l;
 
