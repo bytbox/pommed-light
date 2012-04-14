@@ -2,8 +2,6 @@ Installation instructions for pommed
 ------------------------------------
 
 pommed  - the daemon
-gpomme  - GTK+ client
-wmpomme - WindowMaker client
 
 
 Building
@@ -14,25 +12,10 @@ pommed requires:
  - libofapi aka oflib (PowerMac machines only, see below)
  - zlib
  - libconfuse
- - libdbus
  - libasound
  - libaudiofile
  - eject
 
-gpomme requires:
- - libdbus
- - libdbus-glib
- - GTK+ 2.0
-
-wmpomme requires:
- - X11 libs
- - libdbus
-
-
-To build everything, just run make from the top-level directory, or:
- - make pommed, to build pommed
- - make gpomme, to build gpomme
- - make wmpomme, to build wmpomme
 
 For PowerPC machines, if you do not have libofapi installed, can't find it or
 do not want to install it, run make pommed OFLIB=1 to use the embedded copy
@@ -42,37 +25,10 @@ of libofapi.
 Installing
 ----------
 
-To install pommed:
  - copy pommed somewhere in your PATH (/usr/bin)
  - copy pommed/data/* to /usr/share/pommed
  - copy pommed.conf.(mactel|pmac) as /etc/pommed.conf
  - install the pommed.init initscript as /etc/init.d/pommed, make it executable
    and perform any additional configuration needed on your system (links to
    /etc/rc?.d/ for instance)
- - configure DBus for pommed
-    + if you have a /etc/dbus-1/system.d directory, copy dbus-policy.conf
-      as /etc/dbus-1/system.d/pommed.conf
-    + otherwise, copy dbus-policy.conf as /etc/dbus-1/pommed.conf and add 
-          <include>pommed.conf</include>
-      in /etc/dbus-1/system.conf, between the <busconfig>...</busconfig> tags
-      (usually toward the end of the file, before the </busconfig> tag)
- - restart dbus
 
-To install gpomme:
- - copy gpomme somewhere in your PATH (/usr/bin)
- - install gpomme/themes as /usr/share/gpomme/themes
- - install gpomme/po/$lang.mo as /usr/share/locale/$lang/LC_MESSAGES/gpomme.mo
- - copy gpomme/gpomme*.desktop to /usr/share/applications
-
-Icons for gpomme are available in the icons/ directory. For the .desktop files
-provided with gpomme to work, the icons should be installed under
-/usr/share/icons/hicolor. PNG files go to the appropriate sub-directory
-depending on their size, gpomme.svg goes to the scalable/ sub-directory.
-
-
-To install wmpomme:
- - copy wmpomme somewhere in your PATH (/usr/bin)
-
-Pick an icon from the icons/ directory to display in the dock. You can install
-gpomme_32x32.xpm to /usr/share/pixmaps/wmpomme.xpm and use that in the dock for
-instance.

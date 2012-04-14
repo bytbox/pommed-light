@@ -2,6 +2,9 @@
 pommed
 ------
 
+This stripped-down version of pommed was prepared by Scott Lawrence
+<bytbox@gmail.com>.
+
 Written by Julien BLACHE <jb@jblache.org>, with code taken from
   - Nicolas BOICHAT <nicolas@boichat.ch>
        for the Radeon X1600 backlight support
@@ -26,50 +29,4 @@ Copyright (C) 2007 Yann Beauxis.
 The click.wav sound file shipped with pommed comes from the Classic theme
 from PBButtons and is released under the GPLv2+.
 
-
-gpomme
-------
-
-Soeren SONNENBURG <debian@nn7.de> provided the base for gpomme, based
-on code taken from gtkpbbuttons. Daniel G. SIEGEL wrote the configuration
-GUI.
-
-Glue added by Julien BLACHE <jb@jblache.org>.
-
-
- Themes:
-  - CrystalLarge: made by Soeren SONNENBURG <debian@nn7.de>, based on the
-    Crystal theme for pbbuttonsd using icons from the Crystal themes by
-    Everaldo (icons licensed under the LGPL).
-
-  - Tango: made by Daniel G. SIEGEL <dgsiegel@gmail.com>, based on the Tango
-    icons available at
-             <http://tango.freedesktop.org/Tango_Desktop_Project>
-    (icons licensed under the Creative Commons Attribution Share-Alike license).
-
-  - KStyle: made by Natanael ARNDT <arndtn@gmx.de>, based on the Crystal SVG
-    icon theme by Everaldo (LGPL), see
-             <http://www.kde-look.org/content/show.php?content=25668>
-
-  - Elegant Bright & Elegant Dark: made by Natanael ARNDT <arndtn@gmx.de>,
-    icons released under the GPL.
-
-
-  i18n:
-   - french translation by Julien BLACHE
-   - german translation by Soeren SONNENBURG and Daniel G. SIEGEL
-   - spanish translation by Eduardo BELLIDO BELLIDO
-   - italian translation by Daniel G. SIEGEL
-   - japanese translation by Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-
-wmpomme
--------
-
-Written by Julien BLACHE <jb@jblache.org>, based on wmwave.
-
-Icons
------
-
-The icon found in the icons/ directory was contributed under GPLv2 by
-Jan Larres <jan@majutsushi.net>.
 
