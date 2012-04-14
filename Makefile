@@ -1,18 +1,14 @@
-# Top-level Makefile for pommed & tools
+# Top-level Makefile for pommed
 
 OFLIB ?=
 
-all: pommed wmpomme
+all: pommed
 
 pommed:
 	$(MAKE) -C pommed OFLIB=$(OFLIB)
 
-wmpomme:
-	$(MAKE) -C wmpomme
-
 clean:
 	$(MAKE) -C pommed clean
-	$(MAKE) -C wmpomme clean
 	rm -f *~
 
-.PHONY: pommed wmpomme
+.PHONY: pommed
