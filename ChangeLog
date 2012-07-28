@@ -1,6 +1,10 @@
 ChangeLog for pommed
 --------------------
 
+Version 1.42lw:
+	- pommed: adding support for MacbookAir4,1 and MacbookAir4,2 (thanks
+	  jmlacroix!)
+
 Version 1.41lw:
 	- pommed: remove ambient sensor support
 

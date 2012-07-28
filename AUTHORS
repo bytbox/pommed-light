@@ -18,6 +18,8 @@ The following people contributed to pommed:
        base of the ALSA code
   - Yves-Alexis PEREZ <corsac@corsac.net>
        pommed PowerBook support
+  - jmlacroix (github)
+       MacbookAir4,1 and MacbookAir4,2 support
 
 On PowerBook machines, pommed uses the OFlib written by
 Alastair Poole <netstar@gatheringofgray.com>
