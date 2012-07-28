@@ -78,6 +78,11 @@
 #define USB_PRODUCT_ID_WELLSPRING5_ISO    0x0246
 #define USB_PRODUCT_ID_WELLSPRING5_JIS    0x0247
 
+/* 2011 Macbook Air */
+#define USB_PRODUCT_ID_2011MBA_ANSI       0x024A
+#define USB_PRODUCT_ID_2011MBA_ISO        0x024B
+#define USB_PRODUCT_ID_2011MBA_JIS        0x024C
+
 
 /* Apple external USB keyboard, white */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c

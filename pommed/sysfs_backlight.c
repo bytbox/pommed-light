@@ -423,6 +423,7 @@ mbp_sysfs_backlight_probe(void)
       case MACHINE_MACBOOK_6:
       case MACHINE_MACBOOKAIR_2:
       case MACHINE_MACBOOKAIR_3:
+      case MACHINE_MACBOOKAIR_4:
 	logmsg(LOG_INFO, "sysfs backlight probe failed, falling back to nv8600mgt");
 
 	ret = nv8600mgt_backlight_probe();
