@@ -805,7 +805,7 @@ check_machine_dmi(void)
   else if ((strcmp(buf, "MacBookAir4,1") == 0) || (strcmp(buf, "MacBookAir4,2") == 0))
     ret = MACHINE_MACBOOKAIR_4;
   /* MacBook Air 11" & 13" (July 2011) */
-  else if ((strcmp(buf, "MacBookAir5,1") == 0) == 0)
+  else if ((strcmp(buf, "MacBookAir5,1") == 0))
     ret = MACHINE_MACBOOKAIR_5;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buf);
