@@ -690,6 +690,31 @@ evdev_is_2011mba(unsigned short *id)
   return 0;
 }
 
+static int
+evdev_is_2012mba(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_2012MBA_ANSI)
+      || (product == USB_PRODUCT_ID_2012MBA_ISO)
+      || (product == USB_PRODUCT_ID_2012MBA_JIS))
+    {
+      logdebug(" -> 2012MBA USB assembly\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
 /* MacBookPro8,1 (13" Early 2011)
  * MacBookPro8,2 (15" Early 2011)
  * MacBookPro8,3 (17" Early 2011)
@@ -732,7 +757,8 @@ evdev_is_internal(unsigned short *id)
 	  || evdev_is_wellspring4(id)
 	  || evdev_is_wellspring4a(id)
 	  || evdev_is_wellspring5(id)
-	  || evdev_is_2011mba(id));
+	  || evdev_is_2011mba(id)
+	  || evdev_is_2012mba(id));
 }
 
 
@@ -1086,7 +1112,7 @@ evdev_init(void)
   for (i = 0; i < EVDEV_MAX; i++)
     {
       ret = snprintf(evdev, 32, "%s%d", EVDEV_BASE, i);
-
+      
       if ((ret <= 0) || (ret > 31))
 	return -1;
 
