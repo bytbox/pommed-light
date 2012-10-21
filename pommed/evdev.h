@@ -83,6 +83,10 @@
 #define USB_PRODUCT_ID_2011MBA_ISO        0x024B
 #define USB_PRODUCT_ID_2011MBA_JIS        0x024C
 
+/* 2012 Macbook Air */
+#define USB_PRODUCT_ID_2012MBA_ANSI       0x024D
+#define USB_PRODUCT_ID_2012MBA_ISO        0x024E
+#define USB_PRODUCT_ID_2012MBA_JIS        0x024F
 
 /* Apple external USB keyboard, white */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c
