@@ -103,7 +103,7 @@ static char *max_brightness[] =
     "/sys/class/backlight/nvidiabl0/max_brightness",
     "/sys/class/backlight/rivabl0/max_brightness",
 #else
-    "/sys/class/backlight/gmux_backlight/brightness",
+    "/sys/class/backlight/gmux_backlight/max_brightness",
     "/sys/class/backlight/mbp_backlight/max_brightness",
     "/sys/class/backlight/apple_backlight/max_brightness",
     "/sys/class/backlight/nvidia_backlight/max_brightness",
