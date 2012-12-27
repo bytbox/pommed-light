@@ -1,6 +1,10 @@
 ChangeLog for pommed
 --------------------
 
+Version 1.44lw:
+	- pommed: support for gmux_backlight sysfs dir (thanks Thomas Chiroux
+	  and Karsten Gebbert!)
+
 Version 1.42lw:
 	- pommed: adding support for MacbookAir4,1 and MacbookAir4,2 (thanks
 	  jmlacroix!)
