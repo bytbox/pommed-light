@@ -6,7 +6,7 @@
 #define __POMMED_H__
 
 
-#define M_VERSION "1.43lw"
+#define M_VERSION "1.44lw"
 
 
 extern int debug;
