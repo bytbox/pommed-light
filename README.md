@@ -41,7 +41,8 @@ Supported machines:
    * MacBook Core2 Duo (February 2008, October 2008, October 2009, April 2010)
    * MacBook Air Core2 Duo (January 2008, October 2008)
    * MacBook Air Core2 Duo 11" & 13" (October 2010)
-   * MacBook Air Core i5/i7 11" & 13" (Mid 2011)
+   * MacBook Air Core i5/i7 11" & 13" (July 2011)
+   * MacBook Air Core i5/i7 11" & 13" (June 2012)
 
    If your MacBook Pro/MacBook Air/MacBook is not listed here, please contact us
    and include the content of /sys/class/dmi/id/product\_name in your mail. Thanks.
