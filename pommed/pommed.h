@@ -6,7 +6,7 @@
 #define __POMMED_H__
 
 
-#define M_VERSION "1.44lw"
+#define M_VERSION "1.45lw"
 
 
 extern int debug;
@@ -51,6 +51,7 @@ typedef enum
     MACHINE_MACBOOKAIR_2,
     MACHINE_MACBOOKAIR_3,
     MACHINE_MACBOOKAIR_4,
+    MACHINE_MACBOOKAIR_5,
 #else
     MACHINE_POWERBOOK_32,
     MACHINE_POWERBOOK_33,
