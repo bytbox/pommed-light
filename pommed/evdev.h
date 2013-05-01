@@ -88,6 +88,9 @@
 #define USB_PRODUCT_ID_2012MBA_ISO        0x024b
 #define USB_PRODUCT_ID_2012MBA_JIS        0x024c
 
+/* Apple WellSpring VI keyboard + trackpad */
+#define USB_PRODUCT_ID_WELLSPRING6_ANSI   0x0259
+
 
 /* Apple external USB keyboard, white */
 #define USB_PRODUCT_ID_APPLE_EXTKBD_WHITE   0x020c
