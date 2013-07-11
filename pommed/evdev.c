@@ -678,7 +678,8 @@ evdev_is_2011mba(unsigned short *id)
 
   if ((product == USB_PRODUCT_ID_2011MBA_ANSI)
       || (product == USB_PRODUCT_ID_2011MBA_ISO)
-      || (product == USB_PRODUCT_ID_2011MBA_JIS))
+      || (product == USB_PRODUCT_ID_2011MBA_JIS)
+      || (product == USB_PRODUCT_ID_2011MBA_EUR))
     {
       logdebug(" -> 2011MBA USB assembly\n");
 
@@ -706,7 +707,8 @@ evdev_is_2012mba(unsigned short *id)
 
   if ((product == USB_PRODUCT_ID_2012MBA_ANSI)
       || (product == USB_PRODUCT_ID_2012MBA_ISO)
-      || (product == USB_PRODUCT_ID_2012MBA_JIS))
+      || (product == USB_PRODUCT_ID_2012MBA_JIS)
+      || (product == USB_PRODUCT_ID_2012MBA_EUR))
     {
       logdebug(" -> 2012MBA USB assembly\n");
 

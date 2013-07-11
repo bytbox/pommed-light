@@ -82,11 +82,13 @@
 #define USB_PRODUCT_ID_2011MBA_ANSI       0x024a
 #define USB_PRODUCT_ID_2011MBA_ISO        0x024b
 #define USB_PRODUCT_ID_2011MBA_JIS        0x024c
+#define USB_PRODUCT_ID_2011MBA_EUR        0x024d
 
 /* 2012 Macbook Air */
 #define USB_PRODUCT_ID_2012MBA_ANSI       0x024a
 #define USB_PRODUCT_ID_2012MBA_ISO        0x024b
 #define USB_PRODUCT_ID_2012MBA_JIS        0x024c
+#define USB_PRODUCT_ID_2012MBA_EUR        0x024d
 
 /* Apple WellSpring VI keyboard + trackpad */
 #define USB_PRODUCT_ID_WELLSPRING6_ANSI   0x0259
