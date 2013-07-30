@@ -749,6 +749,31 @@ evdev_is_wellspring5(unsigned short *id)
   return 0;
 }
 
+/* MacBookPro10,1 (15" 2012)
+ */
+static int
+evdev_is_apple_internal_keyboard(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_APPLE_INTERNAL_KEYBOARD_ANSI))
+    {
+      logdebug(" -> Apple Internal Keyboard USB assembly\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
 /* MacBookPro10,2 (13" 2012)
  */
 static int
@@ -787,6 +812,7 @@ evdev_is_internal(unsigned short *id)
 	  || evdev_is_wellspring4(id)
 	  || evdev_is_wellspring4a(id)
 	  || evdev_is_wellspring5(id)
+	  || evdev_is_apple_internal_keyboard(id)
 	  || evdev_is_wellspring6(id)
 	  || evdev_is_2011mba(id)
 	  || evdev_is_2012mba(id));
