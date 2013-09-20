@@ -14,8 +14,11 @@ README for pommed
  - When things go wrong
 
 
-Kernel version requirements:
-----------------------------
+System requirements:
+--------------------
+
+Pommed expects standard development headers for libc to be installed, as well
+as libpci.
 
  pommed requires at least a 2.6.25 kernel, due to the use of the new timerfd
  interface that was released as stable with this version.
@@ -23,61 +26,12 @@ Kernel version requirements:
  February and October 2008 machines require a 2.6.28 kernel for full support.
 
 
-Supported machines:
--------------------
-
- - Intel machines
-   * MacBook Pro Core Duo 15" (January 2006)
-   * MacBook Pro Core Duo 17" (April 2006)
-   * MacBook Pro Core2 Duo 15" (October 2006, June 2007, February 2008, October 2008)
-   * MacBook Pro Core2 Duo 17" (October 2006, June 2007, February 2008, October 2008)
-   * MacBook Pro 13", 15", 17" (June 2009)
-   * MacBook Pro Core i5/i7 15", 17" (April 2010)
-   * MacBook Pro Core2 Duo 13" (April 2010)
-   * MacBook Pro Core i5/i7 13", 15", 17" (Early 2011)
-   * MacBook Core Duo (May 2006)
-   * MacBook Core2 Duo (November 2006 & May 2007)
-   * MacBook Core2 Duo Santa Rosa (November 2007)
-   * MacBook Core2 Duo (February 2008, October 2008, October 2009, April 2010)
-   * MacBook Air Core2 Duo (January 2008, October 2008)
-   * MacBook Air Core2 Duo 11" & 13" (October 2010)
-   * MacBook Air Core i5/i7 11" & 13" (July 2011)
-   * MacBook Air Core i5/i7 11" & 13" (June 2012)
-
-   If your MacBook Pro/MacBook Air/MacBook is not listed here, please contact us
-   and include the content of /sys/class/dmi/id/product\_name in your mail. Thanks.
-
- - PowerMac machines
-   * PowerBook G4 Titanium 15" (December 2000)
-   * PowerBook G4 Titanium 15" (October 2001)
-   * PowerBook G4 Titanium 15" (April 2002)
-   * PowerBook G4 Titanium 15"
-   * PowerBook G4 Aluminium 17"
-   * PowerBook G4 Aluminium 15" (September 2003)
-   * PowerBook G4 Aluminium 17" (September 2003)
-   * PowerBook G4 Aluminium 15" (April 2004)
-   * PowerBook G4 Aluminium 17" (April 2004)
-   * PowerBook G4 Aluminium 15" (February 2005)
-   * PowerBook G4 Aluminium 17" (February 2005)
-   * PowerBook G4 Aluminium 15"
-   * PowerBook G4 Aluminium 17"
-   * PowerBook G4 12" (January 2003)
-   * PowerBook G4 12" (September 2003)
-   * iBook G4 (October 2003)
-   * PowerBook G4 12" (April 2004)
-   * iBook G4 (October 2004)
-   * iBook G4
-   * PowerBook G4 12"
-
-   If your PowerBook/iBook is not listed here, please contact us and include
-   the content of /proc/device-tree/model in your mail. Thanks.
-
-
 Using pommed
 ------------
 
 Launch pommed at startup, a simple init script will do. Your distribution
-should take care of this.
+should take care of this. A standard init script and a systemd service file are
+provided.
 
 
 Keyboard backlight on PowerMac machines
