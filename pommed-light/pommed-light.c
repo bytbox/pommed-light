@@ -831,12 +831,18 @@ check_machine_dmi(void)
 }
 #endif /* __powerpc__ */
 
+static void
+version_info(void)
+{
+  printf("pommed-light v" M_VERSION " Apple laptops hotkeys handler\n");
+  printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
+}
+
 
 static void
 usage(void)
 {
-  printf("pommed-light v" M_VERSION " Apple laptops hotkeys handler\n");
-  printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
+  version_info();
 
   printf("Usage:\n");
   printf("\tpommed-light\t-- start pommed as a daemon\n");
@@ -877,8 +883,7 @@ main (int argc, char **argv)
 	    break;
 
 	  case 'v':
-	    printf("pommed-light v" M_VERSION " Apple laptops hotkeys handler\n");
-	    printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
+	    version_info();
 
 	    exit(0);
 	    break;
@@ -903,8 +908,7 @@ main (int argc, char **argv)
       openlog("pommed-light", LOG_PID, LOG_DAEMON);
     }
 
-  logmsg(LOG_INFO, "pommed-light v" M_VERSION " Apple laptops hotkeys handler");
-  logmsg(LOG_INFO, "Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>");
+  version_info();
 
   /* Load our configuration */
   ret = config_load();
