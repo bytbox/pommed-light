@@ -25,7 +25,7 @@
 
 #include <confuse.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "conffile.h"
 #include "lcd_backlight.h"
 #include "kbd_backlight.h"
@@ -33,6 +33,7 @@
 #include "beep.h"
 #include "audio.h"
 
+char *conffile_name;
 
 struct _general_cfg general_cfg;
 struct _lcd_sysfs_cfg lcd_sysfs_cfg;
@@ -302,7 +303,7 @@ config_load(void)
    * If the file does not exist or cannot be opened,
    * we'll be using the default values defined in the cfg_opt_t arrays.
    */
-  ret = cfg_parse(cfg, CONFFILE);
+  ret = cfg_parse(cfg, conffile_name);
   if (ret != CFG_SUCCESS)
     {
       if (ret == CFG_FILE_ERROR)

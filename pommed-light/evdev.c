@@ -40,7 +40,7 @@
 
 #include <linux/input.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "conffile.h"
 #include "evdev.h"
 #include "evloop.h"

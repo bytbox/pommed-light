@@ -24,7 +24,7 @@
 #define NDEBUG
 #include <alsa/asoundlib.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "conffile.h"
 #include "audio.h"
 #include "beep.h"

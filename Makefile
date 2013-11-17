@@ -2,13 +2,13 @@
 
 OFLIB ?=
 
-all: pommed
+all: pommed-light
 
-pommed:
-	$(MAKE) -C pommed OFLIB=$(OFLIB)
+pommed-light:
+	$(MAKE) -C pommed-light OFLIB=$(OFLIB)
 
 clean:
-	$(MAKE) -C pommed clean
+	$(MAKE) -C pommed-light clean
 	rm -f *~
 
-.PHONY: pommed
+.PHONY: pommed-light

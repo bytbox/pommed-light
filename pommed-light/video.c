@@ -33,7 +33,7 @@
 
 #include <syslog.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "video.h"
 
 

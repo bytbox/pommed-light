@@ -1,5 +1,5 @@
 /*
- * pommed - Apple laptops hotkeys handler daemon
+ * pommed-light - Apple laptops hotkeys handler daemon
  *
  * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
@@ -43,7 +43,7 @@
 
 #include <getopt.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
 #include "cd_eject.h"
@@ -55,6 +55,9 @@
 #include "beep.h"
 
 
+/* Global variables */
+char *conffile_name;
+
 /* Machine-specific operations */
 struct machine_ops *mops;
 
@@ -62,7 +65,7 @@ struct machine_ops *mops;
 /* --- WARNING ---
  *
  * Be extra-careful here, the list below must come in the same
- * order as the machine_type enum in pommed.h !
+ * order as the machine_type enum in pommed-light.h !
  */
 #ifdef __powerpc__
 /* PowerBook machines */
@@ -831,18 +834,26 @@ check_machine_dmi(void)
 }
 #endif /* __powerpc__ */
 
+static void
+version_info(void)
+{
+  printf("pommed-light v" M_VERSION " Apple laptops hotkeys handler\n");
+  printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
+}
+
 
 static void
 usage(void)
 {
-  printf("pommed v" M_VERSION " Apple laptops hotkeys handler\n");
-  printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
+  version_info();
 
   printf("Usage:\n");
-  printf("\tpommed\t-- start pommed as a daemon\n");
-  printf("\tpommed -v\t-- print version and exit\n");
-  printf("\tpommed -f\t-- run in the foreground with log messages\n");
-  printf("\tpommed -d\t-- run in the foreground with debug messages\n");
+  printf("\tpommed-light\t\t-- start pommed as a daemon\n");
+  printf("\tpommed-light -v\t\t-- print version and exit\n");
+  printf("\tpommed-light -f\t\t-- run in the foreground with log messages\n");
+  printf("\tpommed-light -d\t\t-- run in the foreground with debug messages\n");
+  printf("\tpommed-light -p PIDFILE\t-- specify config file name\n");
+  printf("\tpommed-light -c CONFFILE\t-- specify pidfile name\n");
 }
 
 
@@ -858,12 +869,14 @@ main (int argc, char **argv)
   int ret;
   int c;
 
+  char *pidfile_name = NULL;
   FILE *pidfile;
   struct utsname sysinfo;
 
   machine_type machine;
+  conffile_name = NULL;
 
-  while ((c = getopt(argc, argv, "fdv")) != -1)
+  while ((c = getopt(argc, argv, "fdvp:c:")) != -1)
     {
       switch (c)
 	{
@@ -877,10 +890,17 @@ main (int argc, char **argv)
 	    break;
 
 	  case 'v':
-	    printf("pommed v" M_VERSION " Apple laptops hotkeys handler\n");
-	    printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
+	    version_info();
 
 	    exit(0);
+	    break;
+
+	  case 'p':
+	    pidfile_name = optarg;
+	    break;
+
+          case 'c':
+	    conffile_name = optarg;
 	    break;
 
 	  default:
@@ -891,20 +911,29 @@ main (int argc, char **argv)
 	}
     }
 
+ if (!pidfile_name)
+    {
+      asprintf(&pidfile_name, "%s", PIDFILE);
+    }
+
+ if (!conffile_name)
+    {
+      asprintf(&conffile_name, "%s", CONFFILE);
+    }
+
   if (geteuid() != 0)
     {
-      logmsg(LOG_ERR, "pommed needs root privileges to operate");
+      logmsg(LOG_ERR, "pommed-light needs root privileges to operate");
 
       exit(1);
     }
 
   if (!console)
     {
-      openlog("pommed", LOG_PID, LOG_DAEMON);
+      openlog("pommed-light", LOG_PID, LOG_DAEMON);
     }
 
-  logmsg(LOG_INFO, "pommed v" M_VERSION " Apple laptops hotkeys handler");
-  logmsg(LOG_INFO, "Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>");
+  version_info();
 
   /* Load our configuration */
   ret = config_load();
@@ -1011,10 +1040,10 @@ main (int argc, char **argv)
 	}
     }
 
-  pidfile = fopen(PIDFILE, "w");
+  pidfile = fopen(pidfile_name, "w");
   if (pidfile == NULL)
     {
-      logmsg(LOG_WARNING, "Could not open pidfile %s: %s", PIDFILE, strerror(errno));
+      logmsg(LOG_WARNING, "Could not open pidfile %s: %s", pidfile_name, strerror(errno));
 
       evdev_cleanup();
 
@@ -1053,7 +1082,7 @@ main (int argc, char **argv)
   if (!console)
     closelog();
 
-  unlink(PIDFILE);
+  unlink(pidfile_name);
 
   return 0;
 }
