@@ -11,7 +11,7 @@
 
 extern int debug;
 extern int console;
-
+extern char *conffile_name;
 
 void
 logmsg(int level, char *fmt, ...);
@@ -89,7 +89,6 @@ struct machine_ops
 };
 
 extern struct machine_ops *mops;
-
 
 #define PIDFILE                "/var/run/pommed-light.pid"
 #define CONFFILE               "/etc/pommed-light.conf"
