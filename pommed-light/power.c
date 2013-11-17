@@ -25,7 +25,7 @@
 
 #include <syslog.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "evloop.h"
 #include "lcd_backlight.h"
 #include "power.h"

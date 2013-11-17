@@ -62,7 +62,7 @@
 
 #include <pci/pci.h>
 
-#include "../pommed.h"
+#include "../pommed-light.h"
 #include "../conffile.h"
 #include "../lcd_backlight.h"
 

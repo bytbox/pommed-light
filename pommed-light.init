@@ -1,7 +1,7 @@
 #! /bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:          pommed
+# Provides:          pommed-light
 # Required-Start:    $syslog $local_fs
 # Required-Stop:     $syslog $local_fs
 # Should-Start:      
@@ -16,8 +16,8 @@
 ### END INIT INFO
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/usr/sbin/pommed
-NAME=pommed
+DAEMON=/usr/sbin/pommed-light
+NAME=pommed-light
 DESC="Apple laptops hotkeys events handler"
 
 test -x $DAEMON || exit 0
@@ -31,9 +31,9 @@ pommed_start()
 
 pommed_stop()
 {
-    pid=$(cat /var/run/pommed.pid)
+    pid=$(cat /var/run/pommed-light.pid)
     kill $pid
-    rm -f /var/run/pommed.pid
+    rm -f /var/run/pommed-light.pid
 }
 
 
@@ -45,7 +45,7 @@ case "$1" in
 	;;
   stop)
 	echo -n "Stopping $DESC: "
-	if [ -f /var/run/pommed.pid ]; then
+	if [ -f /var/run/pommed-light.pid ]; then
 	    pommed_stop
 	    echo "$NAME."
 	else
@@ -54,7 +54,7 @@ case "$1" in
 	;;
   force-reload)
 	# check wether $DAEMON is running. If so, restart
-	if [ -f /var/run/pommed.pid ]; then
+	if [ -f /var/run/pommed-light.pid ]; then
 	    $0 restart
 	else
 	    echo "Reloading $DESC: $NAME not running."
@@ -63,7 +63,7 @@ case "$1" in
 	;;
   restart)
 	echo -n "Restarting $DESC: "
-	if [ -f /var/run/pommed.pid ]; then
+	if [ -f /var/run/pommed-light.pid ]; then
 	    pommed_stop
 	else
 	    echo "no PID file found; $NAME not running?"

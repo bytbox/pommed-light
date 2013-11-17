@@ -18,28 +18,29 @@
  */
 
 #include <stdio.h>
-#include <unistd.h>
 #include <string.h>
 #include <errno.h>
 
-#include "../pommed.h"
+#include "../pommed-light.h"
 #include "../power.h"
 
 
-#define PROC_ACPI_AC_STATE   "/proc/acpi/ac_adapter/ADP1/state"
-#define PROC_ACPI_AC_ONLINE  "on-line\n"
-#define PROC_ACPI_AC_OFFLINE "off-line\n"
+#define PROC_PMU_AC_STATE_FILE  "/proc/pmu/info"
+#define PROC_PMU_AC_STATE       "AC Power"
+#define PROC_PMU_AC_ONLINE      '1'
+#define PROC_PMU_AC_OFFLINE     '0'
 
 
-/* Internal API - procfs ACPI */
+/* Internal API - procfs PMU */
 int
 procfs_check_ac_state(void)
 {
   FILE *fp;
   char buf[128];
+  char *ac_state;
   int ret;
 
-  fp = fopen(PROC_ACPI_AC_STATE, "r");
+  fp = fopen(PROC_PMU_AC_STATE_FILE, "r");
   if (fp == NULL)
     return AC_STATE_ERROR;
 
@@ -47,13 +48,13 @@ procfs_check_ac_state(void)
 
   if (ferror(fp) != 0)
     {
-      logdebug("acpi: Error reading proc AC state: %s\n", strerror(errno));
+      logdebug("pmu: Error reading AC state: %s\n", strerror(errno));
       return AC_STATE_ERROR;
     }
 
   if (feof(fp) == 0)
     {
-      logdebug("acpi: Error reading proc AC state: buffer too small\n");
+      logdebug("pmu: Error reading AC state: buffer too small\n");
       return AC_STATE_ERROR;
     }
 
@@ -61,10 +62,18 @@ procfs_check_ac_state(void)
 
   buf[ret] = '\0';
 
-  if (strstr(buf, PROC_ACPI_AC_ONLINE) != NULL)
+  ac_state = strstr(buf, PROC_PMU_AC_STATE);
+  if (ac_state == NULL)
+    return AC_STATE_ERROR;
+
+  ac_state = strchr(ac_state, '\n');
+  if ((ac_state == NULL) || (ac_state == buf))
+    return AC_STATE_ERROR;
+
+  if (ac_state[-1] == PROC_PMU_AC_ONLINE)
     return AC_STATE_ONLINE;
 
-  if (strstr(buf, PROC_ACPI_AC_OFFLINE) != NULL)
+  if (ac_state[-1] == PROC_PMU_AC_OFFLINE)
     return AC_STATE_OFFLINE;
 
   return AC_STATE_UNKNOWN;

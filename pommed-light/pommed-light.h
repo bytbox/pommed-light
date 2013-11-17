@@ -1,9 +1,9 @@
 /*
- * pommed - pommed.h
+ * pommed-light - pommed-light.h
  */
 
-#ifndef __POMMED_H__
-#define __POMMED_H__
+#ifndef __POMMED_LIGHT_H__
+#define __POMMED_LIGHT_H__
 
 
 #define M_VERSION "1.45lw"
@@ -91,8 +91,8 @@ struct machine_ops
 extern struct machine_ops *mops;
 
 
-#define PIDFILE                "/var/run/pommed.pid"
-#define CONFFILE               "/etc/pommed.conf"
+#define PIDFILE                "/var/run/pommed-light.pid"
+#define CONFFILE               "/etc/pommed-light.conf"
 
 #define STEP_UP                 1
 #define STEP_DOWN               -1

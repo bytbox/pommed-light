@@ -25,7 +25,7 @@
 
 #include <confuse.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "conffile.h"
 #include "lcd_backlight.h"
 #include "kbd_backlight.h"

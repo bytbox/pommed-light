@@ -43,7 +43,7 @@
 
 #include <audiofile.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "evloop.h"
 #include "conffile.h"
 #include "audio.h"

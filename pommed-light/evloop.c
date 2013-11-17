@@ -37,7 +37,7 @@
 # include "timerfd-syscalls.h"
 #endif
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "evloop.h"
 
 

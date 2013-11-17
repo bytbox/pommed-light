@@ -39,7 +39,7 @@
 
 #include <ofapi/of_api.h>
 
-#include "../pommed.h"
+#include "../pommed-light.h"
 #include "../evloop.h"
 #include "../conffile.h"
 #include "../kbd_backlight.h"

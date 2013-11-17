@@ -34,7 +34,7 @@
 #include <sys/ioctl.h>
 #include <linux/cdrom.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "conffile.h"
 #include "cd_eject.h"
 

@@ -1,5 +1,5 @@
 /*
- * pommed - Apple laptops hotkeys handler daemon
+ * pommed-light - Apple laptops hotkeys handler daemon
  *
  * Copyright (C) 2006-2008 Julien BLACHE <jb@jblache.org>
  *
@@ -43,7 +43,7 @@
 
 #include <getopt.h>
 
-#include "pommed.h"
+#include "pommed-light.h"
 #include "kbd_backlight.h"
 #include "lcd_backlight.h"
 #include "cd_eject.h"
@@ -62,7 +62,7 @@ struct machine_ops *mops;
 /* --- WARNING ---
  *
  * Be extra-careful here, the list below must come in the same
- * order as the machine_type enum in pommed.h !
+ * order as the machine_type enum in pommed-light.h !
  */
 #ifdef __powerpc__
 /* PowerBook machines */
@@ -835,14 +835,14 @@ check_machine_dmi(void)
 static void
 usage(void)
 {
-  printf("pommed v" M_VERSION " Apple laptops hotkeys handler\n");
+  printf("pommed-light v" M_VERSION " Apple laptops hotkeys handler\n");
   printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
 
   printf("Usage:\n");
-  printf("\tpommed\t-- start pommed as a daemon\n");
-  printf("\tpommed -v\t-- print version and exit\n");
-  printf("\tpommed -f\t-- run in the foreground with log messages\n");
-  printf("\tpommed -d\t-- run in the foreground with debug messages\n");
+  printf("\tpommed-light\t-- start pommed as a daemon\n");
+  printf("\tpommed-light -v\t-- print version and exit\n");
+  printf("\tpommed-light -f\t-- run in the foreground with log messages\n");
+  printf("\tpommed-light -d\t-- run in the foreground with debug messages\n");
 }
 
 
@@ -877,7 +877,7 @@ main (int argc, char **argv)
 	    break;
 
 	  case 'v':
-	    printf("pommed v" M_VERSION " Apple laptops hotkeys handler\n");
+	    printf("pommed-light v" M_VERSION " Apple laptops hotkeys handler\n");
 	    printf("Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>\n");
 
 	    exit(0);
@@ -893,17 +893,17 @@ main (int argc, char **argv)
 
   if (geteuid() != 0)
     {
-      logmsg(LOG_ERR, "pommed needs root privileges to operate");
+      logmsg(LOG_ERR, "pommed-light needs root privileges to operate");
 
       exit(1);
     }
 
   if (!console)
     {
-      openlog("pommed", LOG_PID, LOG_DAEMON);
+      openlog("pommed-light", LOG_PID, LOG_DAEMON);
     }
 
-  logmsg(LOG_INFO, "pommed v" M_VERSION " Apple laptops hotkeys handler");
+  logmsg(LOG_INFO, "pommed-light v" M_VERSION " Apple laptops hotkeys handler");
   logmsg(LOG_INFO, "Copyright (C) 2006-2011 Julien BLACHE <jb@jblache.org>");
 
   /* Load our configuration */
