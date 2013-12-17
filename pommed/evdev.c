@@ -941,6 +941,32 @@ evdev_is_extkbd_alu(unsigned short *id)
   return 0;
 }
 
+/* Apple external USB keyboard, aluminium */
+static int
+evdev_is_extkbd_alu_rev_b(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_REV_B_ANSI)
+      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_REV_B_ISO)
+      || (product == USB_PRODUCT_ID_APPLE_EXTKBD_ALU_REV_B_JIS))
+    {
+      logdebug(" -> External Apple USB keyboard (aluminium, revision B)\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
 /* Apple external wireless keyboard, aluminium */
 static int
 evdev_is_extkbd_alu_wl(unsigned short *id)
@@ -1000,6 +1026,7 @@ evdev_is_extkbd(unsigned short *id)
   return (evdev_is_extkbd_white(id)
 	  || evdev_is_extkbd_mini_alu(id)
 	  || evdev_is_extkbd_alu(id)
+	  || evdev_is_extkbd_alu_rev_b(id)
 	  || evdev_is_extkbd_alu_wl(id)
 	  || evdev_is_extkbd_alu_wl_2(id));
 }
