@@ -314,6 +314,15 @@ struct machine_ops mb_mops[] = {
     /* .evdev_identify = evdev_is_wellspring5, */
   },
 
+  { /* MacBookPro9,1 (15", Mid 2012) 
+     * MacBookPro9,2 (13", Mid 2012)
+     */
+    .type = MACHINE_MACBOOKPRO_9,
+    .lcd_backlight_probe = mbp_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
+  },
+  
   {  /* MacBookPro10,2 (13", Late 2012)
       */
     .type = MACHINE_MACBOOKPRO_10,
@@ -780,6 +789,12 @@ check_machine_dmi(void)
 	   || (strcmp(buf, "MacBookPro8,2") == 0)
 	   || (strcmp(buf, "MacBookPro8,3") == 0))
     ret = MACHINE_MACBOOKPRO_8;
+  /* MacBook Pro 15" (Mid 2012)
+   * MacBook Pro 15" (Mid 2012)
+   */
+  else if ((strcmp(buf, "MacBookPro9,1") == 0)
+	   || (strcmp(buf, "MacBookPro9,2") == 0))
+    ret = MACHINE_MACBOOKPRO_9;  
   /* MacBook Pro 13" (Late 2012)
    */
   else if ((strcmp(buf, "MacBookPro10,1") == 0)

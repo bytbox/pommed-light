@@ -92,6 +92,7 @@
 
 /* Apple Inc. Apple Internal Keyboard / Trackpad */
 #define USB_PRODUCT_ID_APPLE_INTERNAL_KEYBOARD_ANSI   0x0262
+#define USB_PRODUCT_ID_APPLE_INTERNAL_KEYBOARD_ISO    0x0253
 
 /* Apple WellSpring VI keyboard + trackpad */
 #define USB_PRODUCT_ID_WELLSPRING6_ANSI   0x0259

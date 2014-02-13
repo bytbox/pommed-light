@@ -750,6 +750,7 @@ evdev_is_wellspring5(unsigned short *id)
 }
 
 /* MacBookPro10,1 (15" 2012)
+ * MacBookPro9,2  (13" 2012)
  */
 static int
 evdev_is_apple_internal_keyboard(unsigned short *id)
@@ -762,7 +763,8 @@ evdev_is_apple_internal_keyboard(unsigned short *id)
   if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
     return 0;
 
-  if ((product == USB_PRODUCT_ID_APPLE_INTERNAL_KEYBOARD_ANSI))
+  if ((product == USB_PRODUCT_ID_APPLE_INTERNAL_KEYBOARD_ANSI) ||
+      (product == USB_PRODUCT_ID_APPLE_INTERNAL_KEYBOARD_ISO))
     {
       logdebug(" -> Apple Internal Keyboard USB assembly\n");
 
