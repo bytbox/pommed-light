@@ -789,7 +789,7 @@ check_machine_dmi(void)
 	   || (strcmp(buf, "MacBookPro8,2") == 0)
 	   || (strcmp(buf, "MacBookPro8,3") == 0))
     ret = MACHINE_MACBOOKPRO_8;
-  /* MacBook Pro 15" (Mid 2012)
+  /* MacBook Pro 13" (Mid 2012)
    * MacBook Pro 15" (Mid 2012)
    */
   else if ((strcmp(buf, "MacBookPro9,1") == 0)
