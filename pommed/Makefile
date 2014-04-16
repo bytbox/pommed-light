@@ -11,11 +11,7 @@ AUDIOFILE_LIBS = $(shell pkg-config audiofile --libs)
 CONFUSE_CFLAGS = $(shell pkg-config libconfuse --cflags)
 CONFUSE_LIBS = $(shell pkg-config libconfuse --libs)
 
-INOTIFY_CFLAGS = $(shell test -e /usr/include/sys/inotify.h || echo -DNO_SYS_INOTIFY_H)
-
-TIMERFD_CFLAGS = $(shell test -e /usr/include/sys/timerfd.h || echo -DNO_SYS_TIMERFD_H)
-
-CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(INOTIFY_CFLAGS) $(TIMERFD_CFLAGS)
+CFLAGS = -g -O2 -Wall $(DBUS_CFLAGS) $(ALSA_CFLAGS) $(AUDIOFILE_CFLAGS) $(CONFUSE_CFLAGS) $(EXTRA_CFLAGS)
 
 LDLIBS = -pthread -lrt $(DBUS_LIBS) $(ALSA_LIBS) $(AUDIOFILE_LIBS) $(CONFUSE_LIBS)
 
@@ -53,9 +49,9 @@ ifeq ($(LIBPCI_SHARED), true)
 	LDLIBS += $(LIBPCI_LIBS)
 else
 	LIB_OBJS += /usr/lib/libpci.a
-	LDLIBS += -lz
 endif
 
+LDLIBS += -lz
 LDLIBS += $(LIB_OBJS)
 
 SOURCES = pommed.c cd_eject.c evdev.c conffile.c audio.c \
