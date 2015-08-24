@@ -314,7 +314,7 @@ struct machine_ops mb_mops[] = {
     /* .evdev_identify = evdev_is_wellspring5, */
   },
 
-  { /* MacBookPro9,1 (15", Mid 2012) 
+  { /* MacBookPro9,1 (15", Mid 2012)
      * MacBookPro9,2 (13", Mid 2012)
      */
     .type = MACHINE_MACBOOKPRO_9,
@@ -322,7 +322,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
   },
-  
+
   {  /* MacBookPro10,2 (13", Late 2012)
       */
     .type = MACHINE_MACBOOKPRO_10,
@@ -330,6 +330,15 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
     /* .evdev_identify = evdev_is_wellspring5, */
+  },
+
+  {  /* MacBookPro12,1 (13", Early 2015)
+      */
+    .type = MACHINE_MACBOOKPRO_12,
+    .lcd_backlight_probe = mbp_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
+    /* .evdev_identify = evdev_is_wellspring9, */
   },
 
   /* MacBook machines */
@@ -666,7 +675,7 @@ check_machine_pmu(void)
 
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
-  
+
   if (ret != MACHINE_MAC_UNKNOWN)
     logmsg(LOG_INFO, "PMU machine check: running on a %s", buffer);
 
@@ -801,12 +810,15 @@ check_machine_dmi(void)
    */
   else if ((strcmp(buf, "MacBookPro9,1") == 0)
 	   || (strcmp(buf, "MacBookPro9,2") == 0))
-    ret = MACHINE_MACBOOKPRO_9;  
+    ret = MACHINE_MACBOOKPRO_9;
   /* MacBook Pro 13" (Late 2012)
    */
   else if ((strcmp(buf, "MacBookPro10,1") == 0)
            || (strcmp(buf, "MacBookPro10,2") == 0))
     ret = MACHINE_MACBOOKPRO_10;
+   /* MacBook Pro 13" (Early 2015) */
+  else if (strcmp(buf, "MacBookPro12,1") == 0)
+    ret = MACHINE_MACBOOKPRO_12;
   /* Core Duo MacBook (May 2006) */
   else if (strcmp(buf, "MacBook1,1") == 0)
     ret = MACHINE_MACBOOK_1;
