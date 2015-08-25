@@ -825,6 +825,33 @@ evdev_is_wellspring6(unsigned short *id)
   return 0;
 }
 
+/* MacBookPro12,1 (13" Early 2015)
+ */
+static int
+evdev_is_wellspring9(unsigned short *id)
+{
+  unsigned short product = id[ID_PRODUCT];
+
+  if (id[ID_BUS] != BUS_USB)
+    return 0;
+
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE)
+    return 0;
+
+  if ((product == USB_PRODUCT_ID_WELLSPRING9_ANSI)
+      || (product == USB_PRODUCT_ID_WELLSPRING9_ISO)
+      || (product == USB_PRODUCT_ID_WELLSPRING9_JIS))
+    {
+      logdebug(" -> WellSpring IX USB assembly\n");
+
+      kbd_set_fnmode();
+
+      return 1;
+    }
+
+  return 0;
+}
+
 /* Any internal keyboard */
 static int
 evdev_is_internal(unsigned short *id)
@@ -840,6 +867,7 @@ evdev_is_internal(unsigned short *id)
 	  || evdev_is_wellspring5(id)
 	  || evdev_is_apple_internal_keyboard(id)
 	  || evdev_is_wellspring6(id)
+	  || evdev_is_wellspring9(id)
 	  || evdev_is_2011mba(id)
 	  || evdev_is_2012mba(id)
 	  || evdev_is_2014mba(id)
