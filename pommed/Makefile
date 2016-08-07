@@ -114,6 +114,10 @@ mactel/kbd_backlight.o: mactel/kbd_backlight.c kbd_auto.c kbd_backlight.h evloop
 
 mactel/acpi.o: mactel/acpi.c power.h
 
+install: pommed
+	$(INSTALL) pommed $(DESTDIR)/sbin/
+	$(INSTALL) -d /usr/share/pommed
+	$(INSTALL) -m 644 data/* /usr/share/pommed
 
 clean:
 	rm -f pommed $(OBJS) $(OF_OBJS) pmac/ofapi/oflib.a
