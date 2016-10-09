@@ -830,7 +830,11 @@ check_machine_dmi(void)
   /* MacBook Pro 13" (Late 2013)
    * MacBook Pro 15" (Late 2013)
    */
-  else if ((strcmp(buf, "MacBookPro11,1") == 0) || (strcmp(buf, "MacBookPro11,2") == 0) || (strcmp(buf, "MacBookPro11,3") == 0))
+  else if ((strcmp(buf, "MacBookPro11,1") == 0)
+            || (strcmp(buf, "MacBookPro11,2") == 0)
+            || (strcmp(buf, "MacBookPro11,3") == 0)
+            || (strcmp(buf, "MacBookPro11,4") == 0)
+            || (strcmp(buf, "MacBookPro11,5") == 0))
     ret = MACHINE_MACBOOKPRO_11;
    /* MacBook Pro 13" (Early 2015) */
   else if (strcmp(buf, "MacBookPro12,1") == 0)
