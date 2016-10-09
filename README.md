@@ -42,6 +42,16 @@ driven through i2c. You need the i2c-dev kernel module loaded on your system
 for pommed to work properly; you can add i2c-dev to /etc/modules to have it
 loaded automatically at system startup.
 
+Backlight driver in MacbookAir6,2 (and 6,1)
+-------------------------
+
+There is a known bug of the intel backlight driver that leaves the screen either at
+~5% or ~95% brightness after suspension, no matter what actual brightness value you
+try to set.
+
+There is a proposed workaround kernel driver (mba6x_bl) that solves the problem, but
+it's not yet in mainline. The changes made to pommed to work with MBA6,2 and 6,1 rely
+on that driver so you should be using it.
 
 Beeper feature
 --------------

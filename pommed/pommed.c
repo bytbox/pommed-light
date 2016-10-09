@@ -314,7 +314,7 @@ struct machine_ops mb_mops[] = {
     /* .evdev_identify = evdev_is_wellspring5, */
   },
 
-  { /* MacBookPro9,1 (15", Mid 2012) 
+  { /* MacBookPro9,1 (15", Mid 2012)
      * MacBookPro9,2 (13", Mid 2012)
      */
     .type = MACHINE_MACBOOKPRO_9,
@@ -322,7 +322,7 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
   },
-  
+
   {  /* MacBookPro10,2 (13", Late 2012)
       */
     .type = MACHINE_MACBOOKPRO_10,
@@ -340,7 +340,16 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_probe = mbp_sysfs_backlight_probe,
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
-    /* .evdev_identify = evdev_is_wellspring5, */
+    /* .evdev_identify = evdev_is_wellspring6, */
+  },
+
+  {  /* MacBookPro12,1 (13", Early 2015)
+      */
+    .type = MACHINE_MACBOOKPRO_12,
+    .lcd_backlight_probe = mbp_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
+    /* .evdev_identify = evdev_is_wellspring9, */
   },
 
   /* MacBook machines */
@@ -441,6 +450,13 @@ struct machine_ops mb_mops[] = {
     .lcd_backlight_step = sysfs_backlight_step,
     .lcd_backlight_toggle = sysfs_backlight_toggle,
     /* .evdev_identify = evdev_is_2012mba, */
+  },
+  {  /* MacBookAir6,1 & 6,2 (Mid 2014) */
+    .type = MACHINE_MACBOOKAIR_6,
+    .lcd_backlight_probe = mbp_sysfs_backlight_probe,
+    .lcd_backlight_step = sysfs_backlight_step,
+    .lcd_backlight_toggle = sysfs_backlight_toggle,
+    /* .evdev_identify = evdev_is_2014mba, */
   },
 };
 #endif /* __powerpc__ */
@@ -670,7 +686,7 @@ check_machine_pmu(void)
 
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buffer);
-  
+
   if (ret != MACHINE_MAC_UNKNOWN)
     logmsg(LOG_INFO, "PMU machine check: running on a %s", buffer);
 
@@ -805,7 +821,7 @@ check_machine_dmi(void)
    */
   else if ((strcmp(buf, "MacBookPro9,1") == 0)
 	   || (strcmp(buf, "MacBookPro9,2") == 0))
-    ret = MACHINE_MACBOOKPRO_9;  
+    ret = MACHINE_MACBOOKPRO_9;
   /* MacBook Pro 13" (Late 2012)
    */
   else if ((strcmp(buf, "MacBookPro10,1") == 0)
@@ -814,10 +830,11 @@ check_machine_dmi(void)
   /* MacBook Pro 13" (Late 2013)
    * MacBook Pro 15" (Late 2013)
    */
-  else if ((strcmp(buf, "MacBookPro11,1") == 0)
-           || (strcmp(buf, "MacBookPro11,2") == 0)
-           || (strcmp(buf, "MacBookPro11,3") == 0))
+  else if ((strcmp(buf, "MacBookPro11,1") == 0) || (strcmp(buf, "MacBookPro11,2") == 0) || (strcmp(buf, "MacBookPro11,3") == 0))
     ret = MACHINE_MACBOOKPRO_11;
+   /* MacBook Pro 13" (Early 2015) */
+  else if (strcmp(buf, "MacBookPro12,1") == 0)
+    ret = MACHINE_MACBOOKPRO_12;
   /* Core Duo MacBook (May 2006) */
   else if (strcmp(buf, "MacBook1,1") == 0)
     ret = MACHINE_MACBOOK_1;
@@ -854,6 +871,9 @@ check_machine_dmi(void)
   /* MacBook Air 11" & 13" (June 2012) */
   else if ((strcmp(buf, "MacBookAir5,1") == 0) || (strcmp(buf, "MacBookAir5,2") == 0))
     ret = MACHINE_MACBOOKAIR_5;
+  /* MacBook Air 11" & 13" (Mid 2014) */
+  else if ((strcmp(buf, "MacBookAir6,1") == 0) || (strcmp(buf, "MacBookAir6,2") == 0))
+    ret = MACHINE_MACBOOKAIR_6;
   else
     logmsg(LOG_ERR, "Unknown Apple machine: %s", buf);
 
