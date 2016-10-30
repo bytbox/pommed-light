@@ -822,7 +822,10 @@ check_machine_dmi(void)
   else if ((strcmp(buf, "MacBookPro9,1") == 0)
 	   || (strcmp(buf, "MacBookPro9,2") == 0))
     ret = MACHINE_MACBOOKPRO_9;
-  /* MacBook Pro 13" (Late 2012)
+  /* MacBook Pro (Retina, 13-inch, Late 2012)
+   * MacBook Pro (Retina, 13-inch, Early 2013)
+   * MacBook Pro (Retina, Mid 2012)
+   * MacBook Pro (Retina, 15-inch, Early 2013)
    */
   else if ((strcmp(buf, "MacBookPro10,1") == 0)
            || (strcmp(buf, "MacBookPro10,2") == 0))
