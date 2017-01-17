@@ -101,6 +101,11 @@
 #define USB_PRODUCT_ID_2014MBA_JIS        0x0290
 #define USB_PRODUCT_ID_2014MBA_EUR        0x0291
 
+/* Early 2015 Macbook Air (MacBookAir7,2) */
+#define USB_PRODUCT_ID_2015MBA_ANSI       0x028e
+#define USB_PRODUCT_ID_2015MBA_ISO        0x028f
+#define USB_PRODUCT_ID_2015MBA_JIS        0x0290
+#define USB_PRODUCT_ID_2015MBA_EUR        0x0291
 
 /* Apple Inc. Apple Internal Keyboard / Trackpad */
 #define USB_PRODUCT_ID_APPLE_INTERNAL_KEYBOARD_ANSI   0x0262
