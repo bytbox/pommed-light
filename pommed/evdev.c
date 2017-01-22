@@ -744,6 +744,37 @@ evdev_is_2014mba(unsigned short *id)
 
   return 0;
 }
+
+/* 
+ * MacBookAir7,2 (Early 2015) 
+ * MacBookAir7,1 (Early 2015) 
+ */ 
+static int 
+evdev_is_2015mba(unsigned short *id) 
+{ 
+  unsigned short product = id[ID_PRODUCT]; 
+ 
+  if (id[ID_BUS] != BUS_USB) 
+    return 0; 
+ 
+  if (id[ID_VENDOR] != USB_VENDOR_ID_APPLE) 
+    return 0; 
+ 
+  if ((product == USB_PRODUCT_ID_2015MBA_ANSI) 
+      || (product == USB_PRODUCT_ID_2015MBA_ISO) 
+      || (product == USB_PRODUCT_ID_2015MBA_JIS) 
+      || (product == USB_PRODUCT_ID_2015MBA_EUR)) 
+    { 
+      logdebug(" -> 2015MBA USB assembly\n"); 
+ 
+      kbd_set_fnmode(); 
+ 
+      return 1; 
+    } 
+ 
+  return 0; 
+} 
+
 /* MacBookPro8,1 (13" Early 2011)
  * MacBookPro8,2 (15" Early 2011)
  * MacBookPro8,3 (17" Early 2011)

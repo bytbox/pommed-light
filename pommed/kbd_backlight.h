@@ -82,6 +82,7 @@ has_kbd_backlight(void)
 	  || (mops->type == MACHINE_MACBOOKAIR_4)
 	  || (mops->type == MACHINE_MACBOOKAIR_5)
 	  || (mops->type == MACHINE_MACBOOKAIR_6)
+		|| (mops->type == MACHINE_MACBOOKAIR_7)
 	  );
 }
 #endif /* __powerpc__ */
