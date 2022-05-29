@@ -47,9 +47,6 @@
 #include "../lcd_backlight.h"
 
 
-struct _lcd_bck_info lcd_bck_info;
-
-
 static int nv8600mgt_inited = 0;
 static unsigned int bl_port;
 

@@ -44,8 +44,6 @@
 #include "../lcd_backlight.h"
 
 
-struct _lcd_bck_info lcd_bck_info;
-
 static int fd = -1;
 static char *memory = NULL;
 static char sysfs_resource[64];
