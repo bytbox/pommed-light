@@ -1,6 +1,10 @@
 # Top-level Makefile for pommed
 
 OFLIB ?=
+INSTALL = /usr/bin/install
+DESTDIR = /usr/local
+
+export INSTALL DESTDIR
 
 all: pommed
 
@@ -11,4 +15,7 @@ clean:
 	$(MAKE) -C pommed clean
 	rm -f *~
 
-.PHONY: pommed
+install:
+	$(MAKE) -C pommed install
+
+.PHONY: pommed install
